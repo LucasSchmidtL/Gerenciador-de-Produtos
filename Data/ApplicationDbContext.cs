@@ -40,5 +40,8 @@ namespace Gerenciador_de_Produtos.Data
 
             // Por enquanto, o EF vai deduzir certinho só com os atributos
         }
+        public DbSet<Gerenciador_de_Produtos.Models.Secao> Secao { get; set; } = default!;
+        public DbSet<Gerenciador_de_Produtos.Models.Equacao> Equacao { get; set; } = default!;
+        public DbSet<Gerenciador_de_Produtos.Models.Norma> Norma { get; set; } = default!;
     }
 }
