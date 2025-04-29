@@ -4,6 +4,12 @@ namespace Gerenciador_de_Produtos.Models
 {
     public class Agrupador
     {
+        public Agrupador()
+        {
+            ProdutoAgrupadores = new List<AgrupadorProduto>();
+            VariaveisAgrupadores = new List<VariavelAgrupador>();
+        }
+
         [Key]
         public int Id { get; set; }
 

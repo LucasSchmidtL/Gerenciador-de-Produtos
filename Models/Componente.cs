@@ -4,6 +4,11 @@ namespace Gerenciador_de_Produtos.Models
 {
     public class Componente
     {
+        public Componente()
+        {
+            VariaveisComponentes = new List<VariavelComponente>();
+        }
+
         [Key]
         public int Id { get; set; }
 
