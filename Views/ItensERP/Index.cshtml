@@ -1,0 +1,179 @@
+﻿@model IEnumerable<Gerenciador_de_Produtos.Models.ItemERP>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ERP)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TipoItem)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemERPIdOriginal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DesenhoId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descricao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Revisao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataCriacao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Acabamento)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ChapaAberta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AreaSuperficial)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PesoLiquidoMetro)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PesoBrutoMetro)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PerimetroSolda)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SRId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DesenvolvimentoId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuantidadeDobras)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MateriaPrimaId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TagId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Altura)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comprimento)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Profundidade)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ComprimentoMaximo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Passo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Classificacao)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ERP)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoItem)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemERPIdOriginal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DesenhoId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descricao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Revisao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataCriacao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Acabamento)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ChapaAberta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AreaSuperficial)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PesoLiquidoMetro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PesoBrutoMetro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PerimetroSolda)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SRId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DesenvolvimentoId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QuantidadeDobras)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MateriaPrimaId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TagId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Altura)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Comprimento)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Profundidade)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ComprimentoMaximo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Passo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Classificacao)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,164 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Gerenciador de Produtos</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="wrapper">
+
+        @using Microsoft.AspNetCore.Identity
+        @inject SignInManager<IdentityUser> SignInManager
+        @inject UserManager<IdentityUser> UserManager
+
+        @{
+            var usuario = SignInManager.IsSignedIn(User) ? await UserManager.GetUserAsync(User) : null;
+            var nome = usuario?.UserName ?? "Usuário";
+            var foto = "/img/default-user.png"; // Você pode depois criar campo de foto se quiser
+        }
+
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <ul class="navbar-nav ms-auto">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" data-bs-toggle="dropdown" href="#">
+                            <img src="@foto" alt="Foto" class="img-circle" style="width:32px; height:32px; object-fit:cover; border-radius:50%;" />
+                            <span class="ms-2 d-none d-md-inline">@nome</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">
+                                    <i class="fas fa-user-cog me-2"></i> Conta
+                                </a>
+                            </li>
+                            <li>
+                                <form method="post" asp-area="Identity" asp-page="/Account/Logout" id="logoutForm">
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Sair
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Entrar</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+
+        <!-- Sidebar -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <a href="/" class="brand-link d-flex align-items-center justify-content-center">
+                <img src="~/img/logo-white.png" alt="Logo" class="brand-image img-fluid" style="max-height: 50px;">
+            </a>
+
+            <div class="sidebar">
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index","Home")" class="nav-link">
+                                <i class="nav-icon fas fa-home"></i>
+                                <p>Home</p>
+                            </a>
+                        </li>
+
+                        <!-- Gerenciador de Produtos -->
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-boxes"></i>
+                                <p>
+                                    Gerenciador de Produtos
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Index","Produtos")" class="nav-link">
+                                        <i class="fas fa-cube nav-icon"></i>
+                                        <p>Produtos</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Index","Agrupadores")" class="nav-link">
+                                        <i class="fas fa-layer-group nav-icon"></i>
+                                        <p>Agrupadores</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Index","AgrupadoresProduto")" class="nav-link">
+                                        <i class="fas fa-box nav-icon"></i>
+                                        <p>Produtos no Agrupador</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Index","ItensERP")" class="nav-link">
+                                        <i class="fas fa-cogs nav-icon"></i>
+                                        <p>Itens ERP</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Index","VariaveisProdutos")" class="nav-link">
+                                        <i class="fas fa-sliders-h nav-icon"></i>
+                                        <p>Variáveis Produtos</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Conteúdo -->
+        <div class="content-wrapper">
+            <section class="content-header">
+                <div class="container-fluid">
+                    <h1>@ViewData["Title"]</h1>
+                </div>
+            </section>
+
+            <section class="content">
+                @RenderBody()
+            </section>
+        </div>
+
+        <!-- Rodapé -->
+        <footer class="main-footer">
+            <strong>&copy; 2025 - Gerenciador de Produtos</strong>
+        </footer>
+    </div>
+
+    <!-- Scripts (ordem importa!) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+    <script>
+        // Reativa o treeview nos menus
+        $(function () {
+            $('[data-widget="treeview"]').Treeview('init');
+        });
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

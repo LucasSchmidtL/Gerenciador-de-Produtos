@@ -1,0 +1,44 @@
+﻿@model Gerenciador_de_Produtos.Models.Componente
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Componente</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Nivel" class="control-label"></label>
+                <input asp-for="Nivel" class="form-control" />
+                <span asp-validation-for="Nivel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NrId" class="control-label"></label>
+                <input asp-for="NrId" class="form-control" />
+                <span asp-validation-for="NrId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MrId" class="control-label"></label>
+                <input asp-for="MrId" class="form-control" />
+                <span asp-validation-for="MrId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

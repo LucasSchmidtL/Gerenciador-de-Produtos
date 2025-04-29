@@ -1,0 +1,269 @@
+﻿@model IEnumerable<Gerenciador_de_Produtos.Models.Perfil>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ERP)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Desenho)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descricao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TipoSecao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Peso)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AreaBruta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AreaLiq)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AreaEq)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ix)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sxt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sxb)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Zx)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Rx)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.yt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.yb)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ixy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Iy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Syl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Syr)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Zy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ry)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.xl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.xr)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.xo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.yo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.jx)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.jy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Cw)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.J)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ixe)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sxet)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sxeb)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.lye)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Syel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Syer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.p1)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.p2)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.p3)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SimetricoX)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SimetricoY)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ERP)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Desenho)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descricao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoSecao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Peso)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AreaBruta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AreaLiq)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AreaEq)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ix)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sxt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sxb)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Zx)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rx)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.yt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.yb)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ixy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Iy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Syl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Syr)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Zy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ry)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.xl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.xr)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.xo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.yo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.jx)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.jy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cw)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.J)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ixe)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sxet)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sxeb)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.lye)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Syel)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Syer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.p1)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.p2)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.p3)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SimetricoX)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SimetricoY)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
