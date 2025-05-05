@@ -1,0 +1,257 @@
+﻿CREATE TABLE `Perfil`(
+    `ERP` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `Desenho` TEXT NOT NULL,
+    `Descrição` TEXT NOT NULL,
+    `TipoSecao` TEXT NOT NULL,
+    `Peso` FLOAT(53) NOT NULL,
+    `AreaBruta` FLOAT(53) NOT NULL,
+    `AreaLiq` FLOAT(53) NOT NULL,
+    `AreaEq` FLOAT(53) NOT NULL,
+    `Ix` FLOAT(53) NOT NULL,
+    `Sxt` FLOAT(53) NOT NULL,
+    `Sxb` FLOAT(53) NOT NULL,
+    `Zx` FLOAT(53) NOT NULL,
+    `rx` FLOAT(53) NOT NULL,
+    `yt` FLOAT(53) NOT NULL,
+    `yb` FLOAT(53) NOT NULL,
+    `Ixy` FLOAT(53) NOT NULL,
+    `Iy` FLOAT(53) NOT NULL,
+    `Syl` FLOAT(53) NOT NULL,
+    `Syr` FLOAT(53) NOT NULL,
+    `Zy` FLOAT(53) NOT NULL,
+    `ry` FLOAT(53) NOT NULL,
+    `xl` FLOAT(53) NOT NULL,
+    `xr` FLOAT(53) NOT NULL,
+    `xo` FLOAT(53) NOT NULL,
+    `yo` FLOAT(53) NOT NULL,
+    `jx` FLOAT(53) NOT NULL,
+    `jy` FLOAT(53) NOT NULL,
+    `Cw` FLOAT(53) NOT NULL,
+    `J` FLOAT(53) NOT NULL,
+    `Ixe` FLOAT(53) NOT NULL,
+    `Sxet` FLOAT(53) NOT NULL,
+    `Sxeb` FLOAT(53) NOT NULL,
+    `Iye` FLOAT(53) NOT NULL,
+    `Syel` FLOAT(53) NOT NULL,
+    `Syer` FLOAT(53) NOT NULL,
+    `p1` FLOAT(53) NOT NULL,
+    `p2` FLOAT(53) NOT NULL,
+    `p3` FLOAT(53) NOT NULL,
+    `SimetricoX` BOOLEAN NOT NULL,
+    `SimetricoY` BOOLEAN NOT NULL
+);
+CREATE TABLE `ItemERP`(
+    `Id` INT NOT NULL,
+    `ERP` INT UNSIGNED NOT NULL DEFAULT '11111' AUTO_INCREMENT,
+    `TipoItem` TEXT NOT NULL COMMENT '-> Item comprado
+-> Item Eng.
+-> Item Produzido
+-> MP',
+    `ItemERPiId` INT NOT NULL,
+    `DesenhoId` TEXT NOT NULL DEFAULT 'DE000X_0XXX',
+    `Descricao` TEXT NOT NULL DEFAULT 'PERFIL_#1,00_XXxXXxXXMM',
+    `Revisao` TEXT NOT NULL DEFAULT '1',
+    `DataCriacao` DATE NOT NULL DEFAULT 'XX/XX/25',
+    `Status` TEXT NOT NULL DEFAULT 'Obsoleto',
+    `Acabamento` TEXT NOT NULL DEFAULT 'Zincado' COMMENT '-> S/ Acabamento
+-> Zincado
+-> Galvanizado',
+    `ChapaAberta` BIGINT NOT NULL,
+    `AreaSuperficial` FLOAT(53) NULL,
+    `PesoLiquidoMetro` FLOAT(53) NULL,
+    `PesoBrutoMetro` FLOAT(53) NULL,
+    `PerimetroSolda` FLOAT(53) NULL,
+    `SRId` INT NULL,
+    `DesenvolvimentoId` INT NULL,
+    `QuantidadeDobras` INT NULL,
+    `MateriaPrimaId` INT NULL,
+    `TagId` BIGINT NOT NULL,
+    `Altura` FLOAT(53) NOT NULL,
+    `Comprimento` FLOAT(53) NOT NULL,
+    `Profundidade` FLOAT(53) NOT NULL,
+    `ComprimentoMaximo` FLOAT(53) NOT NULL,
+    `Passo` INT NOT NULL,
+    `Classificacao` INT NOT NULL,
+    PRIMARY KEY(`ERP`)
+);
+CREATE TABLE `Produto`(
+    `Id` INT NOT NULL,
+    `Familia` TEXT NOT NULL,
+    `NomeComercial` TEXT NOT NULL,
+    `VariaveisId` INT UNSIGNED NOT NULL DEFAULT 'Coluna' AUTO_INCREMENT,
+    `Precificacao` TEXT NOT NULL,
+    `DesenvolvimentoId` INT NOT NULL,
+    `Nivel` INT NOT NULL DEFAULT '1',
+    PRIMARY KEY(`NomeComercial`)
+);
+CREATE TABLE `Agrupador`(
+    `Id` INT NOT NULL,
+    `Grupo` TEXT NOT NULL,
+    `DesenvolvimentoId` INT NOT NULL,
+    `VariaveisId` INT NOT NULL,
+    `ItemERPId` INT NOT NULL,
+    `AgrupadorPaiId` INT NOT NULL,
+    `Nivel` INT NOT NULL COMMENT '2',
+    PRIMARY KEY(`Grupo`)
+);
+CREATE TABLE `Desenho`(
+    `Desenho` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `Descrição` BIGINT NOT NULL,
+    `Revisao` BIGINT NOT NULL,
+    `Status` BIGINT NOT NULL,
+    `Classificacao` BIGINT NOT NULL,
+    `SoliciatacaoAlteracaoId` BIGINT NOT NULL
+);
+CREATE TABLE `Componente`(
+    `Id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `Componente` TEXT NOT NULL,
+    `VariaveisId` INT NOT NULL,
+    `ItemERPId` INT NOT NULL,
+    `Nivel` INT NOT NULL DEFAULT '3',
+    PRIMARY KEY(`Componente`)
+);
+CREATE TABLE `Tag`(
+    `Id` INT NOT NULL,
+    `Nome` TEXT NOT NULL,
+    `ItemERPId` INT NOT NULL,
+    PRIMARY KEY(`Nome`)
+);
+ALTER TABLE
+    `Tag` ADD UNIQUE `tag_nome_unique`(`Nome`);
+CREATE TABLE `Desenvolvimento`(
+    `Id` INT NOT NULL,
+    `Classificacao` TEXT NOT NULL COMMENT 'DPN',
+    `Dificuldade` TEXT NOT NULL,
+    `Produto` TEXT NOT NULL,
+    `Descricao` LONGTEXT NOT NULL,
+    `ERP` INT NOT NULL,
+    `DataInicio` DATE NOT NULL,
+    `DataFim` DATE NOT NULL,
+    `ProjetoFinep` TEXT NOT NULL,
+    `ProjetoLeiBem` TEXT NOT NULL,
+    `Custo` FLOAT(53) NOT NULL,
+    `Fase` TEXT NOT NULL,
+    `Status` TEXT NOT NULL,
+    `TempoDesenvolvimento` INT NOT NULL,
+    `Solicitante` TEXT NOT NULL,
+    `TRL` TEXT NOT NULL,
+    `Agrupador` TEXT NOT NULL,
+    `Componente` TEXT NOT NULL,
+    `MarcoId` BIGINT NOT NULL,
+    PRIMARY KEY(`Id`)
+);
+CREATE TABLE `ProdutoAgrupador`(
+    `id` INT NOT NULL,
+    `ProdutoId` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `AgrupadorId` INT NOT NULL,
+    `Variavel` TEXT NOT NULL,
+    `Status` BOOLEAN NOT NULL,
+    PRIMARY KEY(`AgrupadorId`)
+);
+ALTER TABLE
+    `ProdutoAgrupador` ADD PRIMARY KEY(`Variavel`);
+CREATE TABLE `AgrupadorComponente`(
+    `id` INT NOT NULL,
+    `AgrupadorId` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `ComponenteId` INT NOT NULL,
+    `Quantidade` TEXT NULL,
+    `Comprimento` TEXT NULL,
+    `Profundidade` TEXT NULL,
+    `Altura` TEXT NULL,
+    `Status` BOOLEAN NOT NULL,
+    PRIMARY KEY(`ComponenteId`)
+);
+CREATE TABLE `ComponenteItemERP`(
+    `Id` INT NOT NULL,
+    `ComponenteId` INT NOT NULL,
+    `ItemERPId` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `Comprimento` TEXT NOT NULL,
+    `Altura` TEXT NOT NULL,
+    `Profundidade` TEXT NOT NULL,
+    `Quantidade` TEXT NOT NULL,
+    `Status` BOOLEAN NOT NULL,
+    PRIMARY KEY(`ComponenteId`)
+);
+CREATE TABLE `AgrupadorItemERP`(
+    `id` INT NOT NULL,
+    `AgrupadorId` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `ItemERPId` INT NOT NULL,
+    `Comprimento` FLOAT(53) NOT NULL,
+    `Altura` FLOAT(53) NOT NULL,
+    `Profundidade` FLOAT(53) NOT NULL,
+    `Quantidade` FLOAT(53) NOT NULL,
+    `Status` BOOLEAN NOT NULL,
+    PRIMARY KEY(`ItemERPId`)
+);
+CREATE TABLE `VariaveisProduto`(
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `Nome` TEXT NOT NULL,
+    `Descricao` TEXT NOT NULL,
+    `Tipo` TEXT NOT NULL,
+    `ProdutoId` INT NOT NULL,
+    `Status` BOOLEAN NOT NULL,
+    `Valor` TEXT NULL,
+    PRIMARY KEY(`Nome`)
+);
+ALTER TABLE
+    `VariaveisProduto` ADD PRIMARY KEY(`ProdutoId`);
+CREATE TABLE `VariaveisAgrupador`(
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `Nome` TEXT NOT NULL,
+    `Descricao` TEXT NOT NULL,
+    `Tipo` TEXT NOT NULL,
+    `AgrupadorId` INT NOT NULL,
+    `Status` BOOLEAN NOT NULL,
+    `Valor` TEXT NULL,
+    PRIMARY KEY(`Nome`)
+);
+ALTER TABLE
+    `VariaveisAgrupador` ADD PRIMARY KEY(`AgrupadorId`);
+CREATE TABLE `VariaveisComponente`(
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `Nome` TEXT NOT NULL,
+    `Descricao` TEXT NOT NULL,
+    `Tipo` TEXT NOT NULL,
+    `ComponenteId` INT NOT NULL,
+    `Status` BOOLEAN NOT NULL,
+    `Valor` TEXT NULL,
+    PRIMARY KEY(`Nome`)
+);
+ALTER TABLE
+    `VariaveisComponente` ADD INDEX `variaveiscomponente_nome_index`(`Nome`);
+ALTER TABLE
+    `VariaveisComponente` ADD INDEX `variaveiscomponente_valor_index`(`Valor`);
+ALTER TABLE
+    `VariaveisComponente` ADD INDEX `variaveiscomponente_componenteid_index`(`ComponenteId`);
+ALTER TABLE
+    `VariaveisComponente` ADD PRIMARY KEY(`ComponenteId`);
+ALTER TABLE
+    `Componente` ADD CONSTRAINT `componente_id_foreign` FOREIGN KEY(`Id`) REFERENCES `ComponenteItemERP`(`ComponenteId`);
+ALTER TABLE
+    `Agrupador` ADD CONSTRAINT `agrupador_id_foreign` FOREIGN KEY(`Id`) REFERENCES `AgrupadorItemERP`(`AgrupadorId`);
+ALTER TABLE
+    `Componente` ADD CONSTRAINT `componente_id_foreign` FOREIGN KEY(`Id`) REFERENCES `AgrupadorComponente`(`ComponenteId`);
+ALTER TABLE
+    `Agrupador` ADD CONSTRAINT `agrupador_id_foreign` FOREIGN KEY(`Id`) REFERENCES `ProdutoAgrupador`(`AgrupadorId`);
+ALTER TABLE
+    `Agrupador` ADD CONSTRAINT `agrupador_id_foreign` FOREIGN KEY(`Id`) REFERENCES `AgrupadorComponente`(`AgrupadorId`);
+ALTER TABLE
+    `ItemERP` ADD CONSTRAINT `itemerp_classificacao_foreign` FOREIGN KEY(`Classificacao`) REFERENCES `Desenho`(`Desenho`);
+ALTER TABLE
+    `ItemERP` ADD CONSTRAINT `itemerp_desenvolvimentoid_foreign` FOREIGN KEY(`DesenvolvimentoId`) REFERENCES `Desenvolvimento`(`Id`);
+ALTER TABLE
+    `ItemERP` ADD CONSTRAINT `itemerp_tagid_foreign` FOREIGN KEY(`TagId`) REFERENCES `Perfil`(`ERP`);
+ALTER TABLE
+    `Produto` ADD CONSTRAINT `produto_id_foreign` FOREIGN KEY(`Id`) REFERENCES `VariaveisProduto`(`ProdutoId`);
+ALTER TABLE
+    `ItemERP` ADD CONSTRAINT `itemerp_erp_foreign` FOREIGN KEY(`ERP`) REFERENCES `ComponenteItemERP`(`ItemERPId`);
+ALTER TABLE
+    `Tag` ADD CONSTRAINT `tag_itemerpid_foreign` FOREIGN KEY(`ItemERPId`) REFERENCES `ItemERP`(`Id`);
+ALTER TABLE
+    `ItemERP` ADD CONSTRAINT `itemerp_erp_foreign` FOREIGN KEY(`ERP`) REFERENCES `AgrupadorItemERP`(`ItemERPId`);
+ALTER TABLE
+    `Componente` ADD CONSTRAINT `componente_id_foreign` FOREIGN KEY(`Id`) REFERENCES `VariaveisComponente`(`ComponenteId`);
+ALTER TABLE
+    `Produto` ADD CONSTRAINT `produto_id_foreign` FOREIGN KEY(`Id`) REFERENCES `ProdutoAgrupador`(`ProdutoId`);
+ALTER TABLE
+    `Agrupador` ADD CONSTRAINT `agrupador_id_foreign` FOREIGN KEY(`Id`) REFERENCES `VariaveisAgrupador`(`AgrupadorId`);
