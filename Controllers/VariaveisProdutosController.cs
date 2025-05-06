@@ -22,7 +22,8 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: VariaveisProdutos
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.VariaveisProdutos.Include(v => v.Produto);
+            var applicationDbContext = _context.VariaveisProdutos
+                                               .Include(v => v.Produto);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -30,17 +31,13 @@ namespace Gerenciador_de_Produtos.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var variavelProduto = await _context.VariaveisProdutos
                 .Include(v => v.Produto)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (variavelProduto == null)
-            {
                 return NotFound();
-            }
 
             return View(variavelProduto);
         }
@@ -48,16 +45,17 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: VariaveisProdutos/Create
         public IActionResult Create()
         {
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Familia");
+            // Usar NomeComercial ao exibir produtos
+            ViewData["ProdutoId"] = new SelectList(
+                _context.Produtos, "Id", "NomeComercial");
             return View();
         }
 
         // POST: VariaveisProdutos/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Descricao,Tipo,ProdutoId,Status,Valor")] VariavelProduto variavelProduto)
+        public async Task<IActionResult> Create(
+            [Bind("Nome,Descricao,Tipo,ProdutoId,Status,Valor")] VariavelProduto variavelProduto)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +63,8 @@ namespace Gerenciador_de_Produtos.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Familia", variavelProduto.ProdutoId);
+            ViewData["ProdutoId"] = new SelectList(
+                _context.Produtos, "Id", "NomeComercial", variavelProduto.ProdutoId);
             return View(variavelProduto);
         }
 
@@ -73,30 +72,26 @@ namespace Gerenciador_de_Produtos.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var variavelProduto = await _context.VariaveisProdutos.FindAsync(id);
             if (variavelProduto == null)
-            {
                 return NotFound();
-            }
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Familia", variavelProduto.ProdutoId);
+
+            ViewData["ProdutoId"] = new SelectList(
+                _context.Produtos, "Id", "NomeComercial", variavelProduto.ProdutoId);
             return View(variavelProduto);
         }
 
         // POST: VariaveisProdutos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Descricao,Tipo,ProdutoId,Status,Valor")] VariavelProduto variavelProduto)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("Id,Nome,Descricao,Tipo,ProdutoId,Status,Valor")] VariavelProduto variavelProduto)
         {
             if (id != variavelProduto.Id)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -108,17 +103,14 @@ namespace Gerenciador_de_Produtos.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!VariavelProdutoExists(variavelProduto.Id))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Familia", variavelProduto.ProdutoId);
+            ViewData["ProdutoId"] = new SelectList(
+                _context.Produtos, "Id", "NomeComercial", variavelProduto.ProdutoId);
             return View(variavelProduto);
         }
 
@@ -126,17 +118,13 @@ namespace Gerenciador_de_Produtos.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var variavelProduto = await _context.VariaveisProdutos
                 .Include(v => v.Produto)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (variavelProduto == null)
-            {
                 return NotFound();
-            }
 
             return View(variavelProduto);
         }
@@ -150,9 +138,8 @@ namespace Gerenciador_de_Produtos.Controllers
             if (variavelProduto != null)
             {
                 _context.VariaveisProdutos.Remove(variavelProduto);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

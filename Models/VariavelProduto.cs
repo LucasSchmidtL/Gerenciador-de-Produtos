@@ -16,7 +16,7 @@ namespace Gerenciador_de_Produtos.Models
 
         [Required]
         public int ProdutoId { get; set; }
-        public Produto Produto { get; set; }
+        public Produto? Produto { get; set; }
 
         public bool Status { get; set; }
         public string? Valor { get; set; }
