@@ -1,35 +1,23 @@
 ﻿@model IEnumerable<Gerenciador_de_Produtos.Models.Agrupador>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Agrupadores";
 }
 
-<h1>Index</h1>
+<h1>Agrupadores</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Criar Novo</a>
 </p>
-<table class="table">
+<table class="table table-bordered">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Grupo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DesenvolvimentoId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ItemERPId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AgrupadorPaiId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nivel)
-            </th>
+            <th>@Html.DisplayNameFor(m => m.First().Nome)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Grupo)</th>
+            <th>@Html.DisplayNameFor(m => m.First().DesenvolvimentoId)</th>
+            <th>Itens ERP</th>
+            <th>@Html.DisplayNameFor(m => m.First().AgrupadorPaiId)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Nivel)</th>
             <th></th>
         </tr>
     </thead>
@@ -37,28 +25,30 @@
         @foreach (var item in Model)
         {
             <tr>
+                <td>@item.Nome</td>
+                <td>@item.Grupo</td>
+                <td>@item.DesenvolvimentoId</td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Nome)
+                    @if (item.AgrupadorItensERP != null && item.AgrupadorItensERP.Any())
+                    {
+                        <ul class="mb-0">
+                            @foreach (var ai in item.AgrupadorItensERP)
+                            {
+                                <li>@ai.ItemERP.ERP</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <em class="text-muted">Nenhum Item ERP</em>
+                    }
                 </td>
+                <td>@item.AgrupadorPaiId</td>
+                <td>@item.Nivel</td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Grupo)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DesenvolvimentoId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ItemERPId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.AgrupadorPaiId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Nivel)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Editar</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info ms-1">Detalhes</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger ms-1">Excluir</a>
                 </td>
             </tr>
         }

@@ -22,23 +22,24 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Agrupadores
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Agrupadores.ToListAsync());
+            // Inclui vínculos e detalhes dos itens ERP
+            var agrupadores = await _context.Agrupadores
+                .Include(a => a.AgrupadorItensERP)
+                    .ThenInclude(ai => ai.ItemERP)
+                .ToListAsync();
+            return View(agrupadores);
         }
 
         // GET: Agrupadores/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var agrupador = await _context.Agrupadores
+                .Include(a => a.AgrupadorItensERP)
+                    .ThenInclude(ai => ai.ItemERP)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (agrupador == null)
-            {
-                return NotFound();
-            }
+            if (agrupador == null) return NotFound();
 
             return View(agrupador);
         }
@@ -46,89 +47,126 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Agrupadores/Create
         public IActionResult Create()
         {
+            // Carrega lista de ItemERP para multiselect
+            ViewData["ItemERPs"] = new MultiSelectList(
+                _context.Set<ItemERP>().OrderBy(i => i.ERP).ToList(),
+                "Id",
+                "ERP"
+            );
             return View();
         }
 
         // POST: Agrupadores/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Nome,Grupo,DesenvolvimentoId,ItemERPId,AgrupadorPaiId,Nivel")] Agrupador agrupador)
+        public async Task<IActionResult> Create(Agrupador model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(agrupador);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ViewData["ItemERPs"] = new MultiSelectList(
+                    _context.Set<ItemERP>().OrderBy(i => i.ERP).ToList(),
+                    "Id",
+                    "ERP",
+                    model.ItemErpIds
+                );
+                return View(model);
             }
-            return View(agrupador);
+
+            // 1) persiste o agrupador básico
+            _context.Add(model);
+            await _context.SaveChangesAsync();
+
+            // 2) vincula cada ItemERP selecionado
+            if (model.ItemErpIds?.Any() == true)
+            {
+                foreach (var itemId in model.ItemErpIds)
+                {
+                    _context.Set<AgrupadorItemERP>().Add(new AgrupadorItemERP
+                    {
+                        AgrupadorId = model.Id,
+                        ItemERPId = itemId
+                    });
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Agrupadores/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var agrupador = await _context.Agrupadores.FindAsync(id);
-            if (agrupador == null)
-            {
-                return NotFound();
-            }
+            var agrupador = await _context.Agrupadores
+                .Include(a => a.AgrupadorItensERP)
+                .FirstOrDefaultAsync(a => a.Id == id);
+            if (agrupador == null) return NotFound();
+
+            // pré-seleciona no multiselect
+            agrupador.ItemErpIds = agrupador.AgrupadorItensERP
+                .Select(x => x.ItemERPId)
+                .ToList();
+
+            ViewData["ItemERPs"] = new MultiSelectList(
+                _context.Set<ItemERP>().OrderBy(i => i.ERP).ToList(),
+                "Id",
+                "ERP",
+                agrupador.ItemErpIds
+            );
             return View(agrupador);
         }
 
         // POST: Agrupadores/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("Id,Nome,Grupo,DesenvolvimentoId,ItemERPId,AgrupadorPaiId,Nivel")] Agrupador agrupador)
+        public async Task<IActionResult> Edit(int id, Agrupador model)
         {
-            if (id != agrupador.Id)
+            if (id != model.Id) return NotFound();
+
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                ViewData["ItemERPs"] = new MultiSelectList(
+                    _context.Set<ItemERP>().OrderBy(i => i.ERP).ToList(),
+                    "Id",
+                    "ERP",
+                    model.ItemErpIds
+                );
+                return View(model);
             }
 
-            if (ModelState.IsValid)
+            // atualiza agrupador básico
+            _context.Update(model);
+            await _context.SaveChangesAsync();
+
+            // sincroniza vínculos: remove antigos e adiciona novos
+            var existentes = _context.Set<AgrupadorItemERP>()
+                .Where(x => x.AgrupadorId == id);
+            _context.Set<AgrupadorItemERP>().RemoveRange(existentes);
+
+            if (model.ItemErpIds?.Any() == true)
             {
-                try
+                foreach (var itemId in model.ItemErpIds)
                 {
-                    _context.Update(agrupador);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AgrupadorExists(agrupador.Id))
+                    _context.Set<AgrupadorItemERP>().Add(new AgrupadorItemERP
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                        AgrupadorId = id,
+                        ItemERPId = itemId
+                    });
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(agrupador);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Agrupadores/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var agrupador = await _context.Agrupadores
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (agrupador == null)
-            {
-                return NotFound();
-            }
+            var agrupador = await _context.Agrupadores.FindAsync(id);
+            if (agrupador == null) return NotFound();
 
             return View(agrupador);
         }
@@ -140,9 +178,7 @@ namespace Gerenciador_de_Produtos.Controllers
         {
             var agrupador = await _context.Agrupadores.FindAsync(id);
             if (agrupador != null)
-            {
                 _context.Agrupadores.Remove(agrupador);
-            }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

@@ -12,20 +12,23 @@ namespace Gerenciador_de_Produtos.Models
             ProdutoAgrupadores = new List<AgrupadorProduto>();
             VariaveisAgrupadores = new List<VariavelAgrupador>();
             AgrupadorItensERP = new List<AgrupadorItemERP>();
+            ItemErpIds = new List<int>();
         }
 
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        public string Nome { get; set; }
+        [Required, MaxLength(100)]
+        public string Nome { get; set; } = null!;
 
         public string? Grupo { get; set; }
         public int? DesenvolvimentoId { get; set; }
-        public int? ItemERPId { get; set; }
         public int? AgrupadorPaiId { get; set; }
         public int Nivel { get; set; }
+
+        // Auxiliar para binding de multiselect
+        [NotMapped]
+        public List<int> ItemErpIds { get; set; }
 
         // Relacionamentos
         public ICollection<AgrupadorProduto> ProdutoAgrupadores { get; set; }

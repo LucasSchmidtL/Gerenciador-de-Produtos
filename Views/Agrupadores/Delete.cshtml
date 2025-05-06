@@ -6,58 +6,47 @@
 
 <h1>Delete</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Tem certeza que deseja excluir este agrupador?</h3>
 <div>
     <h4>Agrupador</h4>
     <hr />
     <dl class="row">
-        <!-- Novo campo Nome -->
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
+        <dt class="col-sm-2">@Html.DisplayNameFor(m => m.Nome)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(m => m.Nome)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(m => m.Grupo)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(m => m.Grupo)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(m => m.DesenvolvimentoId)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(m => m.DesenvolvimentoId)</dd>
+
+        <dt class="col-sm-2">Itens ERP</dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Nome)
+            @if (Model.AgrupadorItensERP != null && Model.AgrupadorItensERP.Any())
+            {
+                <ul class="mb-0">
+                    @foreach (var ai in Model.AgrupadorItensERP)
+                    {
+                        <li>@ai.ItemERP.ERP</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <em class="text-muted">Nenhum Item ERP vinculado.</em>
+            }
         </dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Grupo)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Grupo)
-        </dd>
+        <dt class="col-sm-2">@Html.DisplayNameFor(m => m.AgrupadorPaiId)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(m => m.AgrupadorPaiId)</dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DesenvolvimentoId)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DesenvolvimentoId)
-        </dd>
-
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ItemERPId)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ItemERPId)
-        </dd>
-
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.AgrupadorPaiId)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.AgrupadorPaiId)
-        </dd>
-
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Nivel)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Nivel)
-        </dd>
+        <dt class="col-sm-2">@Html.DisplayNameFor(m => m.Nivel)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(m => m.Nivel)</dd>
     </dl>
 
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <button type="submit" class="btn btn-danger">Excluir</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
     </form>
 </div>

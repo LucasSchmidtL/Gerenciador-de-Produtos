@@ -1,20 +1,19 @@
 ﻿@model Gerenciador_de_Produtos.Models.Agrupador
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Agrupador";
 }
 
-<h1>Edit</h1>
-
-<h4>Agrupador</h4>
+<h1>Editar Agrupador</h1>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-md-6">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Id" />
 
-            <!-- Novo campo Nome -->
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                 <label asp-for="Nome" class="control-label"></label>
                 <input asp-for="Nome" class="form-control" />
@@ -34,9 +33,11 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="ItemERPId" class="control-label"></label>
-                <input asp-for="ItemERPId" class="form-control" />
-                <span asp-validation-for="ItemERPId" class="text-danger"></span>
+                <label>Itens ERP</label>
+                <select asp-for="ItemErpIds" class="form-control" multiple="multiple"
+                        asp-items="@(ViewData["ItemERPs"] as MultiSelectList)">
+                </select>
+                <span asp-validation-for="ItemErpIds" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -52,14 +53,11 @@
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
