@@ -1,63 +1,65 @@
 ﻿@model IEnumerable<Gerenciador_de_Produtos.Models.Produto>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Produtos";
 }
 
-<h1>Index</h1>
+<h1>Produtos</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Criar Novo</a>
 </p>
-<table class="table">
+
+<table class="table table-bordered">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.NomeComercial)
-            </th>
-
-            <th>
-                @Html.DisplayNameFor(model => model.Familia)
-            </th>
-           
-            <th>
-                @Html.DisplayNameFor(model => model.Precificacao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DesenvolvimentoId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nivel)
-            </th>
+            <th>@Html.DisplayNameFor(m => m.First().NomeComercial)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Familia)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Precificacao)</th>
+            <th>@Html.DisplayNameFor(m => m.First().DesenvolvimentoId)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Nivel)</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                    @Html.DisplayFor(modelItem => item.NomeComercial)
-            </td>
-
-            <td>
-                @Html.DisplayFor(modelItem => item.Familia)
-            </td>
-            
-            <td>
-                @Html.DisplayFor(modelItem => item.Precificacao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DesenvolvimentoId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nivel)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.NomeComercial</td>
+                <td>@item.Familia</td>
+                <td>@item.Precificacao</td>
+                <td>@item.DesenvolvimentoId</td>
+                <td>@item.Nivel</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" class="ps-5">
+                    <a asp-controller="VariaveisProdutos"
+                       asp-action="Create"
+                       asp-route-produtoId="@item.Id"
+                       class="btn btn-sm btn-success mb-2">
+                        Adicionar Variável
+                    </a>
+                    @if (item.VariaveisProdutos != null && item.VariaveisProdutos.Any())
+                    {
+                        <strong>Variáveis:</strong>
+                        <ul class="mb-0">
+                            @foreach (var v in item.VariaveisProdutos)
+                            {
+                                <li>@v.Nome (@(v.Valor ?? "(sem valor)"))</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <em class="text-muted">Nenhuma variável cadastrada.</em>
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

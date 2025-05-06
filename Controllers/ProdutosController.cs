@@ -22,23 +22,25 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Produtos
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Produtos.ToListAsync());
+            // Inclui as variáveis de cada produto para exibição na view
+            var produtosComVariaveis = await _context.Produtos
+                .Include(p => p.VariaveisProdutos)
+                .ToListAsync();
+
+            return View(produtosComVariaveis);
         }
 
         // GET: Produtos/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var produto = await _context.Produtos
+                .Include(p => p.VariaveisProdutos)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (produto == null)
-            {
                 return NotFound();
-            }
 
             return View(produto);
         }
@@ -50,8 +52,6 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
         // POST: Produtos/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Familia,NomeComercial,Precificacao,DesenvolvimentoId,Nivel")] Produto produto)
@@ -69,29 +69,22 @@ namespace Gerenciador_de_Produtos.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var produto = await _context.Produtos.FindAsync(id);
             if (produto == null)
-            {
                 return NotFound();
-            }
+
             return View(produto);
         }
 
         // POST: Produtos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Familia,NomeComercial,Precificacao,DesenvolvimentoId,Nivel")] Produto produto)
         {
             if (id != produto.Id)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -102,14 +95,10 @@ namespace Gerenciador_de_Produtos.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProdutoExists(produto.Id))
-                    {
+                    if (!_context.Produtos.Any(e => e.Id == produto.Id))
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -120,16 +109,12 @@ namespace Gerenciador_de_Produtos.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var produto = await _context.Produtos
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (produto == null)
-            {
                 return NotFound();
-            }
 
             return View(produto);
         }
@@ -143,15 +128,9 @@ namespace Gerenciador_de_Produtos.Controllers
             if (produto != null)
             {
                 _context.Produtos.Remove(produto);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ProdutoExists(int id)
-        {
-            return _context.Produtos.Any(e => e.Id == id);
         }
     }
 }
