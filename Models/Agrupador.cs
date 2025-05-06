@@ -1,7 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gerenciador_de_Produtos.Models
 {
+    [Index(nameof(Nome), IsUnique = true)]
     public class Agrupador
     {
         public Agrupador()
@@ -13,6 +16,10 @@ namespace Gerenciador_de_Produtos.Models
 
         [Key]
         public int Id { get; set; }
+
+        [Required]
+        [MaxLength(100)]
+        public string Nome { get; set; }
 
         public string? Grupo { get; set; }
         public int? DesenvolvimentoId { get; set; }

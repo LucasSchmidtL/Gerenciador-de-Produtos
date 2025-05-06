@@ -50,11 +50,10 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
         // POST: Agrupadores/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Grupo,DesenvolvimentoId,ItemERPId,AgrupadorPaiId,Nivel")] Agrupador agrupador)
+        public async Task<IActionResult> Create(
+            [Bind("Nome,Grupo,DesenvolvimentoId,ItemERPId,AgrupadorPaiId,Nivel")] Agrupador agrupador)
         {
             if (ModelState.IsValid)
             {
@@ -82,11 +81,11 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
         // POST: Agrupadores/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Grupo,DesenvolvimentoId,ItemERPId,AgrupadorPaiId,Nivel")] Agrupador agrupador)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("Id,Nome,Grupo,DesenvolvimentoId,ItemERPId,AgrupadorPaiId,Nivel")] Agrupador agrupador)
         {
             if (id != agrupador.Id)
             {
