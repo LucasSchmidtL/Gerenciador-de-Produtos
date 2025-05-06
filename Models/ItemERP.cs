@@ -34,6 +34,6 @@ namespace Gerenciador_de_Produtos.Models
         public int? Classificacao { get; set; }
 
         // 🔗 Relacionamento com Agrupadores
-        public ICollection<AgrupadorItemERP> AgrupadorItensERP { get; set; }
+        public ICollection<AgrupadorItemERP> AgrupadorItensERP { get; set; } = new List<AgrupadorItemERP>();
     }
 }
