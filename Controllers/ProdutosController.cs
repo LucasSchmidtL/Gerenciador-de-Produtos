@@ -22,12 +22,14 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Produtos
         public async Task<IActionResult> Index()
         {
-            // Inclui as variáveis de cada produto para exibição na view
-            var produtosComVariaveis = await _context.Produtos
+            // Inclui variáveis e agrupadores de cada produto para exibição na view
+            var produtosComDados = await _context.Produtos
                 .Include(p => p.VariaveisProdutos)
+                .Include(p => p.ProdutoAgrupadores)
+                    .ThenInclude(pa => pa.Agrupador)
                 .ToListAsync();
 
-            return View(produtosComVariaveis);
+            return View(produtosComDados);
         }
 
         // GET: Produtos/Details/5
@@ -38,6 +40,8 @@ namespace Gerenciador_de_Produtos.Controllers
 
             var produto = await _context.Produtos
                 .Include(p => p.VariaveisProdutos)
+                .Include(p => p.ProdutoAgrupadores)
+                    .ThenInclude(pa => pa.Agrupador)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (produto == null)
                 return NotFound();

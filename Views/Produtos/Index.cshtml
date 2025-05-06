@@ -44,6 +44,8 @@
                        class="btn btn-sm btn-success mb-2">
                         Adicionar Variável
                     </a>
+
+                    @* Exibe variáveis cadastradas *@
                     @if (item.VariaveisProdutos != null && item.VariaveisProdutos.Any())
                     {
                         <strong>Variáveis:</strong>
@@ -57,6 +59,30 @@
                     else
                     {
                         <em class="text-muted">Nenhuma variável cadastrada.</em>
+                    }
+
+                    <hr />
+
+                    @* Exibe agrupadores vinculados *@
+                    <a asp-controller="AgrupadoresProduto"
+                       asp-action="Create"
+                       asp-route-produtoId="@item.Id"
+                       class="btn btn-sm btn-warning mb-2 ms-2">
+                        Adicionar Agrupador
+                    </a>
+                    @if (item.ProdutoAgrupadores != null && item.ProdutoAgrupadores.Any())
+                    {
+                        <strong>Agrupadores:</strong>
+                        <ul class="mb-0">
+                            @foreach (var ap in item.ProdutoAgrupadores)
+                            {
+                                <li>@ap.Agrupador.Nome</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <em class="text-muted">Nenhum agrupador cadastrado.</em>
                     }
                 </td>
             </tr>

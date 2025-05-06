@@ -10,6 +10,18 @@ using Gerenciador_de_Produtos.Models;
 
 namespace Gerenciador_de_Produtos.Controllers
 {
+    // ViewModel para exibir listas de produtos ↔ agrupadores
+    public class AgrupadorProdutoViewModel
+    {
+        public int VinculoId { get; set; }
+        public int ProdutoId { get; set; }
+        public string NomeComercial { get; set; } = null!;
+        public int AgrupadorId { get; set; }
+        public string AgrupadorNome { get; set; } = null!;
+        public string? Variavel { get; set; }
+        public bool Status { get; set; }
+    }
+
     public class AgrupadoresProdutoController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,35 +32,60 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
         // GET: AgrupadoresProduto
+        // Exibe todas as relações em um ViewModel customizado
         public async Task<IActionResult> Index()
         {
-            var itens = _context.ProdutoAgrupadores
-                .Include(a => a.Agrupador)
-                .Include(a => a.Produto);
-            return View(await itens.ToListAsync());
+            var itens = await _context.ProdutoAgrupadores
+                .Include(pa => pa.Produto)
+                .Include(pa => pa.Agrupador)
+                .Select(pa => new AgrupadorProdutoViewModel
+                {
+                    VinculoId = pa.Id,
+                    ProdutoId = pa.ProdutoId,
+                    NomeComercial = pa.Produto.NomeComercial,
+                    AgrupadorId = pa.AgrupadorId,
+                    AgrupadorNome = pa.Agrupador.Nome,
+                    Variavel = pa.Variavel,
+                    Status = pa.Status
+                })
+                .ToListAsync();
+
+            return View(itens);
         }
 
         // GET: AgrupadoresProduto/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
-            var item = await _context.ProdutoAgrupadores
-                .Include(a => a.Agrupador)
+            var pa = await _context.ProdutoAgrupadores
                 .Include(a => a.Produto)
+                .Include(a => a.Agrupador)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (item == null)
-                return NotFound();
+            if (pa == null) return NotFound();
 
-            return View(item);
+            var vm = new AgrupadorProdutoViewModel
+            {
+                VinculoId = pa.Id,
+                ProdutoId = pa.ProdutoId,
+                NomeComercial = pa.Produto.NomeComercial,
+                AgrupadorId = pa.AgrupadorId,
+                AgrupadorNome = pa.Agrupador.Nome,
+                Variavel = pa.Variavel,
+                Status = pa.Status
+            };
+            return View(vm);
         }
 
         // GET: AgrupadoresProduto/Create
-        public IActionResult Create()
+        public IActionResult Create(int? produtoId)
         {
-            PopulateDropdowns();
-            return View();
+            var model = new AgrupadorProduto();
+            if (produtoId.HasValue)
+                model.ProdutoId = produtoId.Value;
+
+            PopulateDropdowns(model.ProdutoId, model.AgrupadorId);
+            return View(model);
         }
 
         // POST: AgrupadoresProduto/Create
@@ -58,33 +95,27 @@ namespace Gerenciador_de_Produtos.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // coleta erros para debugger ou exibição
                 var erros = ModelState
                     .Where(x => x.Value.Errors.Count > 0)
                     .Select(x => new { Campo = x.Key, Mensagens = x.Value.Errors.Select(e => e.ErrorMessage) })
                     .ToList();
-
-                // opcional: passar erros para a view
                 ViewData["ModelErrors"] = erros;
-
                 PopulateDropdowns(agrupadorProduto.ProdutoId, agrupadorProduto.AgrupadorId);
                 return View(agrupadorProduto);
             }
 
             _context.Add(agrupadorProduto);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Details", "Produtos", new { id = agrupadorProduto.ProdutoId });
         }
 
         // GET: AgrupadoresProduto/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
             var agrupadorProduto = await _context.ProdutoAgrupadores.FindAsync(id);
-            if (agrupadorProduto == null)
-                return NotFound();
+            if (agrupadorProduto == null) return NotFound();
 
             PopulateDropdowns(agrupadorProduto.ProdutoId, agrupadorProduto.AgrupadorId);
             return View(agrupadorProduto);
@@ -95,8 +126,7 @@ namespace Gerenciador_de_Produtos.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ProdutoId,AgrupadorId,Variavel,Status")] AgrupadorProduto agrupadorProduto)
         {
-            if (id != agrupadorProduto.Id)
-                return NotFound();
+            if (id != agrupadorProduto.Id) return NotFound();
 
             if (!ModelState.IsValid)
             {
@@ -111,28 +141,34 @@ namespace Gerenciador_de_Produtos.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AgrupadorProdutoExists(agrupadorProduto.Id))
-                    return NotFound();
-                else
-                    throw;
+                if (!AgrupadorProdutoExists(agrupadorProduto.Id)) return NotFound(); else throw;
             }
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("Details", "Produtos", new { id = agrupadorProduto.ProdutoId });
         }
 
         // GET: AgrupadoresProduto/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
-            var item = await _context.ProdutoAgrupadores
-                .Include(a => a.Agrupador)
+            var pa = await _context.ProdutoAgrupadores
                 .Include(a => a.Produto)
+                .Include(a => a.Agrupador)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (item == null)
-                return NotFound();
+            if (pa == null) return NotFound();
 
-            return View(item);
+            var vm = new AgrupadorProdutoViewModel
+            {
+                VinculoId = pa.Id,
+                ProdutoId = pa.ProdutoId,
+                NomeComercial = pa.Produto.NomeComercial,
+                AgrupadorId = pa.AgrupadorId,
+                AgrupadorNome = pa.Agrupador.Nome,
+                Variavel = pa.Variavel,
+                Status = pa.Status
+            };
+            return View(vm);
         }
 
         // POST: AgrupadoresProduto/Delete/5
@@ -145,7 +181,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 _context.ProdutoAgrupadores.Remove(item);
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Details", "Produtos", new { id = item!.ProdutoId });
         }
 
         private bool AgrupadorProdutoExists(int id)
