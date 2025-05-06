@@ -8,6 +8,7 @@ namespace Gerenciador_de_Produtos.Models
         {
             ProdutoAgrupadores = new List<AgrupadorProduto>();
             VariaveisAgrupadores = new List<VariavelAgrupador>();
+            AgrupadorItensERP = new List<AgrupadorItemERP>();
         }
 
         [Key]
@@ -22,5 +23,6 @@ namespace Gerenciador_de_Produtos.Models
         // Relacionamentos
         public ICollection<AgrupadorProduto> ProdutoAgrupadores { get; set; }
         public ICollection<VariavelAgrupador> VariaveisAgrupadores { get; set; }
+        public ICollection<AgrupadorItemERP> AgrupadorItensERP { get; set; }
     }
 }

@@ -32,5 +32,8 @@ namespace Gerenciador_de_Produtos.Models
         public float? ComprimentoMaximo { get; set; }
         public int? Passo { get; set; }
         public int? Classificacao { get; set; }
+
+        // 🔗 Relacionamento com Agrupadores
+        public ICollection<AgrupadorItemERP> AgrupadorItensERP { get; set; }
     }
 }

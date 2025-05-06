@@ -1,6 +1,5 @@
 ﻿using Gerenciador_de_Produtos.Models;
 using Microsoft.EntityFrameworkCore;
-using Gerenciador_de_Produtos.Models;    
 
 namespace Gerenciador_de_Produtos.Data
 {
@@ -26,22 +25,24 @@ namespace Gerenciador_de_Produtos.Data
         public DbSet<Desenho> Desenhos { get; set; }
         public DbSet<Perfil> Perfis { get; set; }
         public DbSet<ItemERP> ItensERP { get; set; }
+        public DbSet<Gerenciador_de_Produtos.Models.Secao> Secao { get; set; } = default!;
+        public DbSet<Gerenciador_de_Produtos.Models.Equacao> Equacao { get; set; } = default!;
+        public DbSet<Gerenciador_de_Produtos.Models.Norma> Norma { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configurações adicionais, se precisar no futuro:
-            // Exemplo de relacionamento customizado
-            // modelBuilder.Entity<Produto>()
-            //     .HasMany(p => p.ProdutoAgrupadores)
-            //     .WithOne(pa => pa.Produto)
-            //     .HasForeignKey(pa => pa.ProdutoId);
+            // Mapeamento explícito do relacionamento entre Agrupador e ItemERP
+            modelBuilder.Entity<AgrupadorItemERP>()
+                .HasOne(a => a.Agrupador)
+                .WithMany(g => g.AgrupadorItensERP)
+                .HasForeignKey(a => a.AgrupadorId);
 
-            // Por enquanto, o EF vai deduzir certinho só com os atributos
+            modelBuilder.Entity<AgrupadorItemERP>()
+                .HasOne(a => a.ItemERP)
+                .WithMany(e => e.AgrupadorItensERP)
+                .HasForeignKey(a => a.ItemERPId);
         }
-        public DbSet<Gerenciador_de_Produtos.Models.Secao> Secao { get; set; } = default!;
-        public DbSet<Gerenciador_de_Produtos.Models.Equacao> Equacao { get; set; } = default!;
-        public DbSet<Gerenciador_de_Produtos.Models.Norma> Norma { get; set; } = default!;
     }
 }
