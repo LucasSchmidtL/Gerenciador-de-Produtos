@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Gerenciador_de_Produtos.Data;
 using Gerenciador_de_Produtos.Models;
@@ -50,11 +49,10 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
         // POST: Desenhos/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DesenhoId,Descricao,Revisao,Status,Classificacao,SolicitacaoAlteracaoId")] Desenho desenho)
+        public async Task<IActionResult> Create(
+            [Bind("Nome,Descricao,Revisao,Status,Classificacao,SolicitacaoAlteracaoId")] Desenho desenho)
         {
             if (ModelState.IsValid)
             {
@@ -82,11 +80,11 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
         // POST: Desenhos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("DesenhoId,Descricao,Revisao,Status,Classificacao,SolicitacaoAlteracaoId")] Desenho desenho)
+        public async Task<IActionResult> Edit(
+            long id,
+            [Bind("DesenhoId,Nome,Descricao,Revisao,Status,Classificacao,SolicitacaoAlteracaoId")] Desenho desenho)
         {
             if (id != desenho.DesenhoId)
             {
