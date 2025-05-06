@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Gerenciador_de_Produtos.Data;
 using Gerenciador_de_Produtos.Models;
@@ -28,17 +27,11 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Componentes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var componente = await _context.Componentes
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (componente == null)
-            {
-                return NotFound();
-            }
+            if (componente == null) return NotFound();
 
             return View(componente);
         }
@@ -50,11 +43,10 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
         // POST: Componentes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nivel,NrId,MrId")] Componente componente)
+        public async Task<IActionResult> Create(
+            [Bind("Nome,Descricao,Nivel")] Componente componente)
         {
             if (ModelState.IsValid)
             {
@@ -68,30 +60,21 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Componentes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var componente = await _context.Componentes.FindAsync(id);
-            if (componente == null)
-            {
-                return NotFound();
-            }
+            if (componente == null) return NotFound();
             return View(componente);
         }
 
         // POST: Componentes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nivel,NrId,MrId")] Componente componente)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("Id,Nome,Descricao,Nivel")] Componente componente)
         {
-            if (id != componente.Id)
-            {
-                return NotFound();
-            }
+            if (id != componente.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -102,14 +85,8 @@ namespace Gerenciador_de_Produtos.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ComponenteExists(componente.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!ComponenteExists(componente.Id)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -119,17 +96,11 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Componentes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var componente = await _context.Componentes
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (componente == null)
-            {
-                return NotFound();
-            }
+            if (componente == null) return NotFound();
 
             return View(componente);
         }
@@ -143,9 +114,8 @@ namespace Gerenciador_de_Produtos.Controllers
             if (componente != null)
             {
                 _context.Componentes.Remove(componente);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
