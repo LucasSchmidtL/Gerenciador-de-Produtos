@@ -10,26 +10,51 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            @* Exibe erros coletados no controller *@
+            @{
+                var erros = ViewData["ModelErrors"] as IEnumerable<dynamic>;
+            }
+            @if (erros != null && erros.Any())
+            {
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach (var e in erros)
+                        {
+                            <li><strong>@e.Campo:</strong> @string.Join(", ", e.Mensagens)</li>
+                        }
+                    </ul>
+                </div>
+            }
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                 <label asp-for="ProdutoId" class="control-label"></label>
-                <select asp-for="ProdutoId" class ="form-control" asp-items="ViewBag.ProdutoId"></select>
+                <select asp-for="ProdutoId" class="form-control" asp-items="ViewBag.ProdutoId"></select>
+                <span asp-validation-for="ProdutoId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="AgrupadorId" class="control-label"></label>
-                <select asp-for="AgrupadorId" class ="form-control" asp-items="ViewBag.AgrupadorId"></select>
+                <select asp-for="AgrupadorId" class="form-control" asp-items="ViewBag.AgrupadorId"></select>
+                <span asp-validation-for="AgrupadorId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Variavel" class="control-label"></label>
                 <input asp-for="Variavel" class="form-control" />
                 <span asp-validation-for="Variavel" class="text-danger"></span>
             </div>
+
             <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Status" /> @Html.DisplayNameFor(model => model.Status)
-                </label>
+                <input asp-for="Status" class="form-check-input" />
+                <label asp-for="Status" class="form-check-label"></label>
+                <span asp-validation-for="Status" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -42,5 +67,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

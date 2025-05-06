@@ -22,129 +22,117 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: AgrupadoresProduto
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.ProdutoAgrupadores.Include(a => a.Agrupador).Include(a => a.Produto);
-            return View(await applicationDbContext.ToListAsync());
+            var itens = _context.ProdutoAgrupadores
+                .Include(a => a.Agrupador)
+                .Include(a => a.Produto);
+            return View(await itens.ToListAsync());
         }
 
         // GET: AgrupadoresProduto/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var agrupadorProduto = await _context.ProdutoAgrupadores
+            var item = await _context.ProdutoAgrupadores
                 .Include(a => a.Agrupador)
                 .Include(a => a.Produto)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (agrupadorProduto == null)
-            {
+            if (item == null)
                 return NotFound();
-            }
 
-            return View(agrupadorProduto);
+            return View(item);
         }
 
         // GET: AgrupadoresProduto/Create
         public IActionResult Create()
         {
-            ViewData["AgrupadorId"] = new SelectList(_context.Agrupadores, "Id", "Id");
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Familia");
+            PopulateDropdowns();
             return View();
         }
 
         // POST: AgrupadoresProduto/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ProdutoId,AgrupadorId,Variavel,Status")] AgrupadorProduto agrupadorProduto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(agrupadorProduto);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                // coleta erros para debugger ou exibição
+                var erros = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { Campo = x.Key, Mensagens = x.Value.Errors.Select(e => e.ErrorMessage) })
+                    .ToList();
+
+                // opcional: passar erros para a view
+                ViewData["ModelErrors"] = erros;
+
+                PopulateDropdowns(agrupadorProduto.ProdutoId, agrupadorProduto.AgrupadorId);
+                return View(agrupadorProduto);
             }
-            ViewData["AgrupadorId"] = new SelectList(_context.Agrupadores, "Id", "Id", agrupadorProduto.AgrupadorId);
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Familia", agrupadorProduto.ProdutoId);
-            return View(agrupadorProduto);
+
+            _context.Add(agrupadorProduto);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: AgrupadoresProduto/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var agrupadorProduto = await _context.ProdutoAgrupadores.FindAsync(id);
             if (agrupadorProduto == null)
-            {
                 return NotFound();
-            }
-            ViewData["AgrupadorId"] = new SelectList(_context.Agrupadores, "Id", "Id", agrupadorProduto.AgrupadorId);
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Familia", agrupadorProduto.ProdutoId);
+
+            PopulateDropdowns(agrupadorProduto.ProdutoId, agrupadorProduto.AgrupadorId);
             return View(agrupadorProduto);
         }
 
         // POST: AgrupadoresProduto/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ProdutoId,AgrupadorId,Variavel,Status")] AgrupadorProduto agrupadorProduto)
         {
             if (id != agrupadorProduto.Id)
-            {
                 return NotFound();
+
+            if (!ModelState.IsValid)
+            {
+                PopulateDropdowns(agrupadorProduto.ProdutoId, agrupadorProduto.AgrupadorId);
+                return View(agrupadorProduto);
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    _context.Update(agrupadorProduto);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AgrupadorProdutoExists(agrupadorProduto.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                _context.Update(agrupadorProduto);
+                await _context.SaveChangesAsync();
             }
-            ViewData["AgrupadorId"] = new SelectList(_context.Agrupadores, "Id", "Id", agrupadorProduto.AgrupadorId);
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Familia", agrupadorProduto.ProdutoId);
-            return View(agrupadorProduto);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!AgrupadorProdutoExists(agrupadorProduto.Id))
+                    return NotFound();
+                else
+                    throw;
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: AgrupadoresProduto/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var agrupadorProduto = await _context.ProdutoAgrupadores
+            var item = await _context.ProdutoAgrupadores
                 .Include(a => a.Agrupador)
                 .Include(a => a.Produto)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (agrupadorProduto == null)
-            {
+            if (item == null)
                 return NotFound();
-            }
 
-            return View(agrupadorProduto);
+            return View(item);
         }
 
         // POST: AgrupadoresProduto/Delete/5
@@ -152,11 +140,9 @@ namespace Gerenciador_de_Produtos.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var agrupadorProduto = await _context.ProdutoAgrupadores.FindAsync(id);
-            if (agrupadorProduto != null)
-            {
-                _context.ProdutoAgrupadores.Remove(agrupadorProduto);
-            }
+            var item = await _context.ProdutoAgrupadores.FindAsync(id);
+            if (item != null)
+                _context.ProdutoAgrupadores.Remove(item);
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -165,6 +151,12 @@ namespace Gerenciador_de_Produtos.Controllers
         private bool AgrupadorProdutoExists(int id)
         {
             return _context.ProdutoAgrupadores.Any(e => e.Id == id);
+        }
+
+        private void PopulateDropdowns(int? produtoId = null, int? agrupadorId = null)
+        {
+            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "NomeComercial", produtoId);
+            ViewData["AgrupadorId"] = new SelectList(_context.Agrupadores, "Id", "Nome", agrupadorId);
         }
     }
 }
