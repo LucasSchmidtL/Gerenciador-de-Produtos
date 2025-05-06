@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
 
@@ -30,6 +29,16 @@
 
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Sidebar toggle button-->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+                        <i class="fas fa-bars"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
             <ul class="navbar-nav ms-auto">
                 @if (SignInManager.IsSignedIn(User))
                 {
@@ -66,13 +75,12 @@
         <!-- Sidebar -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <a href="/" class="brand-link d-flex align-items-center justify-content-center">
-                <img src="~/img/logo-white.png" alt="Logo" class="brand-image img-fluid" style="max-height: 50px;">
+                <img src="~/img/logo-white.png" alt="Logo" class="brand-image img-fluid" style="max-height: 50px;" />
             </a>
 
             <div class="sidebar">
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-
                         <!-- Home -->
                         <li class="nav-item">
                             <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link">
@@ -80,35 +88,41 @@
                                 <p>Home</p>
                             </a>
                         </li>
-
                         <!-- Gerenciador de Produtos -->
                         <li class="nav-item has-treeview">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-boxes"></i>
-                                <p>Gerenciador de Produtos <i class="right fas fa-angle-left"></i></p>
+                                <p>
+                                    Gerenciador de Produtos
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
                             </a>
-                            <ul class="nav nav-treeview">
-
-                                <!-- Produtos -->
+                            <ul class="nav nav-treeview ms-3">
                                 <li class="nav-item has-treeview">
                                     <a href="#" class="nav-link">
                                         <i class="fas fa-cube nav-icon"></i>
-                                        <p>Produtos <i class="right fas fa-angle-left"></i></p>
+                                        <p>
+                                            Produtos
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
                                     </a>
-                                    <ul class="nav nav-treeview">
+                                    <ul class="nav nav-treeview ms-3">
                                         <li class="nav-item">
                                             <a asp-area="" asp-controller="Produtos" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-cube nav-icon"></i> Produtos
+                                                <i class="fas fa-cube nav-icon"></i>
+                                                <p>Produtos</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a asp-area="" asp-controller="AgrupadoresProduto" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-box nav-icon"></i> Agrupadores Produto
+                                                <i class="fas fa-box nav-icon"></i>
+                                                <p>Agrupadores Produto</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a asp-area="" asp-controller="VariaveisProdutos" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-sliders-h nav-icon"></i> Variáveis Produto
+                                                <i class="fas fa-sliders-h nav-icon"></i>
+                                                <p>Variáveis Produto</p>
                                             </a>
                                         </li>
                                     </ul>
@@ -118,27 +132,34 @@
                                 <li class="nav-item has-treeview">
                                     <a href="#" class="nav-link">
                                         <i class="fas fa-layer-group nav-icon"></i>
-                                        <p>Agrupadores <i class="right fas fa-angle-left"></i></p>
+                                        <p>
+                                            Agrupadores
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
                                     </a>
-                                    <ul class="nav nav-treeview">
+                                    <ul class="nav nav-treeview ms-3">
                                         <li class="nav-item">
                                             <a asp-area="" asp-controller="Agrupadores" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-layer-group nav-icon"></i> Agrupadores
+                                                <i class="fas fa-layer-group nav-icon"></i>
+                                                <p>Agrupadores</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a asp-area="" asp-controller="AgrupadoresComponentes" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-th-large nav-icon"></i> Agrupadores Componentes
+                                                <i class="fas fa-th-large nav-icon"></i>
+                                                <p>Agrupadores Componentes</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a asp-area="" asp-controller="AgrupadoresItensERP" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-cogs nav-icon"></i> Agrupadores Itens ERP
+                                                <i class="fas fa-cogs nav-icon"></i>
+                                                <p>Agrupadores Itens ERP</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a asp-area="" asp-controller="VariaveisAgrupadores" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-sliders-h nav-icon"></i> Variáveis Agrupadores
+                                                <i class="fas fa-sliders-h nav-icon"></i>
+                                                <p>Variáveis Agrupadores</p>
                                             </a>
                                         </li>
                                     </ul>
@@ -148,22 +169,28 @@
                                 <li class="nav-item has-treeview">
                                     <a href="#" class="nav-link">
                                         <i class="fas fa-tools nav-icon"></i>
-                                        <p>Componentes <i class="right fas fa-angle-left"></i></p>
+                                        <p>
+                                            Componentes
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
                                     </a>
-                                    <ul class="nav nav-treeview">
+                                    <ul class="nav nav-treeview ms-3">
                                         <li class="nav-item">
                                             <a asp-area="" asp-controller="Componentes" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-tools nav-icon"></i> Componentes
+                                                <i class="fas fa-tools nav-icon"></i>
+                                                <p>Componentes</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a asp-area="" asp-controller="ComponentesItensERP" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-screwdriver-wrench nav-icon"></i> Itens ERP do Componente
+                                                <i class="fas fa-screwdriver-wrench nav-icon"></i>
+                                                <p>Itens ERP do Componente</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a asp-area="" asp-controller="VariaveisComponentes" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-sliders-h nav-icon"></i> Variáveis Componentes
+                                                <i class="fas fa-sliders-h nav-icon"></i>
+                                                <p>Variáveis Componentes</p>
                                             </a>
                                         </li>
                                     </ul>
@@ -172,59 +199,61 @@
                                 <!-- Itens ERP -->
                                 <li class="nav-item">
                                     <a asp-area="" asp-controller="ItensERP" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-cogs nav-icon"></i> Itens ERP
+                                        <i class="fas fa-cogs nav-icon"></i>
+                                        <p>Itens ERP</p>
                                     </a>
                                 </li>
 
                                 <!-- Desenhos -->
                                 <li class="nav-item">
                                     <a asp-area="" asp-controller="Desenhos" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-drafting-compass nav-icon"></i> Desenhos
+                                        <i class="fas fa-drafting-compass nav-icon"></i>
+                                        <p>Desenhos</p>
                                     </a>
                                 </li>
 
                                 <!-- Perfis -->
                                 <li class="nav-item">
                                     <a asp-area="" asp-controller="Perfis" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-columns nav-icon"></i> Perfis
+                                        <i class="fas fa-columns nav-icon"></i>
+                                        <p>Perfis</p>
                                     </a>
                                 </li>
 
                                 <!-- Tags -->
                                 <li class="nav-item">
                                     <a asp-area="" asp-controller="Tags" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-tag nav-icon"></i> Tags
+                                        <i class="fas fa-tag nav-icon"></i>
+                                        <p>Tags</p>
                                     </a>
                                 </li>
 
-                                <!-- Seções / Equações / Normas -->
+                                <!-- Documentação Técnica -->
                                 <li class="nav-header">Documentação Técnica</li>
-
                                 <li class="nav-item">
                                     <a asp-area="" asp-controller="Secoes" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-ruler-horizontal nav-icon"></i> Seções
+                                        <i class="fas fa-ruler-horizontal nav-icon"></i>
+                                        <p>Seções</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a asp-area="" asp-controller="Equacoes" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-square-root-alt nav-icon"></i> Equações
+                                        <i class="fas fa-square-root-alt nav-icon"></i>
+                                        <p>Equações</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a asp-area="" asp-controller="Normas" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-book nav-icon"></i> Normas
+                                        <i class="fas fa-book nav-icon"></i>
+                                        <p>Normas</p>
                                     </a>
                                 </li>
-
                             </ul>
-                        </li>
-
-                    </ul>
                 </nav>
             </div>
         </aside>
 
-        <!-- Conteúdo -->
+        <!-- Content Wrapper -->
         <div class="content-wrapper">
             <section class="content-header">
                 <div class="container-fluid">
@@ -237,7 +266,7 @@
             </section>
         </div>
 
-        <!-- Rodapé -->
+        <!-- Footer -->
         <footer class="main-footer">
             <strong>&copy; 2025 - Gerenciador de Produtos</strong>
         </footer>
@@ -247,7 +276,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-
     @RenderSection("Scripts", required: false)
 </body>
 </html>
