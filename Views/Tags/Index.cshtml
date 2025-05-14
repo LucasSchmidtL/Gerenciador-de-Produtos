@@ -1,41 +1,49 @@
 ﻿@model IEnumerable<Gerenciador_de_Produtos.Models.Tag>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Tags";
 }
 
-<h1>Index</h1>
+<h1>Tags</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Criar Nova Tag</a>
 </p>
-<table class="table">
-    <thead>
+
+<table class="table table-bordered">
+    <thead class="table-light">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ItemERP)
-            </th>
+            <th>@Html.DisplayNameFor(m => m.First().Nome)</th>
+            <th>Itens ERP</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ItemERP.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var tag in Model)
+        {
+            <tr>
+                <td>@tag.Nome</td>
+                <td>
+                    @if (tag.ItemERPs != null && tag.ItemERPs.Any())
+                    {
+                        <ul class="mb-0">
+                            @foreach (var item in tag.ItemERPs)
+                            {
+                                <li>@item.ERP (@item.Id)</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <em class="text-muted">—</em>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-secondary ms-1">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-danger ms-1">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

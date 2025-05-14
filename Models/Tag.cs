@@ -11,8 +11,6 @@ namespace Gerenciador_de_Produtos.Models
         [Required]
         public string Nome { get; set; }
 
-        [Required]
-        public int ItemERPId { get; set; }
-        public ItemERP ItemERP { get; set; }
+        public ICollection<ItemERP> ItemERPs { get; set; } = new List<ItemERP>();
     }
 }

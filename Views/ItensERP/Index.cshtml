@@ -1,179 +1,129 @@
 ﻿@model IEnumerable<Gerenciador_de_Produtos.Models.ItemERP>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Itens ERP";
 }
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Novo ItemERP</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ERP)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TipoItem)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ItemERPIdOriginal)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DesenhoId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descricao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Revisao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataCriacao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Acabamento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ChapaAberta)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AreaSuperficial)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PesoLiquidoMetro)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PesoBrutoMetro)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PerimetroSolda)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SRId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DesenvolvimentoId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.QuantidadeDobras)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MateriaPrimaId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TagId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Altura)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Comprimento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Profundidade)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ComprimentoMaximo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Passo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Classificacao)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ERP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TipoItem)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ItemERPIdOriginal)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DesenhoId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descricao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Revisao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataCriacao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Acabamento)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChapaAberta)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AreaSuperficial)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PesoLiquidoMetro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PesoBrutoMetro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PerimetroSolda)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SRId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DesenvolvimentoId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.QuantidadeDobras)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MateriaPrimaId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TagId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Altura)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Comprimento)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Profundidade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ComprimentoMaximo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Passo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Classificacao)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+
+@foreach (var item in Model)
+{
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>ERP:</strong> @item.ERP (@item.Id)
+                    @if (!string.IsNullOrWhiteSpace(item.Descricao))
+                    {
+                        <br />
+
+                        <small class="text-muted">@item.Descricao</small>
+                    }
+                </div>
+                <div>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-sm-4"><strong>Tipo:</strong> @item.TipoItem</div>
+                <div class="col-sm-4"><strong>Original:</strong> @item.ItemERPIdOriginal</div>
+                <div class="col-sm-4"><strong>Revisão:</strong> @item.Revisao</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4"><strong>Data Criação:</strong> @(item.DataCriacao?.ToString("dd/MM/yyyy"))</div>
+                <div class="col-sm-4"><strong>Status:</strong> @item.Status</div>
+                <div class="col-sm-4"><strong>Acabamento:</strong> @item.Acabamento</div>
+            </div>
+        </div>
+
+        <div class="card-footer p-0">
+            <h5 class="m-3">Tags Vinculadas</h5>
+            @if (item.Tags != null && item.Tags.Any())
+            {
+                <table class="table table-sm table-bordered mb-4">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tag</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var tag in item.Tags)
+                        {
+                            <tr>
+                                <td>@tag.Nome</td>
+                                <td>
+                                    <a asp-controller="Tags" asp-action="Edit" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <a asp-controller="Tags" asp-action="Details" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-info">Details</a>
+                                    <a asp-controller="Tags" asp-action="Delete" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="p-3 text-muted">Nenhuma tag vinculada</div>
+            }
+
+            <h5 class="m-3">Agrupadores Vinculados</h5>
+            @if (item.AgrupadorItensERP.Any())
+            {
+                <table class="table table-sm table-bordered mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Agrupador</th>
+                            <th>Comprimento</th>
+                            <th>Altura</th>
+                            <th>Profundidade</th>
+                            <th>Quantidade</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var vinculo in item.AgrupadorItensERP)
+                        {
+                            <tr>
+                                <td>@vinculo.Agrupador.Nome (@vinculo.Agrupador.Id)</td>
+                                <td>@vinculo.Comprimento</td>
+                                <td>@vinculo.Altura</td>
+                                <td>@vinculo.Profundidade</td>
+                                <td>@vinculo.Quantidade</td>
+                                <td>
+                                    @if (vinculo.Status)
+                                    {
+                                        <span class="badge bg-success">Ativo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inativo</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-controller="AgrupadoresItensERP" asp-action="Edit" asp-route-id="@vinculo.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <a asp-controller="AgrupadoresItensERP" asp-action="Details" asp-route-id="@vinculo.Id" class="btn btn-sm btn-outline-info">Details</a>
+                                    <a asp-controller="AgrupadoresItensERP" asp-action="Delete" asp-route-id="@vinculo.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="p-3 text-muted">Sem agrupadores vinculados</div>
+            }
+        </div>
+    </div>
 }
-    </tbody>
-</table>

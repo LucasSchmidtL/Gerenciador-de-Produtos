@@ -1,168 +1,145 @@
 ﻿@model Gerenciador_de_Produtos.Models.ItemERP
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Item ERP";
 }
 
-<h1>Details</h1>
+<h1>@ViewData["Title"]</h1>
 
-<div>
-    <h4>ItemERP</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ERP)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ERP)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TipoItem)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TipoItem)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ItemERPIdOriginal)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ItemERPIdOriginal)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DesenhoId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DesenhoId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descricao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descricao)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Revisao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Revisao)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DataCriacao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DataCriacao)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Acabamento)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Acabamento)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ChapaAberta)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ChapaAberta)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AreaSuperficial)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AreaSuperficial)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PesoLiquidoMetro)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PesoLiquidoMetro)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PesoBrutoMetro)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PesoBrutoMetro)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PerimetroSolda)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PerimetroSolda)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SRId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SRId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DesenvolvimentoId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DesenvolvimentoId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.QuantidadeDobras)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.QuantidadeDobras)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MateriaPrimaId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MateriaPrimaId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TagId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TagId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Altura)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Altura)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Comprimento)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Comprimento)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Profundidade)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Profundidade)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ComprimentoMaximo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ComprimentoMaximo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Passo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Passo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Classificacao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Classificacao)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <strong>ERP:</strong> @Model.ERP (@Model.Id)
+            @if (!string.IsNullOrWhiteSpace(Model.Descricao))
+            {
+                <br />
+
+                <small class="text-muted">@Model.Descricao</small>
+            }
+        </div>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+            <a asp-action="Index" class="btn btn-sm btn-outline-info">Back to List</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Tipo Item</dt>
+            <dd class="col-sm-9">@Model.TipoItem</dd>
+
+            <dt class="col-sm-3">Original</dt>
+            <dd class="col-sm-9">@Model.ItemERPIdOriginal</dd>
+
+            <dt class="col-sm-3">Desenho ID</dt>
+            <dd class="col-sm-9">@Model.DesenhoId</dd>
+
+            <dt class="col-sm-3">Revisão</dt>
+            <dd class="col-sm-9">@Model.Revisao</dd>
+
+            <dt class="col-sm-3">Data Criação</dt>
+            <dd class="col-sm-9">@(Model.DataCriacao?.ToString("dd/MM/yyyy"))</dd>
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">@Model.Status</dd>
+
+            <dt class="col-sm-3">Acabamento</dt>
+            <dd class="col-sm-9">@Model.Acabamento</dd>
+
+            <dt class="col-sm-3">Chapa Aberta</dt>
+            <dd class="col-sm-9">@Model.ChapaAberta</dd>
+
+            <dt class="col-sm-3">Área Superficial</dt>
+            <dd class="col-sm-9">@Model.AreaSuperficial</dd>
+
+            <dt class="col-sm-3">Peso Líquido/M</dt>
+            <dd class="col-sm-9">@Model.PesoLiquidoMetro</dd>
+
+            <dt class="col-sm-3">Peso Bruto/M</dt>
+            <dd class="col-sm-9">@Model.PesoBrutoMetro</dd>
+
+            <dt class="col-sm-3">Perímetro Solda</dt>
+            <dd class="col-sm-9">@Model.PerimetroSolda</dd>
+        </dl>
+    </div>
+
+    <div class="card-footer p-0">
+        <h5 class="m-3">Tags Vinculadas</h5>
+        @if (Model.Tags != null && Model.Tags.Any())
+        {
+            <table class="table table-sm table-bordered mb-4">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tag</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <tr>
+                            <td>@tag.Nome</td>
+                            <td>
+                                <a asp-controller="Tags" asp-action="Edit" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a asp-controller="Tags" asp-action="Details" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-info">Details</a>
+                                <a asp-controller="Tags" asp-action="Delete" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="p-3 text-muted">Nenhuma tag vinculada</div>
+        }
+
+        <h5 class="m-3">Agrupadores Vinculados</h5>
+        @if (Model.AgrupadorItensERP != null && Model.AgrupadorItensERP.Any())
+        {
+            <table class="table table-sm table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Agrupador</th>
+                        <th>Comprimento</th>
+                        <th>Altura</th>
+                        <th>Profundidade</th>
+                        <th>Quantidade</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var vinculo in Model.AgrupadorItensERP)
+                    {
+                        <tr>
+                            <td>@vinculo.Agrupador.Nome (@vinculo.Agrupador.Id)</td>
+                            <td>@vinculo.Comprimento</td>
+                            <td>@vinculo.Altura</td>
+                            <td>@vinculo.Profundidade</td>
+                            <td>@vinculo.Quantidade</td>
+                            <td>
+                                @if (vinculo.Status)
+                                {
+                                    <span class="badge bg-success">Ativo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inativo</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-controller="AgrupadoresItensERP" asp-action="Edit" asp-route-id="@vinculo.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a asp-controller="AgrupadoresItensERP" asp-action="Details" asp-route-id="@vinculo.Id" class="btn btn-sm btn-outline-info">Details</a>
+                                <a asp-controller="AgrupadoresItensERP" asp-action="Delete" asp-route-id="@vinculo.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="p-3 text-muted">Sem agrupadores vinculados</div>
+        }
+    </div>
 </div>

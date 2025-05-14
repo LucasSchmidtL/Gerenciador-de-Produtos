@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Gerenciador_de_Produtos.Data;
@@ -13,152 +9,153 @@ namespace Gerenciador_de_Produtos.Controllers
     public class TagsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public TagsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public TagsController(ApplicationDbContext context) => _context = context;
 
         // GET: Tags
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Tags.Include(t => t.ItemERP);
-            return View(await applicationDbContext.ToListAsync());
+            var tags = await _context.Tags
+                .Include(t => t.ItemERPs)
+                .ToListAsync();
+
+            return View(tags);
         }
 
         // GET: Tags/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var tag = await _context.Tags
-                .Include(t => t.ItemERP)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (tag == null)
-            {
-                return NotFound();
-            }
+                .Include(t => t.ItemERPs)
+                .FirstOrDefaultAsync(t => t.Id == id);
+            if (tag == null) return NotFound();
 
             return View(tag);
         }
 
         // GET: Tags/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["ItemERPId"] = new SelectList(_context.ItensERP, "Id", "Id");
+            ViewBag.AllItemERPs = new SelectList(
+                await _context.ItensERP.ToListAsync(),
+                "Id", "ERP");
             return View();
         }
 
         // POST: Tags/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,ItemERPId")] Tag tag)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(TagEditViewModel vm)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(tag);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ViewBag.AllItemERPs = new SelectList(
+                    await _context.ItensERP.ToListAsync(),
+                    "Id", "ERP", vm.SelectedItemERPIds);
+                return View(vm);
             }
-            ViewData["ItemERPId"] = new SelectList(_context.ItensERP, "Id", "Id", tag.ItemERPId);
-            return View(tag);
+
+            var tag = new Tag { Nome = vm.Nome };
+            var itens = await _context.ItensERP
+                .Where(i => vm.SelectedItemERPIds.Contains(i.Id))
+                .ToListAsync();
+            foreach (var item in itens)
+                tag.ItemERPs.Add(item);
+
+            _context.Tags.Add(tag);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Tags/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var tag = await _context.Tags.FindAsync(id);
-            if (tag == null)
+            var tag = await _context.Tags
+                .Include(t => t.ItemERPs)
+                .FirstOrDefaultAsync(t => t.Id == id);
+            if (tag == null) return NotFound();
+
+            var vm = new TagEditViewModel
             {
-                return NotFound();
-            }
-            ViewData["ItemERPId"] = new SelectList(_context.ItensERP, "Id", "Id", tag.ItemERPId);
-            return View(tag);
+                Id = tag.Id,
+                Nome = tag.Nome,
+                SelectedItemERPIds = tag.ItemERPs.Select(i => i.Id).ToList(),
+                AllItemERPs = await _context.ItensERP
+                    .Select(i => new SelectListItem(i.ERP, i.Id.ToString()))
+                    .ToListAsync()
+            };
+            return View(vm);
         }
 
         // POST: Tags/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,ItemERPId")] Tag tag)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(TagEditViewModel vm)
         {
-            if (id != tag.Id)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                vm.AllItemERPs = await _context.ItensERP
+                    .Select(i => new SelectListItem(
+                        i.ERP,
+                        i.Id.ToString(),
+                        vm.SelectedItemERPIds.Contains(i.Id)))
+                    .ToListAsync();
+                return View(vm);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(tag);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TagExists(tag.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ItemERPId"] = new SelectList(_context.ItensERP, "Id", "Id", tag.ItemERPId);
-            return View(tag);
+            var tag = await _context.Tags
+                .Include(t => t.ItemERPs)
+                .FirstOrDefaultAsync(t => t.Id == vm.Id);
+            if (tag == null) return NotFound();
+
+            tag.Nome = vm.Nome;
+            tag.ItemERPs.Clear();
+            var selected = await _context.ItensERP
+                .Where(i => vm.SelectedItemERPIds.Contains(i.Id))
+                .ToListAsync();
+            foreach (var item in selected)
+                tag.ItemERPs.Add(item);
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Tags/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var tag = await _context.Tags
-                .Include(t => t.ItemERP)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (tag == null)
-            {
-                return NotFound();
-            }
+                .Include(t => t.ItemERPs)
+                .FirstOrDefaultAsync(t => t.Id == id);
+            if (tag == null) return NotFound();
 
             return View(tag);
         }
 
         // POST: Tags/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var tag = await _context.Tags.FindAsync(id);
             if (tag != null)
             {
                 _context.Tags.Remove(tag);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool TagExists(int id)
-        {
-            return _context.Tags.Any(e => e.Id == id);
-        }
+            => _context.Tags.Any(e => e.Id == id);
+    }
+
+    public class TagEditViewModel
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; } = null!;
+        public List<int> SelectedItemERPIds { get; set; } = new();
+        public List<SelectListItem> AllItemERPs { get; set; } = new();
     }
 }

@@ -1,71 +1,60 @@
 ﻿@model IEnumerable<Gerenciador_de_Produtos.Models.AgrupadorItemERP>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Itens por Agrupador";
 }
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Agrupador)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ItemERP)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Comprimento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Altura)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Profundidade)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantidade)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Agrupador.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ItemERP.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Comprimento)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Altura)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Profundidade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantidade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+@* Agrupa pelo objeto Agrupador *@
+@foreach (var grupo in Model.GroupBy(x => x.Agrupador))
+{
+    <div class="card mb-4">
+        <div class="card-header">
+            <!-- Aqui você puxa o nome do agrupador direto -->
+            <strong>Agrupador:</strong> @grupo.Key.Nome (@grupo.Key.Id)
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Item ERP</th>
+                        <th>Comprimento</th>
+                        <th>Altura</th>
+                        <th>Profundidade</th>
+                        <th>Quantidade</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in grupo)
+                    {
+                        <tr>
+                            <td>@item.ItemERP.ERP</td>
+                            <td>@item.Comprimento</td>
+                            <td>@item.Altura</td>
+                            <td>@item.Profundidade</td>
+                            <td>@item.Quantidade</td>
+                            <td>
+                                @if (item.Status)
+                                {
+                                    <span class="badge bg-success">Ativo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inativo</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 }
-    </tbody>
-</table>
