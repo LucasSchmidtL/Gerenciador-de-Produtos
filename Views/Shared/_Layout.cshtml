@@ -29,31 +29,21 @@
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button">
-                        <i class="fas fa-bars"></i>
-                    </a>
-                </li>
+                <li class="nav-item"><a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a></li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 @if (SignInManager.IsSignedIn(User))
                 {
                     <li class="nav-item dropdown">
                         <a class="nav-link" data-bs-toggle="dropdown" href="#">
-                            <img src="@foto" alt="Foto" class="img-circle" style="width:32px;height:32px;object-fit:cover;border-radius:50%;" />
+                            <img src="@foto" class="img-circle" style="width:32px;height:32px;object-fit:cover;border-radius:50%;" />
                             <span class="ms-2 d-none d-md-inline">@nome</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">
-                                    <i class="fas fa-user-cog me-2"></i>Conta
-                                </a>
-                            </li>
+                            <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="fas fa-user-cog me-2"></i>Conta</a></li>
                             <li>
                                 <form method="post" asp-area="Identity" asp-page="/Account/Logout">
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Sair
-                                    </button>
+                                    <button type="submit" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt me-2"></i>Sair</button>
                                 </form>
                             </li>
                         </ul>
@@ -61,9 +51,7 @@
                 }
                 else
                 {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Entrar</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Entrar</a></li>
                 }
             </ul>
         </nav>
@@ -76,195 +64,79 @@
             <div class="sidebar">
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <li class="nav-item"><a asp-controller="Home" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-home"></i><p>Home</p></a></li>
 
-                        <!-- Home -->
-                        <li class="nav-item">
-                            <a asp-controller="Home" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-home"></i><p>Home</p>
-                            </a>
-                        </li>
-
-                        <!-- Gerenciador de Produtos -->
-                        <li class="nav-item has-treeview">
                         <li class="nav-item has-treeview menu-open">
-                            <a href="#" class="nav-link">
-                                <a href="#" class="nav-link active">
-                                <i class="nav-icon fas fa-boxes"></i>
-                                <p>
-                                    Gerenciador de Produtos
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
+                            <a href="#" class="nav-link active"><i class="nav-icon fas fa-boxes"></i><p>Gerenciador de Produtos<i class="right fas fa-angle-left"></i></p></a>
                             <ul class="nav nav-treeview ms-3">
-
                                 <!-- Produtos -->
                                 <li class="nav-item has-treeview">
-                                    <a href="#" class="nav-link">
-                                        <i class="fas fa-cube nav-icon"></i>
-                                        <p>
-                                            Produtos
-                                            <i class="right fas fa-angle-left"></i>
-                                        </p>
-                                    </a>
+                                    <a href="#" class="nav-link"><i class="fas fa-cube nav-icon"></i><p>Produtos<i class="right fas fa-angle-left"></i></p></a>
                                     <ul class="nav nav-treeview ms-3">
-                                        <li class="nav-item">
-                                            <a asp-controller="Produtos" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-list nav-icon"></i><p>Lista</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a asp-controller="AgrupadoresProduto" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-layer-group nav-icon"></i><p>Agrupadores</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a asp-controller="VariaveisProdutos" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-sliders-h nav-icon"></i><p>Variáveis</p>
-                                            </a>
-                                        </li>
+                                        <li class="nav-item"><a asp-controller="Produtos" asp-action="Index" class="nav-link"><i class="fas fa-list nav-icon"></i><p>Lista</p></a></li>
+                                        <li class="nav-item"><a asp-controller="VariaveisProdutos" asp-action="Index" class="nav-link"><i class="fas fa-sliders-h nav-icon"></i><p>Variáveis</p></a></li>
+                                        <li class="nav-item"><a asp-controller="AgrupadoresProduto" asp-action="Index" class="nav-link"><i class="fas fa-layer-group nav-icon"></i><p>Agrupadores</p></a></li>
                                     </ul>
                                 </li>
 
                                 <!-- Agrupadores -->
                                 <li class="nav-item has-treeview">
-                                    <a href="#" class="nav-link">
-                                        <i class="fas fa-layer-group nav-icon"></i>
-                                        <p>
-                                            Agrupadores
-                                            <i class="right fas fa-angle-left"></i>
-                                        </p>
-                                    </a>
+                                    <a href="#" class="nav-link"><i class="fas fa-layer-group nav-icon"></i><p>Agrupadores<i class="right fas fa-angle-left"></i></p></a>
                                     <ul class="nav nav-treeview ms-3">
-                                        <li class="nav-item">
-                                            <a asp-controller="Agrupadores" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-list nav-icon"></i><p>Lista</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a asp-controller="AgrupadoresComponentes" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-th-large nav-icon"></i><p>Componentes</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a asp-controller="AgrupadoresItensERP" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-cogs nav-icon"></i><p>Itens ERP</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a asp-controller="VariaveisAgrupadores" asp-action="Index" class="nav-link">
-                                               <i class="fas fa-sliders-h nav-icon"></i><p>Variáveis</p>
-                                            </a>
-                                        </li>
+                                        <li class="nav-item"><a asp-controller="Agrupadores" asp-action="Index" class="nav-link"><i class="fas fa-list nav-icon"></i><p>Lista</p></a></li>
+                                        <li class="nav-item"><a asp-controller="VariaveisAgrupadores" asp-action="Index" class="nav-link"><i class="fas fa-sliders-h nav-icon"></i><p>Variáveis</p></a></li>
+                                        <li class="nav-item"><a asp-controller="AgrupadoresComponentes" asp-action="Index" class="nav-link"><i class="fas fa-tools nav-icon"></i><p>Componentes</p></a></li>
+                                        <li class="nav-item"><a asp-controller="AgrupadoresItensERP" asp-action="Index" class="nav-link"><i class="fas fa-cogs nav-icon"></i><p>Itens ERP</p></a></li>
                                     </ul>
                                 </li>
 
-                                    <!-- Componentes -->
-                                    <li class="nav-item has-treeview">
-                                        <a href="#" class="nav-link">
-                                            <i class="fas fa-tools nav-icon"></i>
-                                            <p>
-                                                Componentes
-                                                <i class="right fas fa-angle-left"></i>
-                                            </p>
-                                        </a>
-                                        <ul class="nav nav-treeview ms-3">
-
-                                            <li class="nav-item">
-                                                <a asp-controller="Componentes" asp-action="Index" class="nav-link">
-                                                    <i class="fas fa-list nav-icon"></i><p>Lista</p>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a asp-controller="AgrupadoresComponentes" asp-action="Index" class="nav-link">
-                                                    <i class="fas fa-layer-group nav-icon"></i><p>Agrupadores</p>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a asp-controller="ComponentesItensERP" asp-action="Index" class="nav-link">
-                                                    <i class="fas fa-cogs nav-icon"></i><p>Itens ERP</p>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a asp-controller="VariaveisComponentes" asp-action="Index" class="nav-link">
-                                                    <i class="fas fa-sliders-h nav-icon"></i><p>Variáveis</p>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
+                                <!-- Componentes -->
+                                <li class="nav-item has-treeview">
+                                    <a href="#" class="nav-link"><i class="fas fa-tools nav-icon"></i><p>Componentes<i class="right fas fa-angle-left"></i></p></a>
+                                    <ul class="nav nav-treeview ms-3">
+                                        <li class="nav-item"><a asp-controller="Componentes" asp-action="Index" class="nav-link"><i class="fas fa-list nav-icon"></i><p>Lista</p></a></li>
+                                        <li class="nav-item"><a asp-controller="VariaveisComponentes" asp-action="Index" class="nav-link"><i class="fas fa-sliders-h nav-icon"></i><p>Variáveis</p></a></li>
+                                        <li class="nav-item"><a asp-controller="AgrupadoresComponentes" asp-action="Index" class="nav-link"><i class="fas fa-layer-group nav-icon"></i><p>Agrupadores</p></a></li>
+                                        <li class="nav-item"><a asp-controller="ComponentesItensERP" asp-action="Index" class="nav-link"><i class="fas fa-cogs nav-icon"></i><p>Itens ERP</p></a></li>
+                                    </ul>
+                                </li>
 
                                 <!-- Itens ERP -->
-                                <li class="nav-item">
-                                    <a asp-controller="ItensERP" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-cogs nav-icon"></i><p>Itens ERP</p>
-                                    </a>
-                                </li>
-
-                                <!-- Variáveis -->
                                 <li class="nav-item has-treeview">
-                                    <a href="#" class="nav-link">
-                                        <i class="fas fa-sliders-h nav-icon"></i>
-                                        <p>
-                                            Variáveis
-                                            <i class="right fas fa-angle-left"></i>
-                                        </p>
-                                    </a>
+                                    <a href="#" class="nav-link"><i class="fas fa-cogs nav-icon"></i><p>Itens ERP<i class="right fas fa-angle-left"></i></p></a>
                                     <ul class="nav nav-treeview ms-3">
-                                        <li class="nav-item">
-                                            <a asp-controller="VariaveisComponentes" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-sliders-h nav-icon"></i><p>Componentes</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a asp-controller="VariaveisAgrupadores" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-sliders-h nav-icon"></i><p>Agrupadores</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a asp-controller="VariaveisProdutos" asp-action="Index" class="nav-link">
-                                                <i class="fas fa-sliders-h nav-icon"></i><p>Produtos</p>
-                                            </a>
-                                        </li>
+                                        <li class="nav-item"><a asp-controller="ItensERP" asp-action="Index" class="nav-link"><i class="fas fa-list nav-icon"></i><p>Lista</p></a></li>
+                                        <li class="nav-item"><a asp-controller="Tags" asp-action="Index" class="nav-link"><i class="fas fa-tag nav-icon"></i><p>Tags</p></a></li>
+                                        <li class="nav-item"><a asp-controller="AgrupadoresItensERP" asp-action="Index" class="nav-link"><i class="fas fa-layer-group nav-icon"></i><p>Agrupadores</p></a></li>
+                                        <li class="nav-item"><a asp-controller="ComponenteItemERP" asp-action="Index" class="nav-link"><i class="fas fa-tools nav-icon"></i><p>Componentes</p></a></li>
                                     </ul>
                                 </li>
 
-                               
+                                <!-- Tags Global -->
+                                <li class="nav-item"><a asp-controller="Tags" asp-action="Index" class="nav-link"><i class="fas fa-tag nav-icon"></i><p>Tags</p></a></li>
 
-                                <!-- Desenhos, Perfis, Tags... -->
-                                <li class="nav-item">
-                                    <a asp-controller="Desenhos" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-drafting-compass nav-icon"></i><p>Desenhos</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a asp-controller="Perfis" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-columns nav-icon"></i><p>Perfis</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a asp-controller="Tags" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-tag nav-icon"></i><p>Tags</p>
-                                    </a>
+                                <!-- Desenhos, Perfis -->
+                                <li class="nav-item"><a asp-controller="Desenhos" asp-action="Index" class="nav-link"><i class="fas fa-drafting-compass nav-icon"></i><p>Desenhos</p></a></li>
+                                <li class="nav-item"><a asp-controller="Perfis" asp-action="Index" class="nav-link"><i class="fas fa-columns nav-icon"></i><p>Perfis</p></a></li>
+
+                                <!-- Variáveis Geral -->
+                                <li class="nav-item has-treeview">
+                                    <a href="#" class="nav-link"><i class="fas fa-sliders-h nav-icon"></i><p>Variáveis<i class="right fas fa-angle-left"></i></p></a>
+                                    <ul class="nav nav-treeview ms-3">
+                                        <li class="nav-item"><a asp-controller="VariaveisProdutos" asp-action="Index" class="nav-link"><i class="fas fa-sliders-h nav-icon"></i><p>Produtos</p></a></li>
+                                        <li class="nav-item"><a asp-controller="VariaveisAgrupadores" asp-action="Index" class="nav-link"><i class="fas fa-sliders-h nav-icon"></i><p>Agrupadores</p></a></li>
+                                        <li class="nav-item"><a asp-controller="VariaveisComponentes" asp-action="Index" class="nav-link"><i class="fas fa-sliders-h nav-icon"></i><p>Componentes</p></a></li>
+                                    </ul>
                                 </li>
 
                                 <!-- Documentação Técnica -->
                                 <li class="nav-header">Documentação Técnica</li>
-                                <li class="nav-item">
-                                    <a asp-controller="Secoes" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-ruler-horizontal nav-icon"></i><p>Seções</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a asp-controller="Equacoes" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-square-root-alt nav-icon"></i><p>Equações</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a asp-controller="Normas" asp-action="Index" class="nav-link">
-                                        <i class="fas fa-book nav-icon"></i><p>Normas</p>
-                                    </a>
-                                </li>
-
+                                <li class="nav-item"><a asp-controller="Secoes" asp-action="Index" class="nav-link"><i class="fas fa-ruler-horizontal nav-icon"></i><p>Seções</p></a></li>
+                                <li class="nav-item"><a asp-controller="Equacoes" asp-action="Index" class="nav-link"><i class="fas fa-square-root-alt nav-icon"></i><p>Equações</p></a></li>
+                                <li class="nav-item"><a asp-controller="Normas" asp-action="Index" class="nav-link"><i class="fas fa-book nav-icon"></i><p>Normas</p></a></li>
                             </ul>
+                        </li>
+                    </ul>
                 </nav>
             </div>
         </aside>
