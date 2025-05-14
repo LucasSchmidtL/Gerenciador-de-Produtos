@@ -4,53 +4,90 @@
     ViewData["Title"] = "Agrupadores";
 }
 
-<h1>Agrupadores</h1>
+<h1 class="display-4 text-center mb-5 text-primary">
+    <i class="bi bi-diagram-2-fill me-2"></i>@ViewData["Title"]
+</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Criar Novo</a>
-</p>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(m => m.First().Nome)</th>
-            <th>@Html.DisplayNameFor(m => m.First().Grupo)</th>
-            <th>@Html.DisplayNameFor(m => m.First().DesenvolvimentoId)</th>
-            <th>Itens ERP</th>
-            <th>@Html.DisplayNameFor(m => m.First().AgrupadorPaiId)</th>
-            <th>@Html.DisplayNameFor(m => m.First().Nivel)</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Nome</td>
-                <td>@item.Grupo</td>
-                <td>@item.DesenvolvimentoId</td>
-                <td>
-                    @if (item.AgrupadorItensERP != null && item.AgrupadorItensERP.Any())
-                    {
-                        <ul class="mb-0">
-                            @foreach (var ai in item.AgrupadorItensERP)
-                            {
-                                <li>@ai.ItemERP.ERP</li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <em class="text-muted">Nenhum Item ERP</em>
-                    }
-                </td>
-                <td>@item.AgrupadorPaiId</td>
-                <td>@item.Nivel</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Editar</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info ms-1">Detalhes</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger ms-1">Excluir</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="mb-3 d-flex justify-content-between align-items-center">
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-lg me-1"></i>Criar Novo
+    </a>
+    <input id="searchInput" type="text" class="form-control ms-3" placeholder="Buscar nome ou grupo..." style="max-width:300px;" />
+</div>
+
+<div class="accordion" id="agrupadoresAccordion">
+    @foreach (var agr in Model)
+    {
+        var hId = $"headingAgr{agr.Id}";
+        var cId = $"collapseAgr{agr.Id}";
+        <div class="accordion-item mb-3" data-filter="@(agr.Nome + " " + agr.Grupo).ToLower()">
+            <h2 class="accordion-header" id="@hId">
+                <button class="accordion-button collapsed d-flex justify-content-between"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#@cId"
+                        aria-expanded="false"
+                        aria-controls="@cId">
+                    <div>
+                        <strong>@agr.Nome</strong>
+                        <small class="text-muted ms-2">(@agr.Grupo ?? "—")</small>
+                    </div>
+                    <div>
+                        <span class="badge bg-secondary">Nível @agr.Nivel</span>
+                    </div>
+                </button>
+            </h2>
+            <div id="@cId"
+                 class="accordion-collapse collapse"
+                 aria-labelledby="@hId"
+                 data-bs-parent="#agrupadoresAccordion">
+                <div class="accordion-body bg-light p-4">
+                    <p><strong>Desenvolvimento:</strong> @(agr.DesenvolvimentoId?.ToString() ?? "—")</p>
+                    <p><strong>Agrupador Pai:</strong> @(agr.AgrupadorPaiId?.ToString() ?? "—")</p>
+                    <hr />
+                    <div class="bg-white p-3 rounded mb-4">
+                        <h6 class="mb-2">Itens ERP</h6>
+                        @if (agr.AgrupadorItensERP?.Any() == true)
+                        {
+                            <ul class="list-group">
+                                @foreach (var ai in agr.AgrupadorItensERP)
+                                {
+                                    <li class="list-group-item">
+                                        <i class="bi bi-box me-1"></i>@ai.ItemERP.ERP
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0">Nenhum Item ERP vinculado.</p>
+                        }
+                    </div>
+                    <div class="text-end">
+                        <a asp-action="Details" asp-route-id="@agr.Id" class="btn btn-sm btn-info me-1">
+                            <i class="bi bi-eye"></i> Detalhes
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@agr.Id" class="btn btn-sm btn-secondary me-1">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@agr.Id" class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash"></i> Excluir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function() {
+            var filter = this.value.toLowerCase();
+            document.querySelectorAll('#agrupadoresAccordion .accordion-item').forEach(function(item) {
+                var data = item.getAttribute('data-filter') || '';
+                item.style.display = data.includes(filter) ? '' : 'none';
+            });
+        });
+    </script>
+}

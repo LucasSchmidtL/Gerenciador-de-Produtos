@@ -1,8 +1,127 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Dashboard";
+    var recentLogs = ViewBag.RecentLogs as List<string>;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h1 class="display-4 text-center mb-5 text-primary">
+    <i class="bi bi-speedometer2 me-2"></i>@ViewData["Title"]
+</h1>
+
+<div class="row g-4 mb-5">
+    @* KPIs Cards *@
+    <div class="col-md-2">
+        <div class="card text-white bg-primary h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-box-seam fs-1 mb-2"></i>
+                <h5 class="card-title">Itens ERP</h5>
+                <h2 class="card-text">@ViewBag.TotalItensERP</h2>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 text-center">
+                <a asp-controller="ItensERP" asp-action="Index" class="link-light">Ver →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-white bg-success h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-tags-fill fs-1 mb-2"></i>
+                <h5 class="card-title">Tags</h5>
+                <h2 class="card-text">@ViewBag.TotalTags</h2>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 text-center">
+                <a asp-controller="Tags" asp-action="Index" class="link-light">Ver →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-white bg-warning h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-diagram-2-fill fs-1 mb-2"></i>
+                <h5 class="card-title">Agrupadores</h5>
+                <h2 class="card-text">@ViewBag.TotalAgrupadores</h2>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 text-center">
+                <a asp-controller="Agrupadores" asp-action="Index" class="link-light">Ver →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-white bg-info h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-file-earmark-spreadsheet-fill fs-1 mb-2"></i>
+                <h5 class="card-title">Perfis</h5>
+                <h2 class="card-text">@ViewBag.TotalPerfis</h2>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 text-center">
+                <a asp-controller="Perfis" asp-action="Index" class="link-light">Ver →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-white bg-secondary h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-pencil-square fs-1 mb-2"></i>
+                <h5 class="card-title">Desenhos</h5>
+                <h2 class="card-text">@ViewBag.TotalDesenhos</h2>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 text-center">
+                <a asp-controller="Desenhos" asp-action="Index" class="link-light">Ver →</a>
+            </div>
+        </div>
+    </div>
 </div>
+
+<div class="row gy-4">
+    <div class="col-lg-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-light">
+                <strong>Itens ERP por Status</strong>
+            </div>
+            <div class="card-body">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-light">
+                <strong>Últimas Atividades</strong>
+            </div>
+            <ul class="list-group list-group-flush">
+                @if (recentLogs != null && recentLogs.Any())
+                {
+                    foreach (var log in recentLogs)
+                    {
+                        <li class="list-group-item">@log</li>
+                    }
+                }
+                else
+                {
+                    <li class="list-group-item text-muted">Sem registros recentes</li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('statusChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Ativos', 'Inativos'],
+                datasets: [{
+                    data: [@ViewBag.ActiveCount, @ViewBag.InactiveCount],
+                    backgroundColor: ['#198754', '#6c757d']
+                }]
+            },
+            options: {
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    </script>
+}
