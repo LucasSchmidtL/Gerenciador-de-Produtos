@@ -13,7 +13,6 @@ namespace Gerenciador_de_Produtos.Models
         public string? ERP { get; set; }
         public string? TipoItem { get; set; }
         public string? ItemERPIdOriginal { get; set; }
-        public long? DesenhoId { get; set; }
         public string? Descricao { get; set; }
         public long? Revisao { get; set; }
         public DateTime? DataCriacao { get; set; }
@@ -36,11 +35,11 @@ namespace Gerenciador_de_Produtos.Models
         public int? Passo { get; set; }
         public int? Classificacao { get; set; }
 
-        // Relacionamentos com outras tabelas
+        // relacionamentos existentes
         public ICollection<AgrupadorItemERP> AgrupadorItensERP { get; set; } = new List<AgrupadorItemERP>();
         public ICollection<Tag> Tags { get; set; } = new List<Tag>();
-
-        // **Adicione isto para Componente ⇄ ItemERP via ComponenteItemERP**
         public ICollection<ComponenteItemERP> ComponenteItemERPs { get; set; } = new List<ComponenteItemERP>();
+        public ICollection<Desenho> Desenhos { get; set; } = new List<Desenho>();
+        public ICollection<Perfil> Perfis { get; set; } = new List<Perfil>();
     }
 }

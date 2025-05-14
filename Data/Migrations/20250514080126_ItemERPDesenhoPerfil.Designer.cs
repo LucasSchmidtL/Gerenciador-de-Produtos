@@ -4,6 +4,7 @@ using Gerenciador_de_Produtos.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gerenciador_de_Produtos.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250514080126_ItemERPDesenhoPerfil")]
+    partial class ItemERPDesenhoPerfil
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,7 +245,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ItemERPId")
+                    b.Property<int>("ItemERPId")
                         .HasColumnType("int");
 
                     b.Property<string>("Nome")
@@ -434,7 +437,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.Property<string>("ERP")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ItemERPId")
+                    b.Property<int>("ItemERPId")
                         .HasColumnType("int");
 
                     b.Property<float?>("Ix")
@@ -817,7 +820,8 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.HasOne("Gerenciador_de_Produtos.Models.ItemERP", "ItemERP")
                         .WithMany("Desenhos")
                         .HasForeignKey("ItemERPId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ItemERP");
                 });
@@ -827,7 +831,8 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.HasOne("Gerenciador_de_Produtos.Models.ItemERP", "ItemERP")
                         .WithMany("Perfis")
                         .HasForeignKey("ItemERPId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ItemERP");
                 });

@@ -33,7 +33,7 @@ namespace Gerenciador_de_Produtos.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Já existente: Agrupador ⇄ ItemERP
+            // Agrupador ⇄ ItemERP
             modelBuilder.Entity<AgrupadorItemERP>()
                 .HasOne(a => a.Agrupador)
                 .WithMany(g => g.AgrupadorItensERP)
@@ -44,7 +44,7 @@ namespace Gerenciador_de_Produtos.Data
                 .WithMany(e => e.AgrupadorItensERP)
                 .HasForeignKey(a => a.ItemERPId);
 
-            // **Novo**: Componente ⇄ ItemERP via ComponenteItemERP
+            // Componente ⇄ ItemERP
             modelBuilder.Entity<ComponenteItemERP>()
                 .HasOne(ci => ci.Componente)
                 .WithMany(c => c.ComponenteItensERP)
@@ -54,6 +54,20 @@ namespace Gerenciador_de_Produtos.Data
                 .HasOne(ci => ci.ItemERP)
                 .WithMany(i => i.ComponenteItemERPs)
                 .HasForeignKey(ci => ci.ItemERPId);
+
+            // ItemERP ⇄ Desenhos
+            modelBuilder.Entity<Desenho>()
+                .HasOne(d => d.ItemERP)
+                .WithMany(i => i.Desenhos)
+                .HasForeignKey(d => d.ItemERPId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // ItemERP ⇄ Perfis
+            modelBuilder.Entity<Perfil>()
+                .HasOne(p => p.ItemERP)
+                .WithMany(i => i.Perfis)
+                .HasForeignKey(p => p.ItemERPId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

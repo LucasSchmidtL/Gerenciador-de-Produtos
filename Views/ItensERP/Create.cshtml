@@ -29,11 +29,6 @@
                 <span asp-validation-for="ItemERPIdOriginal" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="DesenhoId" class="form-label">Desenho ID</label>
-                <input asp-for="DesenhoId" class="form-control" />
-                <span asp-validation-for="DesenhoId" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
                 <label asp-for="Descricao" class="form-label">Descrição</label>
                 <input asp-for="Descricao" class="form-control" />
                 <span asp-validation-for="Descricao" class="text-danger"></span>
@@ -136,6 +131,7 @@
                 <input asp-for="Classificacao" class="form-control" />
                 <span asp-validation-for="Classificacao" class="text-danger"></span>
             </div>
+
             <!-- Multiselect abaixo -->
             <div class="form-group mb-3">
                 <label asp-for="SelectedTagIds" class="form-label">Tags</label>
@@ -146,6 +142,16 @@
                 <label asp-for="SelectedAgrupadorIds" class="form-label">Agrupadores</label>
                 <select asp-for="SelectedAgrupadorIds" asp-items="Model.AllAgrupadores" multiple class="form-select"></select>
                 <span asp-validation-for="SelectedAgrupadorIds" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="SelectedDesenhoIds" class="form-label">Desenhos</label>
+                <select asp-for="SelectedDesenhoIds" asp-items="Model.AllDesenhos" multiple class="form-select"></select>
+                <span asp-validation-for="SelectedDesenhoIds" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="SelectedPerfilIds" class="form-label">Perfis</label>
+                <select asp-for="SelectedPerfilIds" asp-items="Model.AllPerfis" multiple class="form-select"></select>
+                <span asp-validation-for="SelectedPerfilIds" class="text-danger"></span>
             </div>
         </div>
     </div>

@@ -5,15 +5,31 @@
 }
 
 <h1>Create</h1>
-
 <h4>Desenho</h4>
 <hr />
+
+<!-- LOG DE DEBUG PARA MODELSTATE -->
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+{
+    <div class="alert alert-warning">
+        <strong>Problemas encontrados:</strong>
+        <ul>
+            @foreach (var entry in ViewData.ModelState)
+            {
+                foreach (var error in entry.Value.Errors)
+                {
+                    <li><strong>@entry.Key:</strong> @error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <!-- Novo campo Nome -->
             <div class="form-group">
                 <label asp-for="Nome" class="control-label"></label>
                 <input asp-for="Nome" class="form-control" />
@@ -25,34 +41,47 @@
                 <input asp-for="Descricao" class="form-control" />
                 <span asp-validation-for="Descricao" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Revisao" class="control-label"></label>
                 <input asp-for="Revisao" class="form-control" />
                 <span asp-validation-for="Revisao" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Status" class="control-label"></label>
                 <input asp-for="Status" class="form-control" />
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Classificacao" class="control-label"></label>
                 <input asp-for="Classificacao" class="form-control" />
                 <span asp-validation-for="Classificacao" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="SolicitacaoAlteracaoId" class="control-label"></label>
                 <input asp-for="SolicitacaoAlteracaoId" class="form-control" />
                 <span asp-validation-for="SolicitacaoAlteracaoId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
+                <label asp-for="ItemERPId" class="control-label"></label>
+                <select asp-for="ItemERPId" class="form-control" asp-items="ViewBag.ItemERPId">
+                    <option value="">Selecione...</option>
+                </select>
+                <span asp-validation-for="ItemERPId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
+<div class="mt-3">
     <a asp-action="Index">Back to List</a>
 </div>
 

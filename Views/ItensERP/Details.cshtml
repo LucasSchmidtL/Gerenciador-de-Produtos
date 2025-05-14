@@ -13,7 +13,6 @@
             @if (!string.IsNullOrWhiteSpace(Model.Descricao))
             {
                 <br />
-
                 <small class="text-muted">@Model.Descricao</small>
             }
         </div>
@@ -29,9 +28,6 @@
 
             <dt class="col-sm-3">Original</dt>
             <dd class="col-sm-9">@Model.ItemERPIdOriginal</dd>
-
-            <dt class="col-sm-3">Desenho ID</dt>
-            <dd class="col-sm-9">@Model.DesenhoId</dd>
 
             <dt class="col-sm-3">Revisão</dt>
             <dd class="col-sm-9">@Model.Revisao</dd>
@@ -68,10 +64,7 @@
         {
             <table class="table table-sm table-bordered mb-4">
                 <thead class="table-light">
-                    <tr>
-                        <th>Tag</th>
-                        <th></th>
-                    </tr>
+                    <tr><th>Tag</th><th></th></tr>
                 </thead>
                 <tbody>
                     @foreach (var tag in Model.Tags)
@@ -96,7 +89,7 @@
         <h5 class="m-3">Agrupadores Vinculados</h5>
         @if (Model.AgrupadorItensERP != null && Model.AgrupadorItensERP.Any())
         {
-            <table class="table table-sm table-bordered mb-0">
+            <table class="table table-sm table-bordered mb-4">
                 <thead class="table-light">
                     <tr>
                         <th>Agrupador</th>
@@ -109,28 +102,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var vinculo in Model.AgrupadorItensERP)
+                    @foreach (var v in Model.AgrupadorItensERP)
                     {
                         <tr>
-                            <td>@vinculo.Agrupador.Nome (@vinculo.Agrupador.Id)</td>
-                            <td>@vinculo.Comprimento</td>
-                            <td>@vinculo.Altura</td>
-                            <td>@vinculo.Profundidade</td>
-                            <td>@vinculo.Quantidade</td>
+                            <td>@v.Agrupador.Nome (@v.Agrupador.Id)</td>
+                            <td>@v.Comprimento</td>
+                            <td>@v.Altura</td>
+                            <td>@v.Profundidade</td>
+                            <td>@v.Quantidade</td>
+                            <td>@(v.Status ? "<span class=\"badge bg-success\">Ativo</span>" : "<span class=\"badge bg-secondary\">Inativo</span>")</td>
                             <td>
-                                @if (vinculo.Status)
-                                {
-                                    <span class="badge bg-success">Ativo</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">Inativo</span>
-                                }
-                            </td>
-                            <td>
-                                <a asp-controller="AgrupadoresItensERP" asp-action="Edit" asp-route-id="@vinculo.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <a asp-controller="AgrupadoresItensERP" asp-action="Details" asp-route-id="@vinculo.Id" class="btn btn-sm btn-outline-info">Details</a>
-                                <a asp-controller="AgrupadoresItensERP" asp-action="Delete" asp-route-id="@vinculo.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                <a asp-controller="AgrupadoresItensERP" asp-action="Edit" asp-route-id="@v.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a asp-controller="AgrupadoresItensERP" asp-action="Details" asp-route-id="@v.Id" class="btn btn-sm btn-outline-info">Details</a>
+                                <a asp-controller="AgrupadoresItensERP" asp-action="Delete" asp-route-id="@v.Id" class="btn btn-sm btn-outline-danger">Delete</a>
                             </td>
                         </tr>
                     }
@@ -141,5 +125,100 @@
         {
             <div class="p-3 text-muted">Sem agrupadores vinculados</div>
         }
+
+
+        <h5 class="m-3">Componentes Vinculados</h5>
+        @if (Model.ComponenteItemERPs != null && Model.ComponenteItemERPs.Any())
+        {
+            <table class="table table-sm table-bordered mb-4">
+                <thead class="table-light">
+                    <tr>
+                        <th>Componente</th>
+                        <th>Quantidade</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var comp in Model.ComponenteItemERPs)
+                    {
+                        <tr>
+                            <td>@comp.Componente.Nome (ID: @comp.Componente.Id)</td>
+                            <td>@comp.Quantidade</td>
+                            <td>
+                                <a asp-controller="ComponentesItensERP" asp-action="Edit" asp-route-id="@comp.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a asp-controller="ComponentesItensERP" asp-action="Details" asp-route-id="@comp.Id" class="btn btn-sm btn-outline-info">Details</a>
+                                <a asp-controller="ComponentesItensERP" asp-action="Delete" asp-route-id="@comp.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="p-3 text-muted">Nenhum componente vinculado</div>
+        }
+
+
+
+        <h5 class="m-3">Desenhos Vinculados</h5>
+        @if (Model.Desenhos != null && Model.Desenhos.Any())
+        {
+            <table class="table table-sm table-bordered mb-4">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Revisão</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in Model.Desenhos)
+                    {
+                        <tr>
+                            <td>@d.Nome</td>
+                            <td>@d.Descricao</td>
+                            <td>@d.Revisao</td>
+                            <td>@d.Status</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="p-3 text-muted">Nenhum desenho vinculado</div>
+        }
+
+        <h5 class="m-3">Perfis Vinculados</h5>
+        @if (Model.Perfis != null && Model.Perfis.Any())
+        {
+            <table class="table table-sm table-bordered mb-4">
+                <thead class="table-light">
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Tipo Seção</th>
+                        <th>Peso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Perfis)
+                    {
+                        <tr>
+                            <td>@p.Descricao</td>
+                            <td>@p.TipoSecao</td>
+                            <td>@p.Peso</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="p-3 text-muted">Nenhum perfil vinculado</div>
+        }
+
+
     </div>
 </div>

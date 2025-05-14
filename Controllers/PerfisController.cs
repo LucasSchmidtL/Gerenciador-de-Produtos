@@ -11,6 +11,7 @@ using CsvHelper.Configuration;
 using System.Globalization;
 using Gerenciador_de_Produtos.Data;
 using Gerenciador_de_Produtos.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Gerenciador_de_Produtos.Controllers
 {
@@ -40,12 +41,16 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
         // GET: Perfis/Create
-        public IActionResult Create() => View();
+        public IActionResult Create()
+        {
+            ViewBag.ItemERPId = new SelectList(_context.ItensERP, "Id", "ERP");
+            return View();
+        }
 
         // POST: Perfis/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ERP,Desenho,Descricao,TipoSecao,Peso,AreaBruta,AreaLiq,AreaEq,Ix,Sxt,Sxb,Zx,Rx,yt,yb,Ixy,Iy,Syl,Syr,Zy,ry,xl,xr,xo,yo,jx,jy,Cw,J,Ixe,Sxet,Sxeb,lye,Syel,Syer,p1,p2,p3,SimetricoX,SimetricoY")] Perfil perfil)
+        public async Task<IActionResult> Create([Bind("Id,ERP,Desenho,Descricao,TipoSecao,Peso,AreaBruta,AreaLiq,AreaEq,Ix,Sxt,Sxb,Zx,Rx,yt,yb,Ixy,Iy,Syl,Syr,Zy,ry,xl,xr,xo,yo,jx,jy,Cw,J,Ixe,Sxet,Sxeb,lye,Syel,Syer,p1,p2,p3,SimetricoX,SimetricoY,ItemERPId")] Perfil perfil)
         {
             if (ModelState.IsValid)
             {
@@ -53,8 +58,11 @@ namespace Gerenciador_de_Produtos.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.ItemERPId = new SelectList(_context.ItensERP, "Id", "ERP", perfil.ItemERPId);
             return View(perfil);
         }
+
 
         // GET: Perfis/Edit/5
         public async Task<IActionResult> Edit(int? id)

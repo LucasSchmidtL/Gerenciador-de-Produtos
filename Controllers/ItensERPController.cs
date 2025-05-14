@@ -6,14 +6,12 @@ using Gerenciador_de_Produtos.Models;
 
 namespace Gerenciador_de_Produtos.Controllers
 {
-    // ViewModel para Create/Edit de ItemERP com Tags e Agrupadores
     public class ItemERPCreateEditViewModel
     {
         public int Id { get; set; }
         public string? ERP { get; set; }
         public string? TipoItem { get; set; }
         public string? ItemERPIdOriginal { get; set; }
-        public long? DesenhoId { get; set; }
         public string? Descricao { get; set; }
         public long? Revisao { get; set; }
         public DateTime? DataCriacao { get; set; }
@@ -35,11 +33,17 @@ namespace Gerenciador_de_Produtos.Controllers
         public int? Passo { get; set; }
         public int? Classificacao { get; set; }
 
-        // Seleções múltiplas
         public List<int> SelectedTagIds { get; set; } = new();
         public List<SelectListItem> AllTags { get; set; } = new();
+
         public List<int> SelectedAgrupadorIds { get; set; } = new();
         public List<SelectListItem> AllAgrupadores { get; set; } = new();
+
+        public List<int> SelectedDesenhoIds { get; set; } = new();
+        public List<SelectListItem> AllDesenhos { get; set; } = new();
+
+        public List<int> SelectedPerfilIds { get; set; } = new();
+        public List<SelectListItem> AllPerfis { get; set; } = new();
     }
 
     public class ItensERPController : Controller
@@ -47,53 +51,48 @@ namespace Gerenciador_de_Produtos.Controllers
         private readonly ApplicationDbContext _context;
         public ItensERPController(ApplicationDbContext context) => _context = context;
 
-        // GET: ItensERP
         public async Task<IActionResult> Index()
         {
             var itens = await _context.ItensERP
                 .Include(i => i.Tags)
                 .Include(i => i.AgrupadorItensERP).ThenInclude(v => v.Agrupador)
+                .Include(i => i.Desenhos)
+                .Include(i => i.Perfis)
+                .Include(i => i.ComponenteItemERPs).ThenInclude(ci => ci.Componente)
                 .ToListAsync();
+
             return View(itens);
         }
 
-        // GET: ItensERP/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
+
             var item = await _context.ItensERP
                 .Include(i => i.Tags)
                 .Include(i => i.AgrupadorItensERP).ThenInclude(v => v.Agrupador)
+                .Include(i => i.Desenhos)
+                .Include(i => i.Perfis)
+                .Include(i => i.ComponenteItemERPs).ThenInclude(ci => ci.Componente)
                 .FirstOrDefaultAsync(i => i.Id == id);
+
             if (item == null) return NotFound();
             return View(item);
         }
 
-        // GET: ItensERP/Create
         public async Task<IActionResult> Create()
         {
             var vm = new ItemERPCreateEditViewModel();
-            vm.AllTags = await _context.Tags
-                .Select(t => new SelectListItem(t.Nome, t.Id.ToString()))
-                .ToListAsync();
-            vm.AllAgrupadores = await _context.Agrupadores
-                .Select(a => new SelectListItem(a.Nome, a.Id.ToString()))
-                .ToListAsync();
+            await PopulateSelections(vm);
             return View(vm);
         }
 
-        // POST: ItensERP/Create
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ItemERPCreateEditViewModel vm)
         {
             if (!ModelState.IsValid)
             {
-                vm.AllTags = await _context.Tags
-                    .Select(t => new SelectListItem(t.Nome, t.Id.ToString(), vm.SelectedTagIds.Contains(t.Id)))
-                    .ToListAsync();
-                vm.AllAgrupadores = await _context.Agrupadores
-                    .Select(a => new SelectListItem(a.Nome, a.Id.ToString(), vm.SelectedAgrupadorIds.Contains(a.Id)))
-                    .ToListAsync();
+                await PopulateSelections(vm);
                 return View(vm);
             }
 
@@ -102,7 +101,6 @@ namespace Gerenciador_de_Produtos.Controllers
                 ERP = vm.ERP,
                 TipoItem = vm.TipoItem,
                 ItemERPIdOriginal = vm.ItemERPIdOriginal,
-                DesenhoId = vm.DesenhoId,
                 Descricao = vm.Descricao,
                 Revisao = vm.Revisao,
                 DataCriacao = vm.DataCriacao,
@@ -125,156 +123,50 @@ namespace Gerenciador_de_Produtos.Controllers
                 Classificacao = vm.Classificacao
             };
 
-            var tags = await _context.Tags.Where(t => vm.SelectedTagIds.Contains(t.Id)).ToListAsync();
-            foreach (var t in tags) item.Tags.Add(t);
-
-            var agregs = await _context.Agrupadores.Where(a => vm.SelectedAgrupadorIds.Contains(a.Id)).ToListAsync();
-            foreach (var a in agregs)
-                item.AgrupadorItensERP.Add(new AgrupadorItemERP { AgrupadorId = a.Id, Status = true });
-
             _context.ItensERP.Add(item);
             await _context.SaveChangesAsync();
+
+            await AssociateRelations(item, vm, item.Id);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: ItensERP/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        private async Task PopulateSelections(ItemERPCreateEditViewModel vm)
         {
-            if (id == null) return NotFound();
-            var item = await _context.ItensERP
-                .Include(i => i.Tags)
-                .Include(i => i.AgrupadorItensERP)
-                .FirstOrDefaultAsync(i => i.Id == id);
-            if (item == null) return NotFound();
-
-            var vm = new ItemERPCreateEditViewModel
-            {
-                Id = item.Id,
-                ERP = item.ERP,
-                TipoItem = item.TipoItem,
-                ItemERPIdOriginal = item.ItemERPIdOriginal,
-                DesenhoId = item.DesenhoId,
-                Descricao = item.Descricao,
-                Revisao = item.Revisao,
-                DataCriacao = item.DataCriacao,
-                Status = item.Status,
-                Acabamento = item.Acabamento,
-                ChapaAberta = item.ChapaAberta,
-                AreaSuperficial = item.AreaSuperficial,
-                PesoLiquidoMetro = item.PesoLiquidoMetro,
-                PesoBrutoMetro = item.PesoBrutoMetro,
-                PerimetroSolda = item.PerimetroSolda,
-                SRId = item.SRId,
-                DesenvolvimentoId = item.DesenvolvimentoId,
-                QuantidadeDobras = item.QuantidadeDobras,
-                MateriaPrimaId = item.MateriaPrimaId,
-                Altura = item.Altura,
-                Comprimento = item.Comprimento,
-                Profundidade = item.Profundidade,
-                ComprimentoMaximo = item.ComprimentoMaximo,
-                Passo = item.Passo,
-                Classificacao = item.Classificacao,
-                SelectedTagIds = item.Tags.Select(t => t.Id).ToList(),
-                SelectedAgrupadorIds = item.AgrupadorItensERP.Select(a => a.AgrupadorId).ToList()
-            };
             vm.AllTags = await _context.Tags
                 .Select(t => new SelectListItem(t.Nome, t.Id.ToString(), vm.SelectedTagIds.Contains(t.Id)))
                 .ToListAsync();
+
             vm.AllAgrupadores = await _context.Agrupadores
                 .Select(a => new SelectListItem(a.Nome, a.Id.ToString(), vm.SelectedAgrupadorIds.Contains(a.Id)))
                 .ToListAsync();
 
-            return View(vm);
+            vm.AllDesenhos = await _context.Desenhos
+                .Select(d => new SelectListItem(d.Nome, d.DesenhoId.ToString(), vm.SelectedDesenhoIds.Contains((int)d.DesenhoId)))
+                .ToListAsync();
+
+            vm.AllPerfis = await _context.Perfis
+                .Select(p => new SelectListItem(p.ERP ?? p.Id.ToString(), p.Id.ToString(), vm.SelectedPerfilIds.Contains(p.Id)))
+                .ToListAsync();
         }
 
-        // POST: ItensERP/Edit/5
-        [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ItemERPCreateEditViewModel vm)
+        private async Task AssociateRelations(ItemERP item, ItemERPCreateEditViewModel vm, int? id = null)
         {
-            if (id != vm.Id) return NotFound();
-            if (!ModelState.IsValid)
-            {
-                vm.AllTags = await _context.Tags
-                    .Select(t => new SelectListItem(t.Nome, t.Id.ToString(), vm.SelectedTagIds.Contains(t.Id)))
-                    .ToListAsync();
-                vm.AllAgrupadores = await _context.Agrupadores
-                    .Select(a => new SelectListItem(a.Nome, a.Id.ToString(), vm.SelectedAgrupadorIds.Contains(a.Id)))
-                    .ToListAsync();
-                return View(vm);
-            }
+            var tags = await _context.Tags.Where(t => vm.SelectedTagIds.Contains(t.Id)).ToListAsync();
+            foreach (var t in tags) item.Tags.Add(t);
 
-            var item = await _context.ItensERP
-                .Include(i => i.Tags)
-                .Include(i => i.AgrupadorItensERP)
-                .FirstOrDefaultAsync(i => i.Id == id);
-            if (item == null) return NotFound();
-
-            // Atualiza campos básicos
-            item.ERP = vm.ERP;
-            item.TipoItem = vm.TipoItem;
-            item.ItemERPIdOriginal = vm.ItemERPIdOriginal;
-            item.DesenhoId = vm.DesenhoId;
-            item.Descricao = vm.Descricao;
-            item.Revisao = vm.Revisao;
-            item.DataCriacao = vm.DataCriacao;
-            item.Status = vm.Status;
-            item.Acabamento = vm.Acabamento;
-            item.ChapaAberta = vm.ChapaAberta;
-            item.AreaSuperficial = vm.AreaSuperficial;
-            item.PesoLiquidoMetro = vm.PesoLiquidoMetro;
-            item.PesoBrutoMetro = vm.PesoBrutoMetro;
-            item.PerimetroSolda = vm.PerimetroSolda;
-            item.SRId = vm.SRId;
-            item.DesenvolvimentoId = vm.DesenvolvimentoId;
-            item.QuantidadeDobras = vm.QuantidadeDobras;
-            item.MateriaPrimaId = vm.MateriaPrimaId;
-            item.Altura = vm.Altura;
-            item.Comprimento = vm.Comprimento;
-            item.Profundidade = vm.Profundidade;
-            item.ComprimentoMaximo = vm.ComprimentoMaximo;
-            item.Passo = vm.Passo;
-            item.Classificacao = vm.Classificacao;
-
-            // Sincroniza Tags
-            item.Tags.Clear();
-            var tagsEd = await _context.Tags.Where(t => vm.SelectedTagIds.Contains(t.Id)).ToListAsync();
-            foreach (var t in tagsEd) item.Tags.Add(t);
-
-            // Sincroniza Agrupadores
-            item.AgrupadorItensERP.Clear();
-            var agregsEd = await _context.Agrupadores.Where(a => vm.SelectedAgrupadorIds.Contains(a.Id)).ToListAsync();
-            foreach (var a in agregsEd)
+            var agrs = await _context.Agrupadores.Where(a => vm.SelectedAgrupadorIds.Contains(a.Id)).ToListAsync();
+            foreach (var a in agrs)
                 item.AgrupadorItensERP.Add(new AgrupadorItemERP { AgrupadorId = a.Id, Status = true });
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var desenhos = await _context.Desenhos.Where(d => vm.SelectedDesenhoIds.Contains((int)d.DesenhoId)).ToListAsync();
+            foreach (var d in desenhos)
+                d.ItemERPId = id ?? item.Id;
 
-        // GET: ItensERP/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
-            var item = await _context.ItensERP
-                .Include(i => i.Tags)
-                .Include(i => i.AgrupadorItensERP).ThenInclude(v => v.Agrupador)
-                .FirstOrDefaultAsync(i => i.Id == id);
-            if (item == null) return NotFound();
-            return View(item);
+            var perfis = await _context.Perfis.Where(p => vm.SelectedPerfilIds.Contains(p.Id)).ToListAsync();
+            foreach (var p in perfis)
+                p.ItemERPId = id ?? item.Id;
         }
-
-        // POST: ItensERP/Delete/5
-        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var item = await _context.ItensERP.FindAsync(id);
-            if (item != null)
-            {
-                _context.ItensERP.Remove(item);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ItemERPExists(int id) => _context.ItensERP.Any(e => e.Id == id);
     }
 }
