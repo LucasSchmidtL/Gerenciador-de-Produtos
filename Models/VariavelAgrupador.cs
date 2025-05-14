@@ -16,7 +16,7 @@ namespace Gerenciador_de_Produtos.Models
 
         [Required]
         public int AgrupadorId { get; set; }
-        public Agrupador Agrupador { get; set; }
+        public Agrupador? Agrupador { get; set; }
 
         public bool Status { get; set; }
         public string? Valor { get; set; }

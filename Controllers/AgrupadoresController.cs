@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,11 +20,12 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Agrupadores
         public async Task<IActionResult> Index()
         {
-            // Inclui vínculos e detalhes dos itens ERP
             var agrupadores = await _context.Agrupadores
                 .Include(a => a.AgrupadorItensERP)
                     .ThenInclude(ai => ai.ItemERP)
+                .Include(a => a.VariaveisAgrupadores)    // carrega as variáveis
                 .ToListAsync();
+
             return View(agrupadores);
         }
 
@@ -38,18 +37,18 @@ namespace Gerenciador_de_Produtos.Controllers
             var agrupador = await _context.Agrupadores
                 .Include(a => a.AgrupadorItensERP)
                     .ThenInclude(ai => ai.ItemERP)
+                .Include(a => a.VariaveisAgrupadores)    // carrega as variáveis
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (agrupador == null) return NotFound();
 
+            if (agrupador == null) return NotFound();
             return View(agrupador);
         }
 
         // GET: Agrupadores/Create
         public IActionResult Create()
         {
-            // Carrega lista de ItemERP para multiselect
             ViewData["ItemERPs"] = new MultiSelectList(
-                _context.Set<ItemERP>().OrderBy(i => i.ERP).ToList(),
+                _context.ItensERP.OrderBy(i => i.ERP),
                 "Id",
                 "ERP"
             );
@@ -57,14 +56,13 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
         // POST: Agrupadores/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Agrupador model)
         {
             if (!ModelState.IsValid)
             {
                 ViewData["ItemERPs"] = new MultiSelectList(
-                    _context.Set<ItemERP>().OrderBy(i => i.ERP).ToList(),
+                    _context.ItensERP.OrderBy(i => i.ERP),
                     "Id",
                     "ERP",
                     model.ItemErpIds
@@ -72,16 +70,14 @@ namespace Gerenciador_de_Produtos.Controllers
                 return View(model);
             }
 
-            // 1) persiste o agrupador básico
-            _context.Add(model);
+            _context.Agrupadores.Add(model);
             await _context.SaveChangesAsync();
 
-            // 2) vincula cada ItemERP selecionado
             if (model.ItemErpIds?.Any() == true)
             {
                 foreach (var itemId in model.ItemErpIds)
                 {
-                    _context.Set<AgrupadorItemERP>().Add(new AgrupadorItemERP
+                    _context.AgrupadorItemERPs.Add(new AgrupadorItemERP
                     {
                         AgrupadorId = model.Id,
                         ItemERPId = itemId
@@ -100,16 +96,17 @@ namespace Gerenciador_de_Produtos.Controllers
 
             var agrupador = await _context.Agrupadores
                 .Include(a => a.AgrupadorItensERP)
+                .Include(a => a.VariaveisAgrupadores)    // carrega as variáveis para futuros usos
                 .FirstOrDefaultAsync(a => a.Id == id);
+
             if (agrupador == null) return NotFound();
 
-            // pré-seleciona no multiselect
             agrupador.ItemErpIds = agrupador.AgrupadorItensERP
                 .Select(x => x.ItemERPId)
                 .ToList();
 
             ViewData["ItemERPs"] = new MultiSelectList(
-                _context.Set<ItemERP>().OrderBy(i => i.ERP).ToList(),
+                _context.ItensERP.OrderBy(i => i.ERP),
                 "Id",
                 "ERP",
                 agrupador.ItemErpIds
@@ -118,8 +115,7 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
         // POST: Agrupadores/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Agrupador model)
         {
             if (id != model.Id) return NotFound();
@@ -127,7 +123,7 @@ namespace Gerenciador_de_Produtos.Controllers
             if (!ModelState.IsValid)
             {
                 ViewData["ItemERPs"] = new MultiSelectList(
-                    _context.Set<ItemERP>().OrderBy(i => i.ERP).ToList(),
+                    _context.ItensERP.OrderBy(i => i.ERP),
                     "Id",
                     "ERP",
                     model.ItemErpIds
@@ -135,20 +131,18 @@ namespace Gerenciador_de_Produtos.Controllers
                 return View(model);
             }
 
-            // atualiza agrupador básico
             _context.Update(model);
             await _context.SaveChangesAsync();
 
-            // sincroniza vínculos: remove antigos e adiciona novos
-            var existentes = _context.Set<AgrupadorItemERP>()
+            // sincroniza vínculos ERP
+            var existentes = _context.AgrupadorItemERPs
                 .Where(x => x.AgrupadorId == id);
-            _context.Set<AgrupadorItemERP>().RemoveRange(existentes);
-
+            _context.AgrupadorItemERPs.RemoveRange(existentes);
             if (model.ItemErpIds?.Any() == true)
             {
                 foreach (var itemId in model.ItemErpIds)
                 {
-                    _context.Set<AgrupadorItemERP>().Add(new AgrupadorItemERP
+                    _context.AgrupadorItemERPs.Add(new AgrupadorItemERP
                     {
                         AgrupadorId = id,
                         ItemERPId = itemId
@@ -164,29 +158,20 @@ namespace Gerenciador_de_Produtos.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
-
             var agrupador = await _context.Agrupadores.FindAsync(id);
             if (agrupador == null) return NotFound();
-
             return View(agrupador);
         }
 
         // POST: Agrupadores/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var agrupador = await _context.Agrupadores.FindAsync(id);
             if (agrupador != null)
                 _context.Agrupadores.Remove(agrupador);
-
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool AgrupadorExists(int id)
-        {
-            return _context.Agrupadores.Any(e => e.Id == id);
         }
     }
 }

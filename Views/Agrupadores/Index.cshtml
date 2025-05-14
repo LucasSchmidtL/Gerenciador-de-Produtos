@@ -4,7 +4,6 @@
     ViewData["Title"] = "Agrupadores";
 }
 
-<!-- Estilos de rotação do ícone (mova para site.css se preferir) -->
 <style>
     .toggle-icon {
         transition: transform 0.3s ease;
@@ -24,9 +23,7 @@
             </a>
         </div>
         <div class="col">
-            <input id="searchInput"
-                   class="form-control"
-                   placeholder="Buscar nome ou grupo..." />
+            <input id="searchInput" class="form-control" placeholder="Buscar nome ou grupo..." />
         </div>
     </div>
 </div>
@@ -36,32 +33,25 @@
     <div class="card mb-4" data-search="@agr.Nome @agr.Grupo">
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
-                <!-- toggle à esquerda -->
-                <button class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-2 toggle-btn"
+                <button class="btn btn-sm btn-outline-secondary me-2 toggle-btn"
                         data-bs-toggle="collapse"
                         data-bs-target="#details_@agr.Id"
-                        aria-expanded="false"
-                        aria-controls="details_@agr.Id">
+                        aria-expanded="false">
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
-
                 <div class="flex-grow-1">
                     <strong>@agr.Nome</strong>
                     <small class="text-muted ms-2">(@(agr.Grupo ?? "—"))</small>
                 </div>
-
                 <div>
                     <span class="badge bg-secondary me-3">Nível @agr.Nivel</span>
-                    <a asp-action="Details" asp-route-id="@agr.Id"
-                       class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
+                    <a asp-action="Details" asp-route-id="@agr.Id" class="btn btn-sm btn-outline-info me-1">
                         <i class="bi bi-eye me-1"></i>Detalhes
                     </a>
-                    <a asp-action="Edit" asp-route-id="@agr.Id"
-                       class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
+                    <a asp-action="Edit" asp-route-id="@agr.Id" class="btn btn-sm btn-outline-secondary me-1">
                         <i class="bi bi-pencil me-1"></i>Editar
                     </a>
-                    <a asp-action="Delete" asp-route-id="@agr.Id"
-                       class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2">
+                    <a asp-action="Delete" asp-route-id="@agr.Id" class="btn btn-sm btn-outline-danger">
                         <i class="bi bi-trash me-1"></i>Excluir
                     </a>
                 </div>
@@ -71,10 +61,18 @@
         <div class="collapse" id="details_@agr.Id">
             <div class="card-body">
                 <div class="row mb-2">
-                    <div class="col-sm-6"><strong>Desenvolvimento:</strong> @(agr.DesenvolvimentoId?.ToString() ?? "—")</div>
-                    <div class="col-sm-6"><strong>Agrupador Pai:</strong> @(agr.AgrupadorPaiId?.ToString() ?? "—")</div>
+                    <div class="col-sm-6">
+                        <strong>Desenvolvimento:</strong>
+                        @(agr.DesenvolvimentoId?.ToString() ?? "—")
+                    </div>
+                    <div class="col-sm-6">
+                        <strong>Agrupador Pai:</strong>
+                        @(agr.AgrupadorPaiId?.ToString() ?? "—")
+                    </div>
                 </div>
+
                 <hr />
+
                 <div class="bg-light p-3 rounded mb-3">
                     <h6 class="mb-2">Itens ERP</h6>
                     @if (agr.AgrupadorItensERP?.Any() == true)
@@ -93,6 +91,50 @@
                         <p class="text-muted mb-0">Nenhum Item ERP vinculado.</p>
                     }
                 </div>
+
+                <div class="bg-light p-3 rounded mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Variáveis Vinculadas</h6>
+                        <a asp-controller="VariaveisAgrupadores"
+                           asp-action="Create"
+                           asp-route-agrupadorId="@agr.Id"
+                           class="btn btn-sm btn-success rounded-pill py-0 px-2">
+                            <i class="bi bi-plus-lg me-1"></i>Nova Variável
+                        </a>
+                    </div>
+                    @if (agr.VariaveisAgrupadores?.Any() == true)
+                    {
+                        <ul class="list-group">
+                            @foreach (var v in agr.VariaveisAgrupadores)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <strong>@v.Nome</strong>
+                                        <small class="text-muted ms-2">(@v.Tipo)</small>
+                                    </span>
+                                    <div>
+                                        <a asp-controller="VariaveisAgrupadores"
+                                           asp-action="Edit"
+                                           asp-route-id="@v.Id"
+                                           class="btn btn-sm btn-outline-secondary me-1">
+                                            Editar
+                                        </a>
+                                        <a asp-controller="VariaveisAgrupadores"
+                                           asp-action="Details"
+                                           asp-route-id="@v.Id"
+                                           class="btn btn-sm btn-outline-info">
+                                            Detalhes
+                                        </a>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Nenhuma variável vinculada.</p>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -100,25 +142,18 @@
 
 @section Scripts {
     <script>
-        // filtro em tempo real
-        document
-          .getElementById('searchInput')
-          .addEventListener('input', function() {
-            var filtro = this.value.toLowerCase();
-            document
-              .querySelectorAll('[data-search]')
-              .forEach(function(card) {
-                var texto = card.getAttribute('data-search').toLowerCase();
-                card.style.display = texto.includes(filtro) ? '' : 'none';
-              });
-          });
+        // filtro
+        document.getElementById('searchInput').addEventListener('input', function() {
+            var f = this.value.toLowerCase();
+            document.querySelectorAll('[data-search]').forEach(c => {
+                c.style.display = c.getAttribute('data-search').toLowerCase().includes(f) ? '' : 'none';
+            });
+        });
 
-        // inicializa toggles como fechados e anima ícones
-        document.querySelectorAll('.toggle-btn').forEach(function(btn) {
-          btn.classList.add('toggle-collapsed');
-          btn.addEventListener('click', function() {
-            btn.classList.toggle('toggle-collapsed');
-          });
+        // toggle icons
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.classList.add('toggle-collapsed');
+            btn.addEventListener('click', () => btn.classList.toggle('toggle-collapsed'));
         });
     </script>
 }

@@ -1,57 +1,87 @@
 ﻿@model Gerenciador_de_Produtos.Models.VariavelAgrupador
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Criar Variável de Agrupador";
 }
 
-<h1>Create</h1>
+<h1 class="display-5 mb-4">@ViewData["Title"]</h1>
 
-<h4>VariavelAgrupador</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nome" class="control-label"></label>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+@*             <!-- painel de debug -->
+            <div class="alert alert-secondary">
+                <h5>🔍 Debug</h5>
+                <strong>ModelState Errors:</strong>
+                @foreach (var entry in ViewData.ModelState)
+                {
+                    if (entry.Value.Errors.Count > 0)
+                    {
+                        <p>
+                            <em>@entry.Key</em>:
+                            @string.Join(" | ", entry.Value.Errors.Select(e => e.ErrorMessage))
+                        </p>
+                    }
+                }
+                <hr />
+                <strong>Model Values:</strong>
+                <pre>
+    Nome: @Model.Nome  
+    Descricao: @Model.Descricao  
+    Tipo: @Model.Tipo  
+    AgrupadorId: @Model.AgrupadorId  
+    Status: @Model.Status  
+    Valor: @Model.Valor  
+                </pre>
+            </div> *@
+
+            <div class="mb-3">
+                <label asp-for="Nome" class="form-label"></label>
                 <input asp-for="Nome" class="form-control" />
                 <span asp-validation-for="Nome" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Descricao" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="Descricao" class="form-label"></label>
                 <input asp-for="Descricao" class="form-control" />
                 <span asp-validation-for="Descricao" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Tipo" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="Tipo" class="form-label"></label>
                 <input asp-for="Tipo" class="form-control" />
                 <span asp-validation-for="Tipo" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="AgrupadorId" class="control-label"></label>
-                <select asp-for="AgrupadorId" class ="form-control" asp-items="ViewBag.AgrupadorId"></select>
+
+            <div class="mb-3">
+                <label asp-for="AgrupadorId" class="form-label"></label>
+                <select asp-for="AgrupadorId" class="form-select" asp-items="ViewBag.AgrupadorId">
+                    <option value="">-- Selecione um Agrupador --</option>
+                </select>
+                <span asp-validation-for="AgrupadorId" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Status" /> @Html.DisplayNameFor(model => model.Status)
-                </label>
+
+            <div class="form-check mb-3">
+                <input asp-for="Status" class="form-check-input" />
+                <label asp-for="Status" class="form-check-label"></label>
             </div>
-            <div class="form-group">
-                <label asp-for="Valor" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="Valor" class="form-label"></label>
                 <input asp-for="Valor" class="form-control" />
                 <span asp-validation-for="Valor" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+
+            <button type="submit" class="btn btn-primary">Criar</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
