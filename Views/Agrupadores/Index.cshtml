@@ -4,90 +4,121 @@
     ViewData["Title"] = "Agrupadores";
 }
 
-<h1 class="display-4 text-center mb-5 text-primary">
-    <i class="bi bi-diagram-2-fill me-2"></i>@ViewData["Title"]
-</h1>
+<!-- Estilos de rotação do ícone (mova para site.css se preferir) -->
+<style>
+    .toggle-icon {
+        transition: transform 0.3s ease;
+    }
 
-<div class="mb-3 d-flex justify-content-between align-items-center">
-    <a asp-action="Create" class="btn btn-success">
-        <i class="bi bi-plus-lg me-1"></i>Criar Novo
-    </a>
-    <input id="searchInput" type="text" class="form-control ms-3" placeholder="Buscar nome ou grupo..." style="max-width:300px;" />
+    .toggle-collapsed .toggle-icon {
+        transform: rotate(-90deg);
+    }
+</style>
+
+<div class="mb-4">
+    <h3 class="fw-bold mb-3">@ViewData["Title"]</h3>
+    <div class="row g-2">
+        <div class="col-auto">
+            <a asp-action="Create" class="btn btn-primary rounded-pill py-0 px-3">
+                <i class="bi bi-plus-lg me-1"></i>Criar Novo
+            </a>
+        </div>
+        <div class="col">
+            <input id="searchInput"
+                   class="form-control"
+                   placeholder="Buscar nome ou grupo..." />
+        </div>
+    </div>
 </div>
 
-<div class="accordion" id="agrupadoresAccordion">
-    @foreach (var agr in Model)
-    {
-        var hId = $"headingAgr{agr.Id}";
-        var cId = $"collapseAgr{agr.Id}";
-        <div class="accordion-item mb-3" data-filter="@(agr.Nome + " " + agr.Grupo).ToLower()">
-            <h2 class="accordion-header" id="@hId">
-                <button class="accordion-button collapsed d-flex justify-content-between"
-                        type="button"
+@foreach (var agr in Model)
+{
+    <div class="card mb-4" data-search="@agr.Nome @agr.Grupo">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- toggle à esquerda -->
+                <button class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-2 toggle-btn"
                         data-bs-toggle="collapse"
-                        data-bs-target="#@cId"
+                        data-bs-target="#details_@agr.Id"
                         aria-expanded="false"
-                        aria-controls="@cId">
-                    <div>
-                        <strong>@agr.Nome</strong>
-                        <small class="text-muted ms-2">(@agr.Grupo ?? "—")</small>
-                    </div>
-                    <div>
-                        <span class="badge bg-secondary">Nível @agr.Nivel</span>
-                    </div>
+                        aria-controls="details_@agr.Id">
+                    <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
-            </h2>
-            <div id="@cId"
-                 class="accordion-collapse collapse"
-                 aria-labelledby="@hId"
-                 data-bs-parent="#agrupadoresAccordion">
-                <div class="accordion-body bg-light p-4">
-                    <p><strong>Desenvolvimento:</strong> @(agr.DesenvolvimentoId?.ToString() ?? "—")</p>
-                    <p><strong>Agrupador Pai:</strong> @(agr.AgrupadorPaiId?.ToString() ?? "—")</p>
-                    <hr />
-                    <div class="bg-white p-3 rounded mb-4">
-                        <h6 class="mb-2">Itens ERP</h6>
-                        @if (agr.AgrupadorItensERP?.Any() == true)
-                        {
-                            <ul class="list-group">
-                                @foreach (var ai in agr.AgrupadorItensERP)
-                                {
-                                    <li class="list-group-item">
-                                        <i class="bi bi-box me-1"></i>@ai.ItemERP.ERP
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p class="text-muted mb-0">Nenhum Item ERP vinculado.</p>
-                        }
-                    </div>
-                    <div class="text-end">
-                        <a asp-action="Details" asp-route-id="@agr.Id" class="btn btn-sm btn-info me-1">
-                            <i class="bi bi-eye"></i> Detalhes
-                        </a>
-                        <a asp-action="Edit" asp-route-id="@agr.Id" class="btn btn-sm btn-secondary me-1">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                        <a asp-action="Delete" asp-route-id="@agr.Id" class="btn btn-sm btn-danger">
-                            <i class="bi bi-trash"></i> Excluir
-                        </a>
-                    </div>
+
+                <div class="flex-grow-1">
+                    <strong>@agr.Nome</strong>
+                    <small class="text-muted ms-2">(@(agr.Grupo ?? "—"))</small>
+                </div>
+
+                <div>
+                    <span class="badge bg-secondary me-3">Nível @agr.Nivel</span>
+                    <a asp-action="Details" asp-route-id="@agr.Id"
+                       class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
+                        <i class="bi bi-eye me-1"></i>Detalhes
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@agr.Id"
+                       class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
+                        <i class="bi bi-pencil me-1"></i>Editar
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@agr.Id"
+                       class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2">
+                        <i class="bi bi-trash me-1"></i>Excluir
+                    </a>
                 </div>
             </div>
         </div>
-    }
-</div>
+
+        <div class="collapse" id="details_@agr.Id">
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-6"><strong>Desenvolvimento:</strong> @(agr.DesenvolvimentoId?.ToString() ?? "—")</div>
+                    <div class="col-sm-6"><strong>Agrupador Pai:</strong> @(agr.AgrupadorPaiId?.ToString() ?? "—")</div>
+                </div>
+                <hr />
+                <div class="bg-light p-3 rounded mb-3">
+                    <h6 class="mb-2">Itens ERP</h6>
+                    @if (agr.AgrupadorItensERP?.Any() == true)
+                    {
+                        <ul class="list-group">
+                            @foreach (var ai in agr.AgrupadorItensERP)
+                            {
+                                <li class="list-group-item">
+                                    <i class="bi bi-box me-1"></i>@ai.ItemERP.ERP
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Nenhum Item ERP vinculado.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @section Scripts {
     <script>
-        document.getElementById('searchInput').addEventListener('input', function() {
-            var filter = this.value.toLowerCase();
-            document.querySelectorAll('#agrupadoresAccordion .accordion-item').forEach(function(item) {
-                var data = item.getAttribute('data-filter') || '';
-                item.style.display = data.includes(filter) ? '' : 'none';
-            });
+        // filtro em tempo real
+        document
+          .getElementById('searchInput')
+          .addEventListener('input', function() {
+            var filtro = this.value.toLowerCase();
+            document
+              .querySelectorAll('[data-search]')
+              .forEach(function(card) {
+                var texto = card.getAttribute('data-search').toLowerCase();
+                card.style.display = texto.includes(filtro) ? '' : 'none';
+              });
+          });
+
+        // inicializa toggles como fechados e anima ícones
+        document.querySelectorAll('.toggle-btn').forEach(function(btn) {
+          btn.classList.add('toggle-collapsed');
+          btn.addEventListener('click', function() {
+            btn.classList.toggle('toggle-collapsed');
+          });
         });
     </script>
 }

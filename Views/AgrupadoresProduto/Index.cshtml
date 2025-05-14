@@ -4,45 +4,113 @@
     ViewData["Title"] = "Relações Produto ↔ Agrupador";
 }
 
-<h1>@ViewData["Title"]</h1>
+<!-- Estilos de rotação do ícone (movê-los para site.css, se preferir) -->
+<style>
+    .toggle-icon {
+        transition: transform 0.3s ease;
+    }
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Criar Novo Vínculo</a>
-</p>
+    .toggle-collapsed .toggle-icon {
+        transform: rotate(-90deg);
+    }
+</style>
 
-<table class="table table-bordered">
-    <thead class="table-light">
-        <tr>
-            <th>@Html.DisplayNameFor(m => m.First().NomeComercial)</th>
-            <th>@Html.DisplayNameFor(m => m.First().AgrupadorNome)</th>
-            <th>@Html.DisplayNameFor(m => m.First().Variavel)</th>
-            <th>@Html.DisplayNameFor(m => m.First().Status)</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.NomeComercial</td>
-                <td>@item.AgrupadorNome</td>
-                <td>@item.Variavel</td>
-                <td>
-                    @if (item.Status)
-                    {
-                        <span class="badge bg-success">Ativo</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary">Inativo</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.VinculoId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.VinculoId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.VinculoId">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="mb-4">
+    <h3 class="fw-bold mb-3">@ViewData["Title"]</h3>
+    <div class="row g-2">
+        <div class="col-auto">
+            <a asp-action="Create" class="btn btn-primary rounded-pill py-0 px-3">
+                <i class="bi bi-link-45deg me-1"></i>Criar Novo Vínculo
+            </a>
+        </div>
+        <div class="col">
+            <input id="searchInput"
+                   class="form-control"
+                   placeholder="Buscar Produto, Agrupador ou Variável..." />
+        </div>
+    </div>
+</div>
+
+@foreach (var item in Model)
+{
+    <div class="card mb-4" data-search="@item.NomeComercial @item.AgrupadorNome @item.Variavel">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- Toggle -->
+                <button class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-2 toggle-btn"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#details_@item.VinculoId"
+                        aria-expanded="false"
+                        aria-controls="details_@item.VinculoId">
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </button>
+
+                <div class="flex-grow-1">
+                    <strong>@item.NomeComercial</strong>
+                    <small class="text-muted ms-2">↔ @item.AgrupadorNome</small>
+                </div>
+
+                <div>
+                    <a asp-action="Details" asp-route-id="@item.VinculoId"
+                       class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
+                        <i class="bi bi-eye me-1"></i>Detalhes
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@item.VinculoId"
+                       class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
+                        <i class="bi bi-pencil me-1"></i>Editar
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@item.VinculoId"
+                       class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2">
+                        <i class="bi bi-trash me-1"></i>Excluir
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="collapse" id="details_@item.VinculoId">
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-6"><strong>Variável:</strong> @item.Variavel</div>
+                    <div class="col-sm-6">
+                        <strong>Status:</strong>
+                        @if (item.Status)
+                        {
+                            <span class="badge bg-success">Ativo</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Inativo</span>
+                        }
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6"><strong>ID Vinculo:</strong> @item.VinculoId</div>
+                    <div class="col-sm-6"><strong>ID Produto:</strong> @item.ProdutoId</div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Busca em tempo real
+        document
+          .getElementById('searchInput')
+          .addEventListener('input', function() {
+            var filtro = this.value.toLowerCase();
+            document.querySelectorAll('[data-search]').forEach(function(card) {
+              var texto = card.getAttribute('data-search').toLowerCase();
+              card.style.display = texto.includes(filtro) ? '' : 'none';
+            });
+          });
+
+        // Inicializa toggles como fechados e anima ícones
+        document.querySelectorAll('.toggle-btn').forEach(function(btn) {
+          btn.classList.add('toggle-collapsed');
+          btn.addEventListener('click', function() {
+            btn.classList.toggle('toggle-collapsed');
+          });
+        });
+    </script>
+}

@@ -4,107 +4,141 @@
     ViewData["Title"] = "Perfis";
 }
 
-<h1>@ViewData["Title"]</h1>
+<!-- Estilos de rotação do ícone (mova para site.css se preferir) -->
+<style>
+    .toggle-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .toggle-collapsed .toggle-icon {
+        transform: rotate(-90deg);
+    }
+</style>
+
+<div class="mb-4">
+    <h3 class="fw-bold mb-3">@ViewData["Title"]</h3>
+    <div class="row g-2">
+        <div class="col-auto">
+            <a asp-action="Import" class="btn btn-secondary rounded-pill py-0 px-3">
+                <i class="bi bi-file-earmark-arrow-up me-1"></i>Importar CSV
+            </a>
+            <a asp-action="Create" class="btn btn-primary rounded-pill py-0 px-3 ms-2">
+                <i class="bi bi-plus-lg me-1"></i>Novo Perfil
+            </a>
+        </div>
+        <div class="col">
+            <input id="searchInput"
+                   class="form-control"
+                   placeholder="Buscar perfil..." />
+        </div>
+    </div>
+</div>
 
 @if (TempData["Success"] != null)
 {
     <div class="alert alert-success">@TempData["Success"]</div>
 }
 
-<div class="mb-3">
-    <a asp-action="Import" class="btn btn-secondary">Importar CSV</a>
-    <a asp-action="Create" class="btn btn-primary ms-2">Novo Perfil</a>
-</div>
-
-<div class="mb-4">
-    <input id="searchInput" type="text" class="form-control" placeholder="Buscar perfil..." />
-</div>
-
-<div class="accordion" id="perfisAccordion">
-    @foreach (var perfil in Model)
-    {
-        var headingId = $"heading{perfil.Id}";
-        var collapseId = $"collapse{perfil.Id}";
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="@headingId">
-                <button class="accordion-button collapsed d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
-                    <div>
-                        <strong>@perfil.ERP</strong> – @perfil.Descricao
-                        <small class="text-muted ms-3">Desenho: @perfil.Desenho | Tipo: @perfil.TipoSecao | Peso: @perfil.Peso</small>
-                    </div>
+@foreach (var perfil in Model)
+{
+    <div class="card mb-4" data-search="@perfil.ERP @perfil.Descricao">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <button class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-2 toggle-btn"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#details_@perfil.Id"
+                        aria-expanded="false"
+                        aria-controls="details_@perfil.Id">
+                    <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
-            </h2>
-            <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId" data-bs-parent="#perfisAccordion">
-                <div class="accordion-body">
-                    <div class="row row-cols-2 g-2">
-                        @* Coluna 1 *@
-                        <div class="col">
-                            <p><strong>Área Bruta:</strong> @perfil.AreaBruta</p>
-                            <p><strong>Área Líquida:</strong> @perfil.AreaLiq</p>
-                            <p><strong>Área Eq.:</strong> @perfil.AreaEq</p>
-                            <p><strong>Ix:</strong> @perfil.Ix</p>
-                            <p><strong>Sxt:</strong> @perfil.Sxt</p>
-                            <p><strong>Sxb:</strong> @perfil.Sxb</p>
-                            <p><strong>Zx:</strong> @perfil.Zx</p>
-                            <p><strong>Rx:</strong> @perfil.Rx</p>
-                            <p><strong>yt:</strong> @perfil.yt</p>
-                            <p><strong>yb:</strong> @perfil.yb</p>
-                            <p><strong>Ixy:</strong> @perfil.Ixy</p>
-                        </div>
-                        @* Coluna 2 *@
-                        <div class="col">
-                            <p><strong>Iy:</strong> @perfil.Iy</p>
-                            <p><strong>Syl:</strong> @perfil.Syl</p>
-                            <p><strong>Syr:</strong> @perfil.Syr</p>
-                            <p><strong>Zy:</strong> @perfil.Zy</p>
-                            <p><strong>ry:</strong> @perfil.ry</p>
-                            <p><strong>xl:</strong> @perfil.xl</p>
-                            <p><strong>xr:</strong> @perfil.xr</p>
-                            <p><strong>xo:</strong> @perfil.xo</p>
-                            <p><strong>yo:</strong> @perfil.yo</p>
-                            <p><strong>jx:</strong> @perfil.jx</p>
-                            <p><strong>jy:</strong> @perfil.jy</p>
-                        </div>
-                        @* Coluna 3 *@
-                        <div class="col">
-                            <p><strong>Cw:</strong> @perfil.Cw</p>
-                            <p><strong>J:</strong> @perfil.J</p>
-                            <p><strong>Ixe:</strong> @perfil.Ixe</p>
-                            <p><strong>Sxet:</strong> @perfil.Sxet</p>
-                            <p><strong>Sxeb:</strong> @perfil.Sxeb</p>
-                            <p><strong>lye:</strong> @perfil.lye</p>
-                            <p><strong>Syel:</strong> @perfil.Syel</p>
-                            <p><strong>Syer:</strong> @perfil.Syer</p>
-                            <p><strong>p1:</strong> @perfil.p1</p>
-                        </div>
-                        @* Coluna 4 *@
-                        <div class="col">
-                            <p><strong>p2:</strong> @perfil.p2</p>
-                            <p><strong>p3:</strong> @perfil.p3</p>
-                            <p><strong>Simétrico X:</strong> @(perfil.SimetricoX == true ? "Sim" : "Não")</p>
-                            <p><strong>Simétrico Y:</strong> @(perfil.SimetricoY == true ? "Sim" : "Não")</p>
-                        </div>
+                <div class="flex-grow-1">
+                    <strong>@perfil.ERP</strong> – @perfil.Descricao<br />
+                    <small class="text-muted">
+                        Desenho: @perfil.Desenho |
+                        Tipo: @perfil.TipoSecao |
+                        Peso: @perfil.Peso
+                    </small>
+                </div>
+                <div>
+                    <a asp-action="Details" asp-route-id="@perfil.Id"
+                       class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
+                        <i class="bi bi-eye me-1"></i>Detalhes
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@perfil.Id"
+                       class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
+                        <i class="bi bi-pencil me-1"></i>Editar
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@perfil.Id"
+                       class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2">
+                        <i class="bi bi-trash me-1"></i>Excluir
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="collapse" id="details_@perfil.Id">
+            <div class="card-body">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+                    <div class="col">
+                        <p><strong>Área Bruta:</strong> @perfil.AreaBruta</p>
+                        <p><strong>Área Líquida:</strong> @perfil.AreaLiq</p>
+                        <p><strong>Área Eq.:</strong> @perfil.AreaEq</p>
+                        <p><strong>Ix:</strong> @perfil.Ix</p>
+                        <p><strong>Sxt:</strong> @perfil.Sxt</p>
                     </div>
-                    <div class="text-end mt-2">
-                        <a asp-action="Details" asp-route-id="@perfil.Id" class="btn btn-sm btn-info">Detalhes</a>
-                        <a asp-action="Edit" asp-route-id="@perfil.Id" class="btn btn-sm btn-secondary ms-1">Editar</a>
-                        <a asp-action="Delete" asp-route-id="@perfil.Id" class="btn btn-sm btn-danger ms-1">Excluir</a>
+                    <div class="col">
+                        <p><strong>Sxb:</strong> @perfil.Sxb</p>
+                        <p><strong>Zx:</strong> @perfil.Zx</p>
+                        <p><strong>Rx:</strong> @perfil.Rx</p>
+                        <p><strong>yt:</strong> @perfil.yt</p>
+                        <p><strong>yb:</strong> @perfil.yb</p>
+                    </div>
+                    <div class="col">
+                        <p><strong>Ixy:</strong> @perfil.Ixy</p>
+                        <p><strong>Iy:</strong> @perfil.Iy</p>
+                        <p><strong>Syl:</strong> @perfil.Syl</p>
+                        <p><strong>Syr:</strong> @perfil.Syr</p>
+                        <p><strong>Zy:</strong> @perfil.Zy</p>
+                    </div>
+                    <div class="col">
+                        <p><strong>ry:</strong> @perfil.ry</p>
+                        <p><strong>xl:</strong> @perfil.xl</p>
+                        <p><strong>xr:</strong> @perfil.xr</p>
+                        <p>
+                            <strong>Simétrico X:</strong>
+                            @(perfil.SimetricoX == true ? "Sim" : "Não")
+                        </p>
+                        <p>
+                            <strong>Simétrico Y:</strong>
+                            @(perfil.SimetricoY == true ? "Sim" : "Não")
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
-    }
-</div>
+    </div>
+}
 
 @section Scripts {
     <script>
-        document.getElementById('searchInput').addEventListener('input', function() {
-            var filter = this.value.toLowerCase();
-            var items = document.querySelectorAll('#perfisAccordion .accordion-item');
-            items.forEach(function(item) {
-                var text = item.textContent.toLowerCase();
-                item.style.display = text.includes(filter) ? '' : 'none';
-            });
+        // filtro em tempo real
+        document
+          .getElementById('searchInput')
+          .addEventListener('input', function() {
+            var filtro = this.value.toLowerCase();
+            document
+              .querySelectorAll('[data-search]')
+              .forEach(function(card) {
+                var texto = card.getAttribute('data-search').toLowerCase();
+                card.style.display = texto.includes(filtro) ? '' : 'none';
+              });
+          });
+
+        // inicia todos toggles fechados
+        document.querySelectorAll('.toggle-btn').forEach(function(btn) {
+          btn.classList.add('toggle-collapsed');
+          btn.addEventListener('click', function() {
+            btn.classList.toggle('toggle-collapsed');
+          });
         });
     </script>
 }

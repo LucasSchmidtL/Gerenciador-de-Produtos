@@ -4,82 +4,119 @@
     ViewData["Title"] = "Tags";
 }
 
-<h1 class="display-4 text-center mb-5 text-primary">
-    <i class="bi bi-tags-fill me-2"></i>@ViewData["Title"]
-</h1>
+<!-- Estilos de rotação do ícone (mova para site.css) -->
+<style>
+    .toggle-icon {
+        transition: transform 0.3s ease;
+    }
 
-<div class="mb-3 d-flex justify-content-between align-items-center">
-    <a asp-action="Create" class="btn btn-success">
-        <i class="bi bi-plus-lg me-1"></i>Criar Nova Tag
-    </a>
-    <input id="searchInput" type="text" class="form-control ms-3" placeholder="Buscar por nome ou ERP..." style="max-width:300px;" />
+    .toggle-collapsed .toggle-icon {
+        transform: rotate(-90deg);
+    }
+</style>
+
+<div class="mb-4">
+    <h3 class="fw-bold mb-3">@ViewData["Title"]</h3>
+    <div class="row g-2">
+        <div class="col-auto">
+            <a asp-action="Create" class="btn btn-primary rounded-pill py-0 px-3">
+                <i class="bi bi-plus-lg me-1"></i>Criar Nova Tag
+            </a>
+        </div>
+        <div class="col">
+            <input id="searchInput"
+                   class="form-control"
+                   placeholder="Buscar por nome ou ERP..." />
+        </div>
+    </div>
 </div>
 
-<div class="accordion" id="tagsAccordion">
-    @foreach (var tag in Model)
-    {
-        var headingId = $"headingTag{tag.Id}";
-        var collapseId = $"collapseTag{tag.Id}";
-        <div class="accordion-item mb-3" data-filter="@(tag.Nome + " " + string.Join(" ", tag.ItemERPs.Select(i => i.ERP))).ToLower()">
-            <h2 class="accordion-header" id="@headingId">
-                <button class="accordion-button collapsed d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
-                    <div>
-                        <strong>@tag.Nome</strong>
-                        <small class="text-muted ms-2">(@tag.ItemERPs.Count() itens)</small>
-                    </div>
+@foreach (var tag in Model)
+{
+    var erps = tag.ItemERPs?.Select(i => i.ERP).DefaultIfEmpty();
+    <div class="card mb-4" data-search="@($"{tag.Nome} {string.Join(" ", erps)}")">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <button class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-2 toggle-btn"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#details_@tag.Id"
+                        aria-expanded="false"
+                        aria-controls="details_@tag.Id">
+                    <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
-            </h2>
-            <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId" data-bs-parent="#tagsAccordion">
-                <div class="accordion-body bg-light p-4">
-                    @if (tag.ItemERPs?.Any() == true)
-                    {
-                        <ul class="list-group">
-                            @foreach (var item in tag.ItemERPs)
-                            {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span><i class="bi bi-box me-1"></i>@item.ERP <small class="text-muted">(@item.Id)</small></span>
-                                    <div>
-                                        <a asp-controller="ItensERP" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info me-1" title="Ver Detalhes do Item">
-                                            <i class="bi bi-eye me-1"></i>Detalhes
-                                        </a>
-                                        <a asp-controller="ItensERP" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" title="Editar Item ERP">
-                                            <i class="bi bi-pencil me-1"></i>Editar
-                                        </a>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p class="text-muted mb-0">Nenhum Item ERP vinculado.</p>
-                    }
-                    <hr />
-                    <div class="text-end">
-                        <a asp-action="Details" asp-route-id="@tag.Id" class="btn btn-sm btn-info me-1">
-                            <i class="bi bi-eye"></i> Detalhes
-                        </a>
-                        <a asp-action="Edit" asp-route-id="@tag.Id" class="btn btn-sm btn-secondary me-1">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                        <a asp-action="Delete" asp-route-id="@tag.Id" class="btn btn-sm btn-danger">
-                            <i class="bi bi-trash"></i> Excluir
-                        </a>
-                    </div>
+                <div class="flex-grow-1">
+                    <strong>@tag.Nome</strong>
+                    <small class="text-muted ms-2">(@tag.ItemERPs?.Count() ?? 0 itens)</small>
+                </div>
+                <div>
+                    <a asp-action="Details" asp-route-id="@tag.Id"
+                       class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
+                        <i class="bi bi-eye me-1"></i>Detalhes
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@tag.Id"
+                       class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
+                        <i class="bi bi-pencil me-1"></i>Editar
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@tag.Id"
+                       class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2">
+                        <i class="bi bi-trash me-1"></i>Excluir
+                    </a>
                 </div>
             </div>
         </div>
-    }
-</div>
+
+        <div class="collapse" id="details_@tag.Id">
+            <div class="card-body bg-light p-4">
+                @if (tag.ItemERPs?.Any() == true)
+                {
+                    <ul class="list-group mb-3">
+                        @foreach (var item in tag.ItemERPs)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <i class="bi bi-box me-1"></i>
+                                    @item.ERP <small class="text-muted">(@item.Id)</small>
+                                </span>
+                                <div>
+                                    <a asp-controller="ItensERP" asp-action="Details" asp-route-id="@item.Id"
+                                       class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1" title="Ver Detalhes">
+                                        <i class="bi bi-eye me-1"></i>Detalhes
+                                    </a>
+                                    <a asp-controller="ItensERP" asp-action="Edit" asp-route-id="@item.Id"
+                                       class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2" title="Editar Item">
+                                        <i class="bi bi-pencil me-1"></i>Editar
+                                    </a>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted mb-3">Nenhum Item ERP vinculado.</p>
+                }
+            </div>
+        </div>
+    </div>
+}
 
 @section Scripts {
     <script>
+        // filtro em tempo real
         document.getElementById('searchInput').addEventListener('input', function() {
-            var filter = this.value.toLowerCase();
-            document.querySelectorAll('#tagsAccordion .accordion-item').forEach(function(item) {
-                var data = item.getAttribute('data-filter') || '';
-                item.style.display = data.includes(filter) ? '' : 'none';
-            });
+          var filtro = this.value.toLowerCase();
+          document.querySelectorAll('[data-search]').forEach(function(card) {
+            var texto = card.getAttribute('data-search').toLowerCase();
+            card.style.display = texto.includes(filtro) ? '' : 'none';
+          });
+        });
+
+        // inicializa toggles fechados e anima ícones
+        document.querySelectorAll('.toggle-btn').forEach(function(btn) {
+          btn.classList.add('toggle-collapsed');
+          btn.addEventListener('click', function() {
+            btn.classList.toggle('toggle-collapsed');
+          });
         });
     </script>
 }
