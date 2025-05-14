@@ -1,49 +1,157 @@
 ﻿@model Gerenciador_de_Produtos.Models.Agrupador
 
 @{
-    ViewData["Title"] = "Detalhes";
+    ViewData["Title"] = "Detalhes do Agrupador";
 }
 
-<h1>Detalhes</h1>
+<h1 class="mb-4">Detalhes do Agrupador</h1>
 
-<div>
-    <h4>Agrupador</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">@Html.DisplayNameFor(m => m.Nome)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(m => m.Nome)</dd>
-
-        <dt class="col-sm-2">@Html.DisplayNameFor(m => m.Grupo)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(m => m.Grupo)</dd>
-
-        <dt class="col-sm-2">@Html.DisplayNameFor(m => m.DesenvolvimentoId)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(m => m.DesenvolvimentoId)</dd>
-
-        <dt class="col-sm-2">Itens ERP</dt>
-        <dd class="col-sm-10">
-            @if (Model.AgrupadorItensERP != null && Model.AgrupadorItensERP.Any())
-            {
-                <ul>
-                    @foreach (var ai in Model.AgrupadorItensERP)
-                    {
-                        <li>@ai.ItemERP.ERP</li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <em class="text-muted">Nenhum Item ERP vinculado.</em>
-            }
-        </dd>
-
-        <dt class="col-sm-2">@Html.DisplayNameFor(m => m.AgrupadorPaiId)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(m => m.AgrupadorPaiId)</dd>
-
-        <dt class="col-sm-2">@Html.DisplayNameFor(m => m.Nivel)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(m => m.Nivel)</dd>
-    </dl>
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Nome</h5>
+        <p class="card-text">
+            <strong>Grupo:</strong> @Model.Grupo ?? "—"<br />
+            <strong>Desenvolvimento ID:</strong> @Model.DesenvolvimentoId?.ToString() ?? "—"<br />
+            <strong>Agrupador Pai ID:</strong> @Model.AgrupadorPaiId?.ToString() ?? "—"<br />
+            <strong>Nível:</strong> @Model.Nivel
+        </p>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
-    <a asp-action="Index" class="btn btn-secondary ms-2">Voltar</a>
+
+<!-- Itens ERP -->
+<div class="card mb-4">
+    <div class="card-header">
+        Itens ERP vinculados
+    </div>
+    <div class="card-body">
+        @if (Model.AgrupadorItensERP?.Any() == true)
+        {
+            <ul class="list-group">
+                @foreach (var ai in Model.AgrupadorItensERP)
+                {
+                    <li class="list-group-item">
+                        <i class="bi bi-box me-1"></i> @ai.ItemERP.ERP (@ai.ItemERP.Id)
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted mb-0">Nenhum Item ERP vinculado.</p>
+        }
+    </div>
+</div>
+
+<!-- Variáveis -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Variáveis vinculadas</span>
+        <a asp-controller="VariaveisAgrupadores"
+           asp-action="Create"
+           asp-route-agrupadorId="@Model.Id"
+           class="btn btn-sm btn-success">
+            <i class="bi bi-plus-lg me-1"></i>Nova Variável
+        </a>
+    </div>
+    <div class="card-body">
+        @if (Model.VariaveisAgrupadores?.Any() == true)
+        {
+            <ul class="list-group">
+                @foreach (var v in Model.VariaveisAgrupadores)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <strong>@v.Nome</strong> <small class="text-muted">(@v.Tipo)</small>
+                        </span>
+                        <div>
+                            <a asp-controller="VariaveisAgrupadores" asp-action="Edit" asp-route-id="@v.Id" class="btn btn-sm btn-outline-secondary me-1">
+                                Editar
+                            </a>
+                            <a asp-controller="VariaveisAgrupadores" asp-action="Details" asp-route-id="@v.Id" class="btn btn-sm btn-outline-info">
+                                Detalhes
+                            </a>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted mb-0">Nenhuma variável vinculada.</p>
+        }
+    </div>
+</div>
+
+<!-- Produtos -->
+<div class="card mb-4">
+    <div class="card-header">
+        Produtos vinculados
+    </div>
+    <div class="card-body">
+        @if (Model.ProdutoAgrupadores?.Any() == true)
+        {
+            <ul class="list-group">
+                @foreach (var p in Model.ProdutoAgrupadores)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="bi bi-box-seam me-1"></i> @p.Produto.NomeComercial
+                        </span>
+                        <a asp-controller="AgrupadoresProduto" asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-outline-info">
+                            Detalhes
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted mb-0">Nenhum produto vinculado.</p>
+        }
+    </div>
+</div>
+
+<!-- Componentes -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Componentes vinculados</span>
+        <a asp-controller="AgrupadoresComponentes"
+           asp-action="Create"
+           asp-route-agrupadorId="@Model.Id"
+           class="btn btn-sm btn-warning">
+            <i class="bi bi-plus-lg me-1"></i>Adicionar Componente
+        </a>
+    </div>
+    <div class="card-body">
+        @if (Model.AgrupadorComponentes?.Any() == true)
+        {
+            <ul class="list-group">
+                @foreach (var ac in Model.AgrupadorComponentes)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="bi bi-tools me-1"></i> @ac.Componente.Nome
+                        </span>
+                        <div>
+                            <a asp-controller="AgrupadoresComponentes" asp-action="Edit" asp-route-id="@ac.Id" class="btn btn-sm btn-outline-secondary me-1">
+                                Editar
+                            </a>
+                            <a asp-controller="AgrupadoresComponentes" asp-action="Details" asp-route-id="@ac.Id" class="btn btn-sm btn-outline-info">
+                                Detalhes
+                            </a>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted mb-0">Nenhum componente vinculado.</p>
+        }
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar Agrupador</a>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Voltar à Lista</a>
 </div>

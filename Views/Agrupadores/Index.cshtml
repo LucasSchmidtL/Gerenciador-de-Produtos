@@ -73,6 +73,7 @@
 
                 <hr />
 
+                <!-- Itens ERP -->
                 <div class="bg-light p-3 rounded mb-3">
                     <h6 class="mb-2">Itens ERP</h6>
                     @if (agr.AgrupadorItensERP?.Any() == true)
@@ -92,6 +93,7 @@
                     }
                 </div>
 
+                <!-- Variáveis -->
                 <div class="bg-light p-3 rounded mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h6 class="mb-0">Variáveis Vinculadas</h6>
@@ -135,6 +137,82 @@
                         <p class="text-muted mb-0">Nenhuma variável vinculada.</p>
                     }
                 </div>
+
+                <!-- Produtos Vinculados -->
+                <div class="bg-light p-3 rounded mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Produtos Vinculados</h6>
+                        <a asp-controller="AgrupadoresProduto"
+                           asp-action="Create"
+                           asp-route-agrupadorId="@agr.Id"
+                           class="btn btn-sm btn-warning rounded-pill py-0 px-2">
+                            <i class="bi bi-plus-lg me-1"></i>Adicionar Produto
+                        </a>
+                    </div>
+                    @if (agr.ProdutoAgrupadores?.Any() == true)
+                    {
+                        <ul class="list-group">
+                            @foreach (var p in agr.ProdutoAgrupadores)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Produto: @p.Produto.NomeComercial</span>
+                                    <div>
+                                        <a asp-controller="AgrupadoresProduto"
+                                           asp-action="Edit"
+                                           asp-route-id="@p.Id"
+                                           class="btn btn-sm btn-outline-secondary me-1">Editar</a>
+                                        <a asp-controller="AgrupadoresProduto"
+                                           asp-action="Details"
+                                           asp-route-id="@p.Id"
+                                           class="btn btn-sm btn-outline-info">Detalhes</a>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Nenhum produto vinculado.</p>
+                    }
+                </div>
+
+                <!-- Componentes Vinculados -->
+                <div class="bg-light p-3 rounded mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Componentes Vinculados</h6>
+                        <a asp-controller="AgrupadoresComponentes"
+                           asp-action="Create"
+                           asp-route-agrupadorId="@agr.Id"
+                           class="btn btn-sm btn-outline-warning rounded-pill py-0 px-2">
+                            <i class="bi bi-plus-lg me-1"></i>Adicionar Componente
+                        </a>
+                    </div>
+                    @if (agr.AgrupadorComponentes?.Any() == true)
+                    {
+                        <ul class="list-group">
+                            @foreach (var ac in agr.AgrupadorComponentes)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Componente: @ac.Componente.Nome</span>
+                                    <div>
+                                        <a asp-controller="AgrupadoresComponentes"
+                                           asp-action="Edit"
+                                           asp-route-id="@ac.Id"
+                                           class="btn btn-sm btn-outline-secondary me-1">Editar</a>
+                                        <a asp-controller="AgrupadoresComponentes"
+                                           asp-action="Details"
+                                           asp-route-id="@ac.Id"
+                                           class="btn btn-sm btn-outline-info">Detalhes</a>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Nenhum componente vinculado.</p>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -146,11 +224,12 @@
         document.getElementById('searchInput').addEventListener('input', function() {
             var f = this.value.toLowerCase();
             document.querySelectorAll('[data-search]').forEach(c => {
-                c.style.display = c.getAttribute('data-search').toLowerCase().includes(f) ? '' : 'none';
+                c.style.display = c.getAttribute('data-search')
+                                   .toLowerCase()
+                                   .includes(f) ? '' : 'none';
             });
         });
-
-        // toggle icons
+        // toggles
         document.querySelectorAll('.toggle-btn').forEach(btn => {
             btn.classList.add('toggle-collapsed');
             btn.addEventListener('click', () => btn.classList.toggle('toggle-collapsed'));

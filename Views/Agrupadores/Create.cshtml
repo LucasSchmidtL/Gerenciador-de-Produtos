@@ -1,57 +1,76 @@
 ﻿@model Gerenciador_de_Produtos.Models.Agrupador
 
 @{
-    ViewData["Title"] = "Create Agrupador";
+    ViewData["Title"] = "Nova Agrupador";
 }
 
-<h1>Create Agrupador</h1>
-<hr />
-<form asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
+<!-- Título grande e colorido -->
+<h1 class="display-4 text-center mb-5 text-primary">
+    <i class="bi bi-layer-forward me-2"></i>@ViewData["Title"]
+</h1>
 
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-    <div class="form-group">
-        <label asp-for="Nome" class="control-label"></label>
-        <input asp-for="Nome" class="form-control" />
-        <span asp-validation-for="Nome" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Grupo" class="control-label"></label>
-        <input asp-for="Grupo" class="form-control" />
-        <span asp-validation-for="Grupo" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="DesenvolvimentoId" class="control-label"></label>
-        <input asp-for="DesenvolvimentoId" class="form-control" />
-        <span asp-validation-for="DesenvolvimentoId" class="text-danger"></span>
-    </div>
+            <div class="mb-3">
+                <label asp-for="Nome" class="form-label">Nome</label>
+                <input asp-for="Nome" class="form-control" placeholder="Digite o nome do agrupador" />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
 
-    <div class="form-group">
-        <label>Itens ERP</label>
-        <select asp-for="ItemErpIds" class="form-control" multiple="multiple"
-                asp-items="@(ViewData["ItemERPs"] as MultiSelectList)">
-        </select>
-        <span asp-validation-for="ItemErpIds" class="text-danger"></span>
-    </div>
+            <div class="mb-3">
+                <label asp-for="Grupo" class="form-label">Grupo</label>
+                <input asp-for="Grupo" class="form-control" placeholder="Digite o nome do grupo (opcional)" />
+                <span asp-validation-for="Grupo" class="text-danger"></span>
+            </div>
 
-    <div class="form-group">
-        <label asp-for="AgrupadorPaiId" class="control-label"></label>
-        <input asp-for="AgrupadorPaiId" class="form-control" />
-        <span asp-validation-for="AgrupadorPaiId" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Nivel" class="control-label"></label>
-        <input asp-for="Nivel" class="form-control" />
-        <span asp-validation-for="Nivel" class="text-danger"></span>
-    </div>
+            <div class="mb-3">
+                <label asp-for="DesenvolvimentoId" class="form-label">Desenvolvimento ID</label>
+                <input asp-for="DesenvolvimentoId" class="form-control" placeholder="ID de desenvolvimento (opcional)" />
+                <span asp-validation-for="DesenvolvimentoId" class="text-danger"></span>
+            </div>
 
-    <button type="submit" class="btn btn-primary">Salvar</button>
-    <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
-</form>
+            <div class="mb-3">
+                <label class="form-label">Itens ERP vinculados</label>
+                <select asp-for="ItemErpIds"
+                        class="form-select"
+                        multiple
+                        asp-items="@(ViewData["ItemERPs"] as MultiSelectList)">
+                </select>
+                <small class="form-text text-muted">Segure Ctrl/Cmd para selecionar múltiplos.</small>
+                <span asp-validation-for="ItemErpIds" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="AgrupadorPaiId" class="form-label">Agrupador Pai ID</label>
+                <input asp-for="AgrupadorPaiId" class="form-control" placeholder="ID do agrupador pai (opcional)" />
+                <span asp-validation-for="AgrupadorPaiId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Nivel" class="form-label">Nível</label>
+                <input asp-for="Nivel" type="number" class="form-control" min="0" placeholder="Informe o nível" />
+                <span asp-validation-for="Nivel" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="bi bi-save me-1"></i>Salvar
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-x-lg me-1"></i>Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+

@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Gerenciador_de_Produtos.Models;
+﻿// Models/AgrupadorComponente.cs
+using System.ComponentModel.DataAnnotations;
 
 namespace Gerenciador_de_Produtos.Models
 {
@@ -10,11 +10,11 @@ namespace Gerenciador_de_Produtos.Models
 
         [Required]
         public int AgrupadorId { get; set; }
-        public Agrupador Agrupador { get; set; }
+        public Agrupador? Agrupador { get; set; }
 
         [Required]
         public int ComponenteId { get; set; }
-        public Componente Componente { get; set; }
+        public Componente? Componente { get; set; }
 
         public float? Quantidade { get; set; }
         public float? Comprimento { get; set; }

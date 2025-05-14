@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,17 +19,31 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Componentes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Componentes.ToListAsync());
+            var lista = await _context.Componentes
+                // inclui as variáveis deste componente
+                .Include(c => c.VariaveisComponentes)
+                // inclui os vínculos com agrupadores e depois o próprio agrupador
+                .Include(c => c.AgrupadorComponentes)
+                    .ThenInclude(ac => ac.Agrupador)
+                .ToListAsync();
+
+            return View(lista);
         }
 
         // GET: Componentes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
             var componente = await _context.Componentes
+                .Include(c => c.VariaveisComponentes)
+                .Include(c => c.AgrupadorComponentes)
+                    .ThenInclude(ac => ac.Agrupador)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (componente == null) return NotFound();
+
+            if (componente == null)
+                return NotFound();
 
             return View(componente);
         }
@@ -45,8 +57,7 @@ namespace Gerenciador_de_Produtos.Controllers
         // POST: Componentes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Nome,Descricao,Nivel")] Componente componente)
+        public async Task<IActionResult> Create([Bind("Nome,Descricao,Nivel")] Componente componente)
         {
             if (ModelState.IsValid)
             {
@@ -60,21 +71,23 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Componentes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
             var componente = await _context.Componentes.FindAsync(id);
-            if (componente == null) return NotFound();
+            if (componente == null)
+                return NotFound();
+
             return View(componente);
         }
 
         // POST: Componentes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("Id,Nome,Descricao,Nivel")] Componente componente)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Descricao,Nivel")] Componente componente)
         {
-            if (id != componente.Id) return NotFound();
+            if (id != componente.Id)
+                return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -85,8 +98,10 @@ namespace Gerenciador_de_Produtos.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ComponenteExists(componente.Id)) return NotFound();
-                    else throw;
+                    if (!ComponenteExists(componente.Id))
+                        return NotFound();
+                    else
+                        throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -96,11 +111,13 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Componentes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
             var componente = await _context.Componentes
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (componente == null) return NotFound();
+            if (componente == null)
+                return NotFound();
 
             return View(componente);
         }

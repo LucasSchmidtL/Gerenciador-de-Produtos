@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿// Models/Componente.cs
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gerenciador_de_Produtos.Models
@@ -10,22 +11,22 @@ namespace Gerenciador_de_Produtos.Models
         public Componente()
         {
             VariaveisComponentes = new List<VariavelComponente>();
+            AgrupadorComponentes = new List<AgrupadorComponente>();
         }
 
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        public string Nome { get; set; }  // Nome do componente
+        [Required, MaxLength(100)]
+        public string Nome { get; set; } = null!;
 
-        [Required]
-        [MaxLength(200)]
-        public string Descricao { get; set; }  // Novo campo de descrição
+        [Required, MaxLength(200)]
+        public string Descricao { get; set; } = null!;
 
         public int? Nivel { get; set; }
 
-        // Relacionamentos
         public ICollection<VariavelComponente> VariaveisComponentes { get; set; }
+
+        public ICollection<AgrupadorComponente> AgrupadorComponentes { get; set; }
     }
 }

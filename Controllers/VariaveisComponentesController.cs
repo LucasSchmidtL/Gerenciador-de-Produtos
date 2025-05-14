@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,137 +20,133 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: VariaveisComponentes
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.VariaveisComponentes.Include(v => v.Componente);
-            return View(await applicationDbContext.ToListAsync());
+            var lista = await _context.VariaveisComponentes
+                                      // inclui o Componente
+                                      .Include(v => v.Componente)
+                                          // opcional: já carregar os agrupadores do componente
+                                          .ThenInclude(c => c.AgrupadorComponentes)
+                                              .ThenInclude(ac => ac.Agrupador)
+                                      .ToListAsync();
+            return View(lista);
         }
 
         // GET: VariaveisComponentes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var variavelComponente = await _context.VariaveisComponentes
-                .Include(v => v.Componente)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (variavelComponente == null)
-            {
-                return NotFound();
-            }
+            var vm = await _context.VariaveisComponentes
+                                   .Include(v => v.Componente)
+                                   .FirstOrDefaultAsync(v => v.Id == id);
+            if (vm == null) return NotFound();
 
-            return View(variavelComponente);
+            return View(vm);
         }
 
         // GET: VariaveisComponentes/Create
         public IActionResult Create()
         {
-            ViewData["ComponenteId"] = new SelectList(_context.Componentes, "Id", "Id");
+            ViewBag.ComponenteId = new SelectList(
+                _context.Componentes.OrderBy(c => c.Nome),
+                "Id",
+                "Nome"
+            );
             return View();
         }
 
         // POST: VariaveisComponentes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Descricao,Tipo,ComponenteId,Status,Valor")] VariavelComponente variavelComponente)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(VariavelComponente vm)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(variavelComponente);
+                _context.Add(vm);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ComponenteId"] = new SelectList(_context.Componentes, "Id", "Id", variavelComponente.ComponenteId);
-            return View(variavelComponente);
+
+            // Em caso de erro, recarrega o dropdown
+            ViewBag.ComponenteId = new SelectList(
+                _context.Componentes.OrderBy(c => c.Nome),
+                "Id",
+                "Nome",
+                vm.ComponenteId
+            );
+            return View(vm);
         }
 
         // GET: VariaveisComponentes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var variavelComponente = await _context.VariaveisComponentes.FindAsync(id);
-            if (variavelComponente == null)
-            {
-                return NotFound();
-            }
-            ViewData["ComponenteId"] = new SelectList(_context.Componentes, "Id", "Id", variavelComponente.ComponenteId);
-            return View(variavelComponente);
+            var vm = await _context.VariaveisComponentes.FindAsync(id);
+            if (vm == null) return NotFound();
+
+            ViewBag.ComponenteId = new SelectList(
+                _context.Componentes.OrderBy(c => c.Nome),
+                "Id",
+                "Nome",
+                vm.ComponenteId
+            );
+            return View(vm);
         }
 
         // POST: VariaveisComponentes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Descricao,Tipo,ComponenteId,Status,Valor")] VariavelComponente variavelComponente)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, VariavelComponente vm)
         {
-            if (id != variavelComponente.Id)
-            {
-                return NotFound();
-            }
+            if (id != vm.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(variavelComponente);
+                    _context.Update(vm);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VariavelComponenteExists(variavelComponente.Id))
-                    {
+                    if (!_context.VariaveisComponentes.Any(e => e.Id == vm.Id))
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ComponenteId"] = new SelectList(_context.Componentes, "Id", "Id", variavelComponente.ComponenteId);
-            return View(variavelComponente);
+
+            ViewBag.ComponenteId = new SelectList(
+                _context.Componentes.OrderBy(c => c.Nome),
+                "Id",
+                "Nome",
+                vm.ComponenteId
+            );
+            return View(vm);
         }
 
         // GET: VariaveisComponentes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var variavelComponente = await _context.VariaveisComponentes
-                .Include(v => v.Componente)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (variavelComponente == null)
-            {
-                return NotFound();
-            }
+            var vm = await _context.VariaveisComponentes
+                                   .Include(v => v.Componente)
+                                   .FirstOrDefaultAsync(v => v.Id == id);
+            if (vm == null) return NotFound();
 
-            return View(variavelComponente);
+            return View(vm);
         }
 
         // POST: VariaveisComponentes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var variavelComponente = await _context.VariaveisComponentes.FindAsync(id);
-            if (variavelComponente != null)
+            var vm = await _context.VariaveisComponentes.FindAsync(id);
+            if (vm != null)
             {
-                _context.VariaveisComponentes.Remove(variavelComponente);
+                _context.VariaveisComponentes.Remove(vm);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

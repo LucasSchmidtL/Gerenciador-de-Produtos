@@ -4,7 +4,7 @@
     ViewData["Title"] = "Componentes";
 }
 
-<!-- Estilos de rotação do ícone (pode mover para site.css) -->
+<!-- Estilos de rotação do ícone (mova para site.css se preferir) -->
 <style>
     .toggle-icon {
         transition: transform 0.3s ease;
@@ -17,7 +17,6 @@
 
 <div class="mb-4">
     <h3 class="fw-bold mb-3">@ViewData["Title"]</h3>
-
     <div class="row g-2">
         <div class="col-auto">
             <a asp-action="Create" class="btn btn-primary rounded-pill py-0 px-3">
@@ -25,81 +24,141 @@
             </a>
         </div>
         <div class="col">
-            <input id="searchInput"
-                   class="form-control"
-                   placeholder="Buscar Nome, Descrição ou Nível..." />
+            <input id="searchInput" class="form-control" placeholder="Buscar Nome, Descrição ou Nível..." />
         </div>
     </div>
 </div>
 
-@foreach (var item in Model)
-{
-    <div class="card mb-4" data-search="@item.Nome @item.Descricao @item.Nivel">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <!-- toggle à esquerda -->
-                <button class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-2 toggle-btn"
+<div class="accordion" id="componentesAccordion">
+    @foreach (var comp in Model)
+    {
+        var headingId = $"headingComp{comp.Id}";
+        var collapseId = $"collapseComp{comp.Id}";
+        <div class="accordion-item mb-3" data-search="@comp.Nome @comp.Descricao @(comp.Nivel?.ToString() ?? "")">
+            <h2 class="accordion-header" id="@headingId">
+                <button class="accordion-button collapsed d-flex justify-content-between"
+                        type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target="#details_@item.Id"
+                        data-bs-target="#@collapseId"
                         aria-expanded="false"
-                        aria-controls="details_@item.Id">
-                    <i class="fas fa-chevron-down toggle-icon"></i>
+                        aria-controls="@collapseId">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-chevron-down toggle-icon me-2"></i>
+                        <strong>@comp.Nome</strong>
+                        <small class="text-muted ms-2">(@comp.Descricao)</small>
+                    </div>
+                    <span class="badge bg-secondary">Nível @comp.Nivel</span>
                 </button>
+            </h2>
+            <div id="@collapseId"
+                 class="accordion-collapse collapse"
+                 aria-labelledby="@headingId"
+                 data-bs-parent="#componentesAccordion">
+                <div class="accordion-body bg-light p-4">
+                    <!-- Seção de Variáveis -->
+                    <div class="mb-4">
+                        <h6 class="mb-2">Variáveis</h6>
+                        <a asp-controller="VariaveisComponentes"
+                           asp-action="Create"
+                           asp-route-componenteId="@comp.Id"
+                           class="btn btn-sm btn-outline-success rounded-pill py-0 px-2 mb-2">
+                            <i class="bi bi-plus-lg me-1"></i>Adicionar Variável
+                        </a>
+                        @if (comp.VariaveisComponentes?.Any() == true)
+                        {
+                            <ul class="list-group">
+                                @foreach (var v in comp.VariaveisComponentes)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <strong>@v.Nome</strong>
+                                            <small class="text-muted ms-2">(@v.Tipo)</small>
+                                        </span>
+                                        <div>
+                                            <a asp-controller="VariaveisComponentes"
+                                               asp-action="Edit"
+                                               asp-route-id="@v.Id"
+                                               class="btn btn-sm btn-outline-secondary me-1">
+                                                Editar
+                                            </a>
+                                            <a asp-controller="VariaveisComponentes"
+                                               asp-action="Details"
+                                               asp-route-id="@v.Id"
+                                               class="btn btn-sm btn-outline-info">
+                                                Detalhes
+                                            </a>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0">Nenhuma variável cadastrada.</p>
+                        }
+                    </div>
 
-                <div class="flex-grow-1">
-                    <strong>Nome:</strong> @item.Nome (@item.Id)
-                    <br />
-                    <small class="text-muted">Nível: @item.Nivel</small>
-                </div>
-
-                <div>
-                    <a asp-action="Details" asp-route-id="@item.Id"
-                       class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
-                        <i class="bi bi-eye me-1"></i>Detalhes
-                    </a>
-                    <a asp-action="Edit" asp-route-id="@item.Id"
-                       class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
-                        <i class="bi bi-pencil me-1"></i>Editar
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@item.Id"
-                       class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2">
-                        <i class="bi bi-trash me-1"></i>Excluir
-                    </a>
+                    <!-- Seção de Agrupadores -->
+                    <div>
+                        <h6 class="mb-2">Agrupadores</h6>
+                        <a asp-controller="AgrupadoresComponentes"
+                           asp-action="Create"
+                           asp-route-componenteId="@comp.Id"
+                           class="btn btn-sm btn-outline-warning rounded-pill py-0 px-2 mb-2">
+                            <i class="bi bi-plus-lg me-1"></i>Adicionar Agrupador
+                        </a>
+                        @if (comp.AgrupadorComponentes?.Any() == true)
+                        {
+                            <ul class="list-group">
+                                @foreach (var ap in comp.AgrupadorComponentes)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        @ap.Agrupador.Nome
+                                        <div>
+                                            <a asp-controller="AgrupadoresComponentes"
+                                               asp-action="Edit"
+                                               asp-route-id="@ap.Id"
+                                               class="btn btn-sm btn-outline-secondary me-1">
+                                                Editar
+                                            </a>
+                                            <a asp-controller="AgrupadoresComponentes"
+                                               asp-action="Details"
+                                               asp-route-id="@ap.Id"
+                                               class="btn btn-sm btn-outline-info">
+                                                Detalhes
+                                            </a>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0">Nenhum agrupador vinculado.</p>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="collapse" id="details_@item.Id">
-            <div class="card-body">
-                <div class="row mb-2">
-                    <div class="col-sm-12"><strong>Descrição:</strong> @item.Descricao</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4"><strong>Nível:</strong> @item.Nivel</div>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+    }
+</div>
 
 @section Scripts {
     <script>
-        // filtro de busca em tempo real
-        document
-          .getElementById('searchInput')
-          .addEventListener('keyup', function () {
-            var filtro = this.value.toLowerCase();
-            document.querySelectorAll('[data-search]').forEach(function (card) {
-              var texto = card.getAttribute('data-search').toLowerCase();
-              card.style.display = texto.includes(filtro) ? '' : 'none';
+        // filtro em tempo real
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const filtro = this.value.toLowerCase();
+            document.querySelectorAll('[data-search]').forEach(card => {
+                card.style.display = card.getAttribute('data-search')
+                                             .toLowerCase()
+                                             .includes(filtro)
+                                 ? '' : 'none';
             });
-          });
-
-        // initialize all toggles as collapsed
-        document.querySelectorAll('.toggle-btn').forEach(function (btn) {
-            btn.classList.add('toggle-collapsed');
-            btn.addEventListener('click', function () {
-                btn.classList.toggle('toggle-collapsed');
+        });
+        // mantém toggles fechados e anima ícone
+        document.querySelectorAll('.accordion-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.querySelector('.toggle-icon').classList.toggle('toggle-collapsed');
             });
         });
     </script>

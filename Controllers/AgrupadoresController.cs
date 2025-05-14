@@ -23,7 +23,11 @@ namespace Gerenciador_de_Produtos.Controllers
             var agrupadores = await _context.Agrupadores
                 .Include(a => a.AgrupadorItensERP)
                     .ThenInclude(ai => ai.ItemERP)
-                .Include(a => a.VariaveisAgrupadores)    // carrega as variáveis
+                .Include(a => a.VariaveisAgrupadores)
+                .Include(a => a.ProdutoAgrupadores)
+                    .ThenInclude(pa => pa.Produto)
+                .Include(a => a.AgrupadorComponentes)
+                    .ThenInclude(ac => ac.Componente)
                 .ToListAsync();
 
             return View(agrupadores);
@@ -37,7 +41,11 @@ namespace Gerenciador_de_Produtos.Controllers
             var agrupador = await _context.Agrupadores
                 .Include(a => a.AgrupadorItensERP)
                     .ThenInclude(ai => ai.ItemERP)
-                .Include(a => a.VariaveisAgrupadores)    // carrega as variáveis
+                .Include(a => a.VariaveisAgrupadores)
+                .Include(a => a.ProdutoAgrupadores)
+                    .ThenInclude(pa => pa.Produto)
+                .Include(a => a.AgrupadorComponentes)
+                    .ThenInclude(ac => ac.Componente)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (agrupador == null) return NotFound();
@@ -49,8 +57,7 @@ namespace Gerenciador_de_Produtos.Controllers
         {
             ViewData["ItemERPs"] = new MultiSelectList(
                 _context.ItensERP.OrderBy(i => i.ERP),
-                "Id",
-                "ERP"
+                "Id", "ERP"
             );
             return View();
         }
@@ -63,9 +70,7 @@ namespace Gerenciador_de_Produtos.Controllers
             {
                 ViewData["ItemERPs"] = new MultiSelectList(
                     _context.ItensERP.OrderBy(i => i.ERP),
-                    "Id",
-                    "ERP",
-                    model.ItemErpIds
+                    "Id", "ERP", model.ItemErpIds
                 );
                 return View(model);
             }
@@ -73,6 +78,7 @@ namespace Gerenciador_de_Produtos.Controllers
             _context.Agrupadores.Add(model);
             await _context.SaveChangesAsync();
 
+            // vínculos ERP
             if (model.ItemErpIds?.Any() == true)
             {
                 foreach (var itemId in model.ItemErpIds)
@@ -96,7 +102,9 @@ namespace Gerenciador_de_Produtos.Controllers
 
             var agrupador = await _context.Agrupadores
                 .Include(a => a.AgrupadorItensERP)
-                .Include(a => a.VariaveisAgrupadores)    // carrega as variáveis para futuros usos
+                .Include(a => a.VariaveisAgrupadores)
+                .Include(a => a.ProdutoAgrupadores)
+                .Include(a => a.AgrupadorComponentes)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (agrupador == null) return NotFound();
@@ -107,9 +115,7 @@ namespace Gerenciador_de_Produtos.Controllers
 
             ViewData["ItemERPs"] = new MultiSelectList(
                 _context.ItensERP.OrderBy(i => i.ERP),
-                "Id",
-                "ERP",
-                agrupador.ItemErpIds
+                "Id", "ERP", agrupador.ItemErpIds
             );
             return View(agrupador);
         }
@@ -124,9 +130,7 @@ namespace Gerenciador_de_Produtos.Controllers
             {
                 ViewData["ItemERPs"] = new MultiSelectList(
                     _context.ItensERP.OrderBy(i => i.ERP),
-                    "Id",
-                    "ERP",
-                    model.ItemErpIds
+                    "Id", "ERP", model.ItemErpIds
                 );
                 return View(model);
             }
@@ -135,9 +139,9 @@ namespace Gerenciador_de_Produtos.Controllers
             await _context.SaveChangesAsync();
 
             // sincroniza vínculos ERP
-            var existentes = _context.AgrupadorItemERPs
+            var existentesErp = _context.AgrupadorItemERPs
                 .Where(x => x.AgrupadorId == id);
-            _context.AgrupadorItemERPs.RemoveRange(existentes);
+            _context.AgrupadorItemERPs.RemoveRange(existentesErp);
             if (model.ItemErpIds?.Any() == true)
             {
                 foreach (var itemId in model.ItemErpIds)
@@ -149,8 +153,8 @@ namespace Gerenciador_de_Produtos.Controllers
                     });
                 }
             }
-            await _context.SaveChangesAsync();
 
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

@@ -1,57 +1,70 @@
 ﻿@model Gerenciador_de_Produtos.Models.VariavelComponente
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nova Variável de Componente";
 }
 
-<h1>Create</h1>
+<h1 class="display-4 text-center mb-5 text-primary">
+    <i class="bi bi-sliders me-2"></i>@ViewData["Title"]
+</h1>
 
-<h4>VariavelComponente</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="row justify-content-center">
+    <div class="col-md-6">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nome" class="control-label"></label>
+            @Html.AntiForgeryToken()
+
+            <!-- Mostra todos os erros de ModelState -->
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Nome" class="form-label">Nome</label>
                 <input asp-for="Nome" class="form-control" />
                 <span asp-validation-for="Nome" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Descricao" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="Descricao" class="form-label">Descrição</label>
                 <input asp-for="Descricao" class="form-control" />
                 <span asp-validation-for="Descricao" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Tipo" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="Tipo" class="form-label">Tipo</label>
                 <input asp-for="Tipo" class="form-control" />
                 <span asp-validation-for="Tipo" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ComponenteId" class="control-label"></label>
-                <select asp-for="ComponenteId" class ="form-control" asp-items="ViewBag.ComponenteId"></select>
+
+            <div class="mb-3">
+                <label asp-for="ComponenteId" class="form-label">Componente</label>
+                <select asp-for="ComponenteId"
+                        class="form-select"
+                        asp-items="ViewBag.ComponenteId">
+                    <option value="">-- selecione o componente --</option>
+                </select>
+                <span asp-validation-for="ComponenteId" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Status" /> @Html.DisplayNameFor(model => model.Status)
-                </label>
+
+            <div class="form-check mb-3">
+                <input asp-for="Status" class="form-check-input" />
+                <label asp-for="Status" class="form-check-label">Ativo?</label>
             </div>
-            <div class="form-group">
-                <label asp-for="Valor" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="Valor" class="form-label">Valor</label>
                 <input asp-for="Valor" class="form-control" />
                 <span asp-validation-for="Valor" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <div class="d-flex">
+                <button type="submit" class="btn btn-primary me-2">Salvar</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
