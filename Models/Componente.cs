@@ -12,6 +12,7 @@ namespace Gerenciador_de_Produtos.Models
         {
             VariaveisComponentes = new List<VariavelComponente>();
             AgrupadorComponentes = new List<AgrupadorComponente>();
+            ComponenteItensERP = new List<ComponenteItemERP>();   // ← Adicionado
         }
 
         [Key]
@@ -26,7 +27,7 @@ namespace Gerenciador_de_Produtos.Models
         public int? Nivel { get; set; }
 
         public ICollection<VariavelComponente> VariaveisComponentes { get; set; }
-
         public ICollection<AgrupadorComponente> AgrupadorComponentes { get; set; }
+        public ICollection<ComponenteItemERP> ComponenteItensERP { get; set; }  // ← Adicionado
     }
 }

@@ -10,11 +10,11 @@ namespace Gerenciador_de_Produtos.Models
 
         [Required]
         public int ComponenteId { get; set; }
-        public Componente Componente { get; set; }
+        public Componente? Componente { get; set; }    
 
         [Required]
         public int ItemERPId { get; set; }
-        public ItemERP ItemERP { get; set; }
+        public ItemERP? ItemERP { get; set; }         
 
         public float? Comprimento { get; set; }
         public float? Profundidade { get; set; }
@@ -22,4 +22,5 @@ namespace Gerenciador_de_Produtos.Models
         public float? Quantidade { get; set; }
         public bool Status { get; set; }
     }
+
 }

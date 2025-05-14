@@ -1,27 +1,140 @@
-﻿<!-- Details.cshtml -->
-@model Gerenciador_de_Produtos.Models.Componente
+﻿@model Gerenciador_de_Produtos.Models.Componente
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Componente";
 }
 
-<h1>Details</h1>
+<h1 class="mb-4">@ViewData["Title"]</h1>
 
-<div>
-    <h4>Componente</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Nome)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Nome)</dd>
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Informações Gerais</h5>
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Nome)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.Nome)</dd>
 
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Descricao)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Descricao)</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Descricao)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.Descricao)</dd>
 
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Nivel)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.Nivel)</dd>
-    </dl>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Nivel)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.Nivel)</dd>
+        </dl>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Variáveis</strong>
+        <a asp-controller="VariaveisComponentes"
+           asp-action="Create"
+           asp-route-componenteId="@Model.Id"
+           class="btn btn-sm btn-outline-success">
+            <i class="bi bi-plus-lg me-1"></i>Nova Variável
+        </a>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.VariaveisComponentes?.Any() == true)
+        {
+            <ul class="list-group list-group-flush">
+                @foreach (var v in Model.VariaveisComponentes)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>@v.Nome</strong>
+                            <small class="text-muted ms-2">(@v.Tipo)</small>
+                        </div>
+                        <div>
+                            <a asp-controller="VariaveisComponentes" asp-action="Details" asp-route-id="@v.Id"
+                               class="btn btn-sm btn-outline-info me-1">Detalhes</a>
+                            <a asp-controller="VariaveisComponentes" asp-action="Edit" asp-route-id="@v.Id"
+                               class="btn btn-sm btn-outline-secondary">Editar</a>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted p-3 mb-0">Nenhuma variável cadastrada.</p>
+        }
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Agrupadores</strong>
+        <a asp-controller="AgrupadoresComponentes"
+           asp-action="Create"
+           asp-route-componenteId="@Model.Id"
+           class="btn btn-sm btn-outline-warning">
+            <i class="bi bi-plus-lg me-1"></i>Novo Vínculo
+        </a>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.AgrupadorComponentes?.Any() == true)
+        {
+            <ul class="list-group list-group-flush">
+                @foreach (var ac in Model.AgrupadorComponentes)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>@ac.Agrupador.Nome</span>
+                        <div>
+                            <a asp-controller="AgrupadoresComponentes" asp-action="Details" asp-route-id="@ac.Id"
+                               class="btn btn-sm btn-outline-info me-1">Detalhes</a>
+                            <a asp-controller="AgrupadoresComponentes" asp-action="Edit" asp-route-id="@ac.Id"
+                               class="btn btn-sm btn-outline-secondary">Editar</a>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted p-3 mb-0">Nenhum agrupador vinculado.</p>
+        }
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Itens ERP</strong>
+        <a asp-controller="ComponentesItensERP"
+           asp-action="Create"
+           asp-route-componenteId="@Model.Id"
+           class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-plus-lg me-1"></i>Vincular Item ERP
+        </a>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.ComponenteItensERP?.Any() == true)
+        {
+            <ul class="list-group list-group-flush">
+                @foreach (var ci in Model.ComponenteItensERP)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>@ci.ItemERP.ERP</span>
+                        <div>
+                            <a asp-controller="ComponentesItensERP" asp-action="Details" asp-route-id="@ci.Id"
+                               class="btn btn-sm btn-outline-info me-1">Detalhes</a>
+                            <a asp-controller="ComponentesItensERP" asp-action="Edit" asp-route-id="@ci.Id"
+                               class="btn btn-sm btn-outline-secondary">Editar</a>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted p-3 mb-0">Nenhum Item ERP vinculado.</p>
+        }
+    </div>
+</div>
+
+<div class="d-flex">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary me-2">
+        <i class="bi bi-pencil me-1"></i>Editar Componente
+    </a>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Voltar à Lista
+    </a>
 </div>

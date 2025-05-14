@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// Models/ItemERP.cs
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Gerenciador_de_Produtos.Models
 {
@@ -36,5 +39,8 @@ namespace Gerenciador_de_Produtos.Models
         // Relacionamentos com outras tabelas
         public ICollection<AgrupadorItemERP> AgrupadorItensERP { get; set; } = new List<AgrupadorItemERP>();
         public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+
+        // **Adicione isto para Componente ⇄ ItemERP via ComponenteItemERP**
+        public ICollection<ComponenteItemERP> ComponenteItemERPs { get; set; } = new List<ComponenteItemERP>();
     }
 }

@@ -25,6 +25,9 @@ namespace Gerenciador_de_Produtos.Controllers
                 // inclui os vínculos com agrupadores e depois o próprio agrupador
                 .Include(c => c.AgrupadorComponentes)
                     .ThenInclude(ac => ac.Agrupador)
+                // inclui os vínculos com ItemERP e depois o próprio ItemERP
+                .Include(c => c.ComponenteItensERP)
+                    .ThenInclude(ci => ci.ItemERP)
                 .ToListAsync();
 
             return View(lista);
@@ -40,6 +43,8 @@ namespace Gerenciador_de_Produtos.Controllers
                 .Include(c => c.VariaveisComponentes)
                 .Include(c => c.AgrupadorComponentes)
                     .ThenInclude(ac => ac.Agrupador)
+                .Include(c => c.ComponenteItensERP)
+                    .ThenInclude(ci => ci.ItemERP)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (componente == null)

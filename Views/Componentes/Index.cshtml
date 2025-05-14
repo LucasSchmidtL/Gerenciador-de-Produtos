@@ -4,7 +4,7 @@
     ViewData["Title"] = "Componentes";
 }
 
-<!-- Estilos de rotação do ícone (mova para site.css se preferir) -->
+<!-- Estilos de rotação do ícone (pode mover para site.css) -->
 <style>
     .toggle-icon {
         transition: transform 0.3s ease;
@@ -29,136 +29,149 @@
     </div>
 </div>
 
-<div class="accordion" id="componentesAccordion">
-    @foreach (var comp in Model)
-    {
-        var headingId = $"headingComp{comp.Id}";
-        var collapseId = $"collapseComp{comp.Id}";
-        <div class="accordion-item mb-3" data-search="@comp.Nome @comp.Descricao @(comp.Nivel?.ToString() ?? "")">
-            <h2 class="accordion-header" id="@headingId">
-                <button class="accordion-button collapsed d-flex justify-content-between"
-                        type="button"
+@foreach (var comp in Model)
+{
+    <div class="card mb-4" data-search="@comp.Nome @comp.Descricao @(comp.Nivel?.ToString() ?? "")">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- toggle à esquerda -->
+                <button class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-2 toggle-btn"
                         data-bs-toggle="collapse"
-                        data-bs-target="#@collapseId"
+                        data-bs-target="#details_@comp.Id"
                         aria-expanded="false"
-                        aria-controls="@collapseId">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-chevron-down toggle-icon me-2"></i>
-                        <strong>@comp.Nome</strong>
-                        <small class="text-muted ms-2">(@comp.Descricao)</small>
-                    </div>
-                    <span class="badge bg-secondary">Nível @comp.Nivel</span>
+                        aria-controls="details_@comp.Id">
+                    <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
-            </h2>
-            <div id="@collapseId"
-                 class="accordion-collapse collapse"
-                 aria-labelledby="@headingId"
-                 data-bs-parent="#componentesAccordion">
-                <div class="accordion-body bg-light p-4">
-                    <!-- Seção de Variáveis -->
-                    <div class="mb-4">
-                        <h6 class="mb-2">Variáveis</h6>
-                        <a asp-controller="VariaveisComponentes"
-                           asp-action="Create"
-                           asp-route-componenteId="@comp.Id"
-                           class="btn btn-sm btn-outline-success rounded-pill py-0 px-2 mb-2">
-                            <i class="bi bi-plus-lg me-1"></i>Adicionar Variável
-                        </a>
-                        @if (comp.VariaveisComponentes?.Any() == true)
-                        {
-                            <ul class="list-group">
-                                @foreach (var v in comp.VariaveisComponentes)
-                                {
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>
-                                            <strong>@v.Nome</strong>
-                                            <small class="text-muted ms-2">(@v.Tipo)</small>
-                                        </span>
-                                        <div>
-                                            <a asp-controller="VariaveisComponentes"
-                                               asp-action="Edit"
-                                               asp-route-id="@v.Id"
-                                               class="btn btn-sm btn-outline-secondary me-1">
-                                                Editar
-                                            </a>
-                                            <a asp-controller="VariaveisComponentes"
-                                               asp-action="Details"
-                                               asp-route-id="@v.Id"
-                                               class="btn btn-sm btn-outline-info">
-                                                Detalhes
-                                            </a>
-                                        </div>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p class="text-muted mb-0">Nenhuma variável cadastrada.</p>
-                        }
-                    </div>
 
-                    <!-- Seção de Agrupadores -->
-                    <div>
-                        <h6 class="mb-2">Agrupadores</h6>
-                        <a asp-controller="AgrupadoresComponentes"
-                           asp-action="Create"
-                           asp-route-componenteId="@comp.Id"
-                           class="btn btn-sm btn-outline-warning rounded-pill py-0 px-2 mb-2">
-                            <i class="bi bi-plus-lg me-1"></i>Adicionar Agrupador
-                        </a>
-                        @if (comp.AgrupadorComponentes?.Any() == true)
-                        {
-                            <ul class="list-group">
-                                @foreach (var ap in comp.AgrupadorComponentes)
-                                {
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        @ap.Agrupador.Nome
-                                        <div>
-                                            <a asp-controller="AgrupadoresComponentes"
-                                               asp-action="Edit"
-                                               asp-route-id="@ap.Id"
-                                               class="btn btn-sm btn-outline-secondary me-1">
-                                                Editar
-                                            </a>
-                                            <a asp-controller="AgrupadoresComponentes"
-                                               asp-action="Details"
-                                               asp-route-id="@ap.Id"
-                                               class="btn btn-sm btn-outline-info">
-                                                Detalhes
-                                            </a>
-                                        </div>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p class="text-muted mb-0">Nenhum agrupador vinculado.</p>
-                        }
-                    </div>
+                <div class="flex-grow-1">
+                    <strong>@comp.Nome</strong>
+                    <small class="text-muted ms-2">(@comp.Descricao)</small>
+                </div>
+
+                <div>
+                    <span class="badge bg-secondary me-3">Nível @comp.Nivel</span>
+                    <a asp-action="Details" asp-route-id="@comp.Id"
+                       class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
+                        <i class="bi bi-eye me-1"></i>Detalhes
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@comp.Id"
+                       class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
+                        <i class="bi bi-pencil me-1"></i>Editar
+                    </a>
+                    <form asp-action="Delete" asp-route-id="@comp.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2"
+                                onclick="return confirm('Tem certeza que deseja excluir este componente?');">
+                            <i class="bi bi-trash me-1"></i>Excluir
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-    }
-</div>
+
+        <div class="collapse" id="details_@comp.Id">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-6"><strong>Descrição:</strong> @comp.Descricao</div>
+                    <div class="col-sm-6"><strong>Nível:</strong> @comp.Nivel</div>
+                </div>
+
+                <div class="bg-light p-3 rounded mb-4">
+                    <h6 class="mb-2">Variáveis</h6>
+                    <a asp-controller="VariaveisComponentes"
+                       asp-action="Create"
+                       asp-route-componenteId="@comp.Id"
+                       class="btn btn-sm btn-outline-success mb-2 rounded-pill py-0 px-2">
+                        <i class="bi bi-plus-lg me-1"></i>Adicionar Variável
+                    </a>
+                    @if (comp.VariaveisComponentes?.Any() == true)
+                    {
+                        <ul class="list-group">
+                            @foreach (var v in comp.VariaveisComponentes)
+                            {
+                                <li class="list-group-item">
+                                    @v.Nome: <em>@(v.Valor ?? "(sem valor)")</em>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Nenhuma variável cadastrada.</p>
+                    }
+                </div>
+
+                <div class="bg-light p-3 rounded mb-4">
+                    <h6 class="mb-2">Agrupadores</h6>
+                    <a asp-controller="AgrupadoresComponentes"
+                       asp-action="Create"
+                       asp-route-componenteId="@comp.Id"
+                       class="btn btn-sm btn-outline-warning mb-2 rounded-pill py-0 px-2">
+                        <i class="bi bi-plus-lg me-1"></i>Adicionar Agrupador
+                    </a>
+                    @if (comp.AgrupadorComponentes?.Any() == true)
+                    {
+                        <ul class="list-group">
+                            @foreach (var ac in comp.AgrupadorComponentes)
+                            {
+                                <li class="list-group-item">
+                                    @ac.Agrupador.Nome
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Nenhum agrupador vinculado.</p>
+                    }
+                </div>
+
+                <div class="bg-light p-3 rounded">
+                    <h6 class="mb-2">Itens ERP</h6>
+                    <a asp-controller="ComponentesItensERP"
+                       asp-action="Create"
+                       asp-route-componenteId="@comp.Id"
+                       class="btn btn-sm btn-outline-primary mb-2 rounded-pill py-0 px-2">
+                        <i class="bi bi-plus-lg me-1"></i>Adicionar Item ERP
+                    </a>
+                    @if (comp.ComponenteItensERP?.Any() == true)
+                    {
+                        <ul class="list-group">
+                            @foreach (var ci in comp.ComponenteItensERP)
+                            {
+                                <li class="list-group-item">
+                                    @ci.ItemERP.ERP
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Nenhum Item ERP vinculado.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @section Scripts {
     <script>
         // filtro em tempo real
         document.getElementById('searchInput').addEventListener('input', function() {
-            const filtro = this.value.toLowerCase();
-            document.querySelectorAll('[data-search]').forEach(card => {
-                card.style.display = card.getAttribute('data-search')
-                                             .toLowerCase()
-                                             .includes(filtro)
-                                 ? '' : 'none';
+            var filtro = this.value.toLowerCase();
+            document.querySelectorAll('[data-search]').forEach(function(card) {
+                var texto = card.getAttribute('data-search').toLowerCase();
+                card.style.display = texto.includes(filtro) ? '' : 'none';
             });
         });
-        // mantém toggles fechados e anima ícone
-        document.querySelectorAll('.accordion-button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                btn.querySelector('.toggle-icon').classList.toggle('toggle-collapsed');
+
+        // initialize all toggles as collapsed
+        document.querySelectorAll('.toggle-btn').forEach(function(btn) {
+            btn.classList.add('toggle-collapsed');
+            btn.addEventListener('click', function() {
+                btn.classList.toggle('toggle-collapsed');
             });
         });
     </script>

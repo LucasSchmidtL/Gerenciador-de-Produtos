@@ -25,15 +25,15 @@ namespace Gerenciador_de_Produtos.Data
         public DbSet<Desenho> Desenhos { get; set; }
         public DbSet<Perfil> Perfis { get; set; }
         public DbSet<ItemERP> ItensERP { get; set; }
-        public DbSet<Gerenciador_de_Produtos.Models.Secao> Secao { get; set; } = default!;
-        public DbSet<Gerenciador_de_Produtos.Models.Equacao> Equacao { get; set; } = default!;
-        public DbSet<Gerenciador_de_Produtos.Models.Norma> Norma { get; set; } = default!;
+        public DbSet<Secao> Secao { get; set; }
+        public DbSet<Equacao> Equacao { get; set; }
+        public DbSet<Norma> Norma { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Mapeamento explícito do relacionamento entre Agrupador e ItemERP
+            // Já existente: Agrupador ⇄ ItemERP
             modelBuilder.Entity<AgrupadorItemERP>()
                 .HasOne(a => a.Agrupador)
                 .WithMany(g => g.AgrupadorItensERP)
@@ -43,6 +43,17 @@ namespace Gerenciador_de_Produtos.Data
                 .HasOne(a => a.ItemERP)
                 .WithMany(e => e.AgrupadorItensERP)
                 .HasForeignKey(a => a.ItemERPId);
+
+            // **Novo**: Componente ⇄ ItemERP via ComponenteItemERP
+            modelBuilder.Entity<ComponenteItemERP>()
+                .HasOne(ci => ci.Componente)
+                .WithMany(c => c.ComponenteItensERP)
+                .HasForeignKey(ci => ci.ComponenteId);
+
+            modelBuilder.Entity<ComponenteItemERP>()
+                .HasOne(ci => ci.ItemERP)
+                .WithMany(i => i.ComponenteItemERPs)
+                .HasForeignKey(ci => ci.ItemERPId);
         }
     }
 }
