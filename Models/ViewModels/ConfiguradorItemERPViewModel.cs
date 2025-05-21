@@ -6,12 +6,13 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
 {
     public class DesenhoLinhaViewModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }          // antes era int, agora long
         public string? Nome { get; set; }
         public string? Descricao { get; set; }
         public long? Revisao { get; set; }
         public DateTime? DataCriacao { get; set; }
     }
+
 
     public class RevisaoLinhaViewModel
     {
@@ -23,18 +24,17 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
 
     public class PerfilLinhaViewModel
     {
-        public int Id { get; set; }           // Novo: identifica o PerfilItemERP
+        public int Id { get; set; }           // identifica o PerfilItemERP
         public int PerfilId { get; set; }
         public string? Aco { get; set; }
         public List<RevisaoLinhaViewModel> Revisoes { get; set; } = new();
     }
 
-    // Novo: ViewModel para cada "item relacionado"
     public class RelatedItemViewModel
     {
         public int Id { get; set; }
         public int ItemERPId { get; set; }
-        public long DesenhoId { get; set; }    // Ajustado para long
+        public long DesenhoId { get; set; }
     }
 
     public class FamilyComponenteViewModel
@@ -49,6 +49,8 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public int AgrupadorId { get; set; }
     }
 
+    // *** A PARTIR DAQUI É O SEU VM ORIGINAL, COM AS PROPRIEDADES ABAIXO ADICIONADAS ***
+
     public class ConfiguradorItemERPViewModel
     {
         public int Id { get; set; }
@@ -56,8 +58,8 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public string? Descricao { get; set; }
         public string? TipoItem { get; set; }
 
-        public string? Acabamento { get; set; }       // "Com Acabamento" / "Sem Acabamento"
-        public int? Classificacao { get; set; }       // 1 = Simples, 2 = Composto
+        public string? Acabamento { get; set; }
+        public int? Classificacao { get; set; }
 
         public List<DesenhoLinhaViewModel> Desenhos { get; set; } = new();
         public List<SelectListItem> AllDesenhos { get; set; } = new();
@@ -77,7 +79,6 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
 
         public List<PerfilLinhaViewModel> PerfisSection { get; set; } = new();
         public List<SelectListItem> AllPerfisSection { get; set; } = new();
-        public List<SelectListItem> AllItensERP { get; set; } = new();
 
         public List<RelatedItemViewModel> ItensPintados { get; set; } = new();
         public List<RelatedItemViewModel> ItensGalvanizados { get; set; } = new();
@@ -86,5 +87,33 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public List<FamilyAgrupadorViewModel> AgrupadoresFamily { get; set; } = new();
 
         public List<SelectListItem> AllComponentes { get; set; } = new();
+
+
+        /// <summary>
+        /// Dropdown de ItensERP (Seção 05)
+        /// </summary>
+        public List<SelectListItem> AllItensERP { get; set; } = new();
+
+        /// <summary>
+        /// IDs selecionados de desenhos (se você fizer bind no POST de Create/Edit)
+        /// </summary>
+        public List<long> SelectedDesenhoIds { get; set; } = new();
+
+        /// <summary>
+        /// IDs selecionados de perfis (se você fizer bind no POST de Create/Edit)
+        /// </summary>
+        public List<int> SelectedPerfilIds { get; set; } = new();          
+
+        /// <summary>
+        /// Aço de cada perfil para pré-carregar o campo no form
+        /// </summary>
+        public List<PerfilAcoViewModel> PerfisAco { get; set; } = new();   
+    }
+
+    // Auxiliar para mapear o aço de cada perfil
+    public class PerfilAcoViewModel
+    {
+        public int PerfilId { get; set; }
+        public string? Aco { get; set; }
     }
 }

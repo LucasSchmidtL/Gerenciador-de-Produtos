@@ -189,15 +189,16 @@ namespace Gerenciador_de_Produtos.Controllers
 
             var item = await _context.ItensERP
                 .Include(i => i.AgrupadorItensERP)
-                .Include(i => i.ComponenteItemERPs)           // necessário para Seção 06
+                .Include(i => i.ComponenteItemERPs)
                 .Include(i => i.Desenhos)
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
-                .Include(i => i.ItensRelacionados)            // Seção 05
+                .Include(i => i.ItensRelacionados)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (item == null) return NotFound();
 
+            // monta VM
             var vm = new ConfiguradorItemERPViewModel
             {
                 Id = item.Id,
@@ -216,7 +217,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 // Seção 04
                 SelectedAgrupadorIds = item.AgrupadorItensERP.Select(ai => ai.AgrupadorId).ToList(),
 
-                // Seção 01
+                // Seção 01 — monta lista de linhas completas
                 Desenhos = item.Desenhos.Select(d => new DesenhoLinhaViewModel
                 {
                     Id = (int)d.DesenhoId,
@@ -235,7 +236,7 @@ namespace Gerenciador_de_Produtos.Controllers
                     DataRevisao = r.Data
                 }).ToList(),
 
-                // Seção 04
+                // Seção 04 — perfis
                 PerfisSection = item.PerfilItemERPs.Select(pi => new PerfilLinhaViewModel
                 {
                     Id = pi.Id,
@@ -250,7 +251,7 @@ namespace Gerenciador_de_Produtos.Controllers
                     }).ToList()
                 }).ToList(),
 
-                // Seção 05
+                // Seção 05 — relacionados
                 ItensPintados = item.ItensRelacionados
                     .Where(r => r.Tipo == RelacionamentoTipo.Pintado)
                     .Select(r => new RelatedItemViewModel
@@ -269,7 +270,7 @@ namespace Gerenciador_de_Produtos.Controllers
                         DesenhoId = r.DesenhoId
                     }).ToList(),
 
-                // Seção 06
+                // Seção 06 — famílias
                 ComponentesFamily = item.ComponenteItemERPs.Select(ci => new FamilyComponenteViewModel
                 {
                     Id = ci.Id,
@@ -302,17 +303,16 @@ namespace Gerenciador_de_Produtos.Controllers
             }
 
             var item = await _context.ItensERP
-                .Include(i => i.AgrupadorItensERP)
-                .Include(i => i.ComponenteItemERPs)
                 .Include(i => i.Desenhos)
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
                 .Include(i => i.ItensRelacionados)
+                .Include(i => i.ComponenteItemERPs)
+                .Include(i => i.AgrupadorItensERP)
                 .FirstOrDefaultAsync(i => i.Id == vm.Id);
-
             if (item == null) return NotFound();
 
-            // campos básicos
+            // 0) Campos básicos
             item.ERP = vm.ERP;
             item.Descricao = vm.Descricao;
             item.TipoItem = vm.TipoItem;
@@ -325,19 +325,68 @@ namespace Gerenciador_de_Produtos.Controllers
             item.PesoBrutoMetro = vm.PesoBrutoMetro;
             item.QuantidadeDobras = vm.QuantidadeDobras;
 
-            // Seção 04 (agrupadores originais, se ainda usar)
+            // 1) SEÇÃO 01 — Desenhos
+            await _context.Entry(item).Collection(i => i.Desenhos).LoadAsync();
+            item.Desenhos.Clear();
+            if (vm.Desenhos != null && vm.Desenhos.Any())
+            {
+                foreach (var dvm in vm.Desenhos)
+                {
+                    if (dvm.Id <= 0) continue;
+                    var desenho = await _context.Desenhos.FindAsync(dvm.Id);
+                    if (desenho != null)
+                        item.Desenhos.Add(desenho);
+                }
+            }
+
+            // 2) SEÇÃO 02 — Revisões do ItemERP
+            _context.RevisaoItemERPs.RemoveRange(item.Revisoes);
+            foreach (var rvm in vm.Revisoes)
+            {
+                item.Revisoes.Add(new RevisaoItemERP
+                {
+                    Numero = rvm.Numero,
+                    Motivo = rvm.MotivoRevisao,
+                    Data = rvm.DataRevisao!.Value,
+                    ItemERPId = item.Id
+                });
+            }
+
+            // 3) SEÇÃO 04 — Perfis
+            _context.PerfilItemERPs.RemoveRange(item.PerfilItemERPs);
+            foreach (var pvm in vm.PerfisSection)
+            {
+                var perfilItem = new PerfilItemERP
+                {
+                    ItemERPId = item.Id,
+                    PerfilId = pvm.PerfilId
+                };
+                foreach (var rr in pvm.Revisoes)
+                {
+                    perfilItem.Revisoes.Add(new RevisaoPerfilItemERP
+                    {
+                        Numero = rr.Numero,
+                        Motivo = rr.MotivoRevisao,
+                        Data = rr.DataRevisao!.Value,
+                        PerfilItemERPId = perfilItem.Id
+                    });
+                }
+                item.PerfilItemERPs.Add(perfilItem);
+            }
+
+            // 4) Seção 04 — Agrupadores
             _context.AgrupadorItemERPs.RemoveRange(item.AgrupadorItensERP);
             foreach (var agrId in vm.SelectedAgrupadorIds)
                 item.AgrupadorItensERP.Add(new AgrupadorItemERP { ItemERPId = item.Id, AgrupadorId = agrId, Status = true });
 
-            // Seção 05 (itens relacionados)
+            // 5) Seção 05 — Itens relacionados
             _context.ItemERPRelacionados.RemoveRange(item.ItensRelacionados);
             foreach (var r in vm.ItensPintados)
                 item.ItensRelacionados.Add(new ItemERPRelacionado { ItemERPId = item.Id, RelacionadoId = r.ItemERPId, DesenhoId = r.DesenhoId, Tipo = RelacionamentoTipo.Pintado });
             foreach (var r in vm.ItensGalvanizados)
                 item.ItensRelacionados.Add(new ItemERPRelacionado { ItemERPId = item.Id, RelacionadoId = r.ItemERPId, DesenhoId = r.DesenhoId, Tipo = RelacionamentoTipo.Galvanizado });
 
-            // Seção 06 (famílias)
+            // 6) Seção 06 — Famílias
             _context.ComponenteItemERPs.RemoveRange(item.ComponenteItemERPs);
             _context.AgrupadorItemERPs.RemoveRange(item.AgrupadorItensERP);
             foreach (var c in vm.ComponentesFamily)
@@ -348,6 +397,7 @@ namespace Gerenciador_de_Produtos.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         // ---------------------------
         // Helpers para popular dropdowns
