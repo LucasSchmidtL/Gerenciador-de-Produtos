@@ -50,6 +50,25 @@ namespace Gerenciador_de_Produtos.Data
                 .WithMany(e => e.AgrupadorItensERP)
                 .HasForeignKey(a => a.ItemERPId);
 
+            // === AgrupadorComponente ===
+            modelBuilder.Entity<AgrupadorComponente>(entity =>
+            {
+                // mantém o Id como PK
+                entity.HasKey(ac => ac.Id);
+
+                // FK para Agrupador
+                entity.HasOne(ac => ac.Agrupador)
+                      .WithMany(a => a.AgrupadorComponentes)
+                      .HasForeignKey(ac => ac.AgrupadorId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                // FK para Componente
+                entity.HasOne(ac => ac.Componente)
+                      .WithMany(c => c.AgrupadorComponentes)
+                      .HasForeignKey(ac => ac.ComponenteId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
             // Componente ⇄ ItemERP
             modelBuilder.Entity<ComponenteItemERP>()
                 .HasOne(ci => ci.Componente)

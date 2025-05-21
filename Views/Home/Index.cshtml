@@ -2,126 +2,301 @@
 
 @{
     ViewData["Title"] = "Dashboard";
-    var recentLogs = ViewBag.RecentLogs as List<string>;
 }
 
-<h1 class="display-4 text-center mb-5 text-primary">
+<!-- Custom Legend & Detail Styles -->
+<style>
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-right: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+        .legend-item svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 0.5rem;
+        }
+
+    .filter-section .form-check {
+        margin-bottom: 0.25rem;
+    }
+    /* Detalhes do nó */
+    #detailPanel .node-detail-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        #detailPanel .node-detail-list li {
+            padding: 0.25rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+            #detailPanel .node-detail-list li:last-child {
+                border-bottom: none;
+            }
+</style>
+
+<h1 class="display-4 text-center mb-4 text-gradient-primary">
     <i class="bi bi-speedometer2 me-2"></i>@ViewData["Title"]
 </h1>
 
-<div class="row g-4 mb-5">
-    @* KPIs Cards *@
-    <div class="col-md-2">
-        <div class="card text-white bg-primary h-100 shadow-sm">
-            <div class="card-body text-center">
-                <i class="bi bi-box-seam fs-1 mb-2"></i>
-                <h5 class="card-title">Itens ERP</h5>
-                <h2 class="card-text">@ViewBag.TotalItensERP</h2>
-            </div>
-            <div class="card-footer bg-transparent border-top-0 text-center">
-                <a asp-controller="ItensERP" asp-action="Index" class="link-light">Ver →</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="card text-white bg-success h-100 shadow-sm">
-            <div class="card-body text-center">
-                <i class="bi bi-tags-fill fs-1 mb-2"></i>
-                <h5 class="card-title">Tags</h5>
-                <h2 class="card-text">@ViewBag.TotalTags</h2>
-            </div>
-            <div class="card-footer bg-transparent border-top-0 text-center">
-                <a asp-controller="Tags" asp-action="Index" class="link-light">Ver →</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="card text-white bg-warning h-100 shadow-sm">
-            <div class="card-body text-center">
-                <i class="bi bi-diagram-2-fill fs-1 mb-2"></i>
-                <h5 class="card-title">Agrupadores</h5>
-                <h2 class="card-text">@ViewBag.TotalAgrupadores</h2>
-            </div>
-            <div class="card-footer bg-transparent border-top-0 text-center">
-                <a asp-controller="Agrupadores" asp-action="Index" class="link-light">Ver →</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="card text-white bg-info h-100 shadow-sm">
-            <div class="card-body text-center">
-                <i class="bi bi-file-earmark-spreadsheet-fill fs-1 mb-2"></i>
-                <h5 class="card-title">Perfis</h5>
-                <h2 class="card-text">@ViewBag.TotalPerfis</h2>
-            </div>
-            <div class="card-footer bg-transparent border-top-0 text-center">
-                <a asp-controller="Perfis" asp-action="Index" class="link-light">Ver →</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="card text-white bg-secondary h-100 shadow-sm">
-            <div class="card-body text-center">
-                <i class="bi bi-pencil-square fs-1 mb-2"></i>
-                <h5 class="card-title">Desenhos</h5>
-                <h2 class="card-text">@ViewBag.TotalDesenhos</h2>
-            </div>
-            <div class="card-footer bg-transparent border-top-0 text-center">
-                <a asp-controller="Desenhos" asp-action="Index" class="link-light">Ver →</a>
-            </div>
-        </div>
-    </div>
+<div class="text-end mb-3">
+    <button class="btn btn-sm btn-outline-secondary" onclick="toggleFullscreen()">
+        <i class="bi bi-arrows-fullscreen"></i> Tela Cheia
+    </button>
+    <button class="btn btn-sm btn-outline-primary" onclick="exportGraph()">
+        <i class="bi bi-download"></i> Exportar Imagem
+    </button>
+    <button class="btn btn-sm btn-outline-success" onclick="resetZoom()">
+        <i class="bi bi-zoom-out"></i> Resetar Zoom
+    </button>
+    <button id="btnForceLayout" class="btn btn-sm btn-outline-dark ms-2">
+        Força (Padrão)
+    </button>
+    <button id="btnHierarchicalLayout" class="btn btn-sm btn-outline-dark">
+        Hierárquico
+    </button>
+    <button id="btnRadialLayout" class="btn btn-sm btn-outline-dark">
+        Radial
+    </button>
 </div>
 
-<div class="row gy-4">
-    <div class="col-lg-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-header bg-light">
-                <strong>Itens ERP por Status</strong>
+<div class="row gy-4 mb-4">
+    <div class="col-9">
+        <div class="card h-100 shadow-lg">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <strong>Mapa de Vínculos</strong>
+                <input type="text" id="nodeSearch" class="form-control form-control-sm w-50" placeholder="Buscar nó e Enter..." />
+            </div>
+            <div class="card-body p-0">
+                <div id="network" style="width:100%; height:600px; border:1px solid #ddd;"></div>
+            </div>
+        </div>
+        <div class="card shadow-lg mt-3">
+            <div class="card-header bg-warning text-dark">
+                Estatísticas
             </div>
             <div class="card-body">
-                <canvas id="statusChart"></canvas>
+                <ul class="list-unstyled">
+                    <li><strong>Total de Nós:</strong> <span id="totalNodes">-</span></li>
+                    <li><strong>Total de Conexões:</strong> <span id="totalEdges">-</span></li>
+                    <li><strong>Nó com Maior Grau:</strong> <span id="topNode">-</span></li>
+                </ul>
             </div>
         </div>
     </div>
-    <div class="col-lg-6">
-        <div class="card h-100 shadow-sm">
-            <div class="card-header bg-light">
-                <strong>Últimas Atividades</strong>
+    <div class="col-3">
+        <div id="detailPanel" class="card h-100 shadow-lg" style="display:none;">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <span id="detailTitle">Detalhes do Nó</span>
+                </div>
+                <button id="closeDetail" class="btn-close btn-close-white" aria-label="Close"></button>
             </div>
-            <ul class="list-group list-group-flush">
-                @if (recentLogs != null && recentLogs.Any())
-                {
-                    foreach (var log in recentLogs)
+            <div class="card-body overflow-auto" style="max-height:550px;">
+                <ul class="node-detail-list" id="nodeDetails"></ul>
+            </div>
+        </div>
+        <div class="card shadow-lg mt-3">
+            <div class="card-header bg-info text-white d-flex align-items-center">
+                <i class="bi bi-diagram-3-fill me-2"></i>
+                <h5 class="m-0">Legenda & Filtros</h5>
+            </div>
+            <div class="card-body">
+                <div class="legend-section mb-4">
+                    <h6 class="text-uppercase">Legenda</h6>
+                    <div class="d-flex flex-wrap">
+                        <!-- Ícones da legenda -->
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <h6 class="text-uppercase">Filtros</h6>
+                    @foreach (var grp in new[] { "item", "componente", "agrupador", "produto", "perfil", "desenho" })
                     {
-                        <li class="list-group-item">@log</li>
+                        <div class="form-check">
+                            <input class="form-check-input filter-checkbox" type="checkbox" data-group="@grp" checked id="filter_@grp" />
+                            <label class="form-check-label text-capitalize ms-1" for="filter_@grp">@grp</label>
+                        </div>
                     }
-                }
-                else
-                {
-                    <li class="list-group-item text-muted">Sem registros recentes</li>
-                }
-            </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+<link rel="stylesheet" href="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.css" />
+
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
     <script>
-        const ctx = document.getElementById('statusChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Ativos', 'Inativos'],
-                datasets: [{
-                    data: [@ViewBag.ActiveCount, @ViewBag.InactiveCount],
-                    backgroundColor: ['#198754', '#6c757d']
-                }]
-            },
-            options: {
-                plugins: { legend: { position: 'bottom' } }
+        (function () {
+          let network, nodesDS, edgesDS, rawNodes, rawEdges;
+
+          function updateStats() {
+            const totalN = nodesDS.length;
+            const totalE = edgesDS.length;
+            document.getElementById('totalNodes').textContent = totalN;
+            document.getElementById('totalEdges').textContent = totalE;
+            let maxDeg = 0, topLabel = '-';
+            nodesDS.getIds().forEach(id => {
+              const deg = network.getConnectedEdges(id).length;
+              if (deg > maxDeg) { maxDeg = deg; topLabel = nodesDS.get(id).label; }
+            });
+            document.getElementById('topNode').textContent = topLabel;
+          }
+
+          function initializeNetwork(nodes, edges) {
+            rawNodes = nodes;
+            rawEdges = edges;
+            const shapedNodes = rawNodes.map(n => {
+              const grp = n.group.toLowerCase();
+              let shape, level;
+              switch (grp) {
+                case 'produto': shape = 'triangle'; level = 0; break;
+                case 'agrupador': shape = 'diamond'; level = 1; break;
+                case 'componente': shape = 'box'; level = 2; break;
+                case 'item': shape = 'ellipse'; level = 3; break;
+                case 'perfil': shape = 'star'; level = 4; break;
+                case 'desenho': shape = 'dot'; level = 5; break;
+                default: shape = 'circle'; level = 6;
+              }
+              return { ...n, shape, level };
+            });
+            nodesDS = new vis.DataSet(shapedNodes);
+            edgesDS = new vis.DataSet(rawEdges);
+            const container = document.getElementById('network');
+            network = new vis.Network(container, { nodes: nodesDS, edges: edgesDS }, {
+              edges: { arrows: { from: { enabled: true } }, smooth: { type: 'continuous' } },
+              interaction: { hover: true, navigationButtons: true, keyboard: true }
+            });
+
+            network.on('click', showNodeDetails);
+            document.getElementById('closeDetail').addEventListener('click', () => document.getElementById('detailPanel').style.display = 'none');
+            document.querySelectorAll('.filter-checkbox').forEach(cb => cb.addEventListener('change', applyFilters));
+            document.getElementById('nodeSearch').addEventListener('keyup', handleSearch);
+            document.getElementById('btnForceLayout').addEventListener('click', applyForceLayout);
+            document.getElementById('btnHierarchicalLayout').addEventListener('click', applyHierarchicalLayout);
+            document.getElementById('btnRadialLayout').addEventListener('click', applyRadialLayout);
+            applyForceLayout();
+          }
+
+          function applyRadialLayout() {
+            // Agrupa nós por nível e posiciona em círculos concêntricos
+            const levels = {};
+            nodesDS.forEach(n => {
+              if (!levels[n.level]) levels[n.level] = [];
+              levels[n.level].push(n);
+            });
+            const center = { x: 0, y: 0 };
+            const step = 150;
+            Object.keys(levels).forEach(lvl => {
+              const group = levels[lvl];
+              const angleStep = (2 * Math.PI) / group.length;
+              group.forEach((node, idx) => {
+                const angle = idx * angleStep;
+                const r = step * parseInt(lvl);
+                nodesDS.update({ id: node.id, x: center.x + Math.cos(angle) * r, y: center.y + Math.sin(angle) * r, fixed: { x: true, y: true } });
+              });
+            });
+            network.setOptions({ physics: false });
+            updateStats();
+          }
+
+          function showNodeDetails(params) {
+            if (!params.nodes.length) return;
+            const node = nodesDS.get(params.nodes[0]);
+            const neighbors = network.getConnectedNodes(node.id).map(id => nodesDS.get(id));
+            const details = [
+              { label: 'ID', value: node.id },
+              { label: 'Nome', value: node.label },
+              { label: 'Tipo', value: node.group },
+              { label: 'Conexões', value: neighbors.length }
+            ];
+            switch (node.group) {
+              case 'produto': {
+                const agrup = neighbors.filter(n => n.group === 'agrupador').map(n => n.label);
+                details.push({ label: 'Agrupadores', value: agrup.length ? agrup.join(', ') : 'Nenhum' });
+                break;
+              }
+              case 'agrupador': {
+                const comps = neighbors.filter(n => n.group === 'componente').map(n => n.label);
+                details.push({ label: 'Componentes', value: comps.length ? comps.join(', ') : 'Nenhum' });
+                break;
+              }
+              case 'componente': {
+                const itens = neighbors.filter(n => n.group === 'item').map(n => n.label);
+                const agrup = neighbors.filter(n => n.group === 'agrupador').map(n => n.label);
+                details.push({ label: 'Itens ERP', value: itens.length ? itens.join(', ') : 'Nenhum' });
+                details.push({ label: 'Agrupadores', value: agrup.length ? agrup.join(', ') : 'Nenhum' });
+                break;
+              }
+              case 'item': {
+                const comps = neighbors.filter(n => n.group === 'componente').map(n => n.label);
+                const perfis = neighbors.filter(n => n.group === 'perfil').map(n => n.label);
+                details.push({ label: 'Componentes', value: comps.length ? comps.join(', ') : 'Nenhum' });
+                details.push({ label: 'Perfis', value: perfis.length ? perfis.join(', ') : 'Nenhum' });
+                break;
+              }
+              case 'perfil': {
+                const itens = neighbors.filter(n => n.group === 'item').map(n => n.label);
+                details.push({ label: 'Itens ERP', value: itens.length ? itens.join(', ') : 'Nenhum' });
+                break;
+              }
+              case 'desenho': {
+                const itens = neighbors.filter(n => n.group === 'item').map(n => n.label);
+                details.push({ label: 'Itens ERP', value: itens.length ? itens.join(', ') : 'Nenhum' });
+                break;
+              }
             }
-        });
+            const $list = document.getElementById('nodeDetails');
+            $list.innerHTML = '';
+            details.forEach(item => {
+              const li = document.createElement('li');
+              li.innerHTML = `<strong>${item.label}:</strong> ${item.value}`;
+              $list.appendChild(li);
+            });
+            document.getElementById('detailTitle').textContent = node.label;
+            document.getElementById('detailPanel').style.display = 'block';
+          }
+
+          function handleSearch(e) {
+            if (e.key !== 'Enter') return;
+            const term = e.target.value.toLowerCase();
+            const match = rawNodes.find(n => n.label.toLowerCase().includes(term));
+            if (match) {
+              network.selectNodes([match.id]);
+              network.focus(match.id, { scale: 1.5 });
+            }
+          }
+
+          function applyForceLayout() {
+            network.setOptions({ layout: { hierarchical: false }, physics: { enabled: true, solver: 'forceAtlas2Based' } });
+            network.stabilize();
+            updateStats();
+          }
+
+          function applyHierarchicalLayout() {
+            network.setOptions({ layout: { hierarchical: true }, physics: { enabled: false } });
+            network.stabilize();
+            updateStats();
+          }
+
+          function applyFilters() {
+            const checked = Array.from(document.querySelectorAll('.filter-checkbox:checked')).map(cb => cb.dataset.group);
+            const visible = rawNodes.filter(n => checked.includes(n.group));
+            const visIds = new Set(visible.map(n => n.id));
+            nodesDS.clear(); nodesDS.add(visible);
+            edgesDS.clear(); edgesDS.add(rawEdges.filter(e => visIds.has(e.from) && visIds.has(e.to)));
+            updateStats();
+          }
+
+          fetch('@Url.Action("GetGraph", "Home")')
+            .then(r => r.json())
+            .then(d => initializeNetwork(d.nodes, d.edges));
+        })();
     </script>
 }
