@@ -4,6 +4,7 @@ using Gerenciador_de_Produtos.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gerenciador_de_Produtos.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521002506_CriarTabelasPerfilItemERP")]
+    partial class CriarTabelasPerfilItemERP
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,7 +55,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.HasIndex("Nome")
                         .IsUnique();
 
-                    b.ToTable("Agrupadores", (string)null);
+                    b.ToTable("Agrupadores");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.AgrupadorComponente", b =>
@@ -90,7 +93,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("ComponenteId");
 
-                    b.ToTable("AgrupadorComponentes", (string)null);
+                    b.ToTable("AgrupadorComponentes");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.AgrupadorItemERP", b =>
@@ -128,7 +131,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("ItemERPId");
 
-                    b.ToTable("AgrupadorItemERPs", (string)null);
+                    b.ToTable("AgrupadorItemERPs");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.AgrupadorProduto", b =>
@@ -157,7 +160,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("ProdutoId");
 
-                    b.ToTable("ProdutoAgrupadores", (string)null);
+                    b.ToTable("ProdutoAgrupadores");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Componente", b =>
@@ -186,7 +189,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.HasIndex("Nome")
                         .IsUnique();
 
-                    b.ToTable("Componentes", (string)null);
+                    b.ToTable("Componentes");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.ComponenteItemERP", b =>
@@ -224,7 +227,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("ItemERPId");
 
-                    b.ToTable("ComponenteItemERPs", (string)null);
+                    b.ToTable("ComponenteItemERPs");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Desenho", b =>
@@ -242,12 +245,14 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Descricao")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ItemERPId")
                         .HasColumnType("int");
 
                     b.Property<string>("Nome")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -264,9 +269,10 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("ItemERPId");
 
-                    b.HasIndex("Nome");
+                    b.HasIndex("Nome")
+                        .IsUnique();
 
-                    b.ToTable("Desenhos", (string)null);
+                    b.ToTable("Desenhos");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Equacao", b =>
@@ -298,7 +304,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Equacao", (string)null);
+                    b.ToTable("Equacao");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.ItemERP", b =>
@@ -310,9 +316,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Acabamento")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Aco")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<float?>("Altura")
@@ -386,38 +389,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ItensERP", (string)null);
-                });
-
-            modelBuilder.Entity("Gerenciador_de_Produtos.Models.ItemERPRelacionado", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<long>("DesenhoId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("ItemERPId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RelacionadoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Tipo")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DesenhoId");
-
-                    b.HasIndex("ItemERPId");
-
-                    b.HasIndex("RelacionadoId");
-
-                    b.ToTable("ItemERPRelacionados", (string)null);
+                    b.ToTable("ItensERP");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Norma", b =>
@@ -436,7 +408,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Norma", (string)null);
+                    b.ToTable("Norma");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Perfil", b =>
@@ -574,7 +546,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("ItemERPId");
 
-                    b.ToTable("Perfis", (string)null);
+                    b.ToTable("Perfis");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.PerfilItemERP", b =>
@@ -600,7 +572,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("PerfilId");
 
-                    b.ToTable("PerfilItemERPs", (string)null);
+                    b.ToTable("PerfilItemERPs");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Produto", b =>
@@ -630,7 +602,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Produtos", (string)null);
+                    b.ToTable("Produtos");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.RevisaoItemERP", b =>
@@ -658,7 +630,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("ItemERPId");
 
-                    b.ToTable("RevisaoItemERPs", (string)null);
+                    b.ToTable("RevisaoItemERPs");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.RevisaoPerfilItemERP", b =>
@@ -685,7 +657,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("PerfilItemERPId");
 
-                    b.ToTable("RevisaoPerfilItemERPs", (string)null);
+                    b.ToTable("RevisaoPerfilItemERPs");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Secao", b =>
@@ -711,7 +683,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Secao", (string)null);
+                    b.ToTable("Secao");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Tag", b =>
@@ -728,7 +700,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags", (string)null);
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.VariavelAgrupador", b =>
@@ -763,7 +735,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("AgrupadorId");
 
-                    b.ToTable("VariaveisAgrupadores", (string)null);
+                    b.ToTable("VariaveisAgrupadores");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.VariavelComponente", b =>
@@ -798,7 +770,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("ComponenteId");
 
-                    b.ToTable("VariaveisComponentes", (string)null);
+                    b.ToTable("VariaveisComponentes");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.VariavelProduto", b =>
@@ -833,7 +805,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("ProdutoId");
 
-                    b.ToTable("VariaveisProdutos", (string)null);
+                    b.ToTable("VariaveisProdutos");
                 });
 
             modelBuilder.Entity("ItemERPTag", b =>
@@ -848,7 +820,7 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     b.HasIndex("TagsId");
 
-                    b.ToTable("ItemERPTag", (string)null);
+                    b.ToTable("ItemERPTag");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.AgrupadorComponente", b =>
@@ -935,33 +907,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ItemERP");
-                });
-
-            modelBuilder.Entity("Gerenciador_de_Produtos.Models.ItemERPRelacionado", b =>
-                {
-                    b.HasOne("Gerenciador_de_Produtos.Models.Desenho", "Desenho")
-                        .WithMany()
-                        .HasForeignKey("DesenhoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Gerenciador_de_Produtos.Models.ItemERP", "ItemERP")
-                        .WithMany("ItensRelacionados")
-                        .HasForeignKey("ItemERPId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Gerenciador_de_Produtos.Models.ItemERP", "Relacionado")
-                        .WithMany()
-                        .HasForeignKey("RelacionadoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Desenho");
-
-                    b.Navigation("ItemERP");
-
-                    b.Navigation("Relacionado");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Perfil", b =>
@@ -1090,8 +1035,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.Navigation("ComponenteItemERPs");
 
                     b.Navigation("Desenhos");
-
-                    b.Navigation("ItensRelacionados");
 
                     b.Navigation("PerfilItemERPs");
 

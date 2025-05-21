@@ -1,0 +1,520 @@
+﻿@model Gerenciador_de_Produtos.Models.ViewModels.ConfiguradorItemERPViewModel
+
+@{
+    ViewData["Title"] = $"Configurador de {Model.ERP}";
+
+    // Pré-renderiza as opções para injetar no JS
+    var itensOptions = string.Join("",
+        Model.AllItensERP.Select(i => $"<option value='{i.Value}'>{i.Text}</option>")
+    );
+    var desenhosOptions = string.Join("",
+        Model.AllDesenhos.Select(d => $"<option value='{d.Value}'>{d.Text}</option>")
+    );
+    var perfisOptions = string.Join("",
+        Model.AllPerfisSection.Select(p => $"<option value='{p.Value}'>{p.Text}</option>")
+    );
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="ConfiguradorItemERP" method="post">
+    <input asp-for="Id" type="hidden" />
+    <input type="hidden" name="TesteBinding" value="ok" />
+
+    <!-- ==========================================
+         Seção 1: Dados Básicos + Desenhos
+         ========================================== -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white"><strong>Seção 1: Dados Básicos</strong></div>
+        <div class="card-body">
+            <!-- Campos principais -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label asp-for="ERP" class="form-label">Item ERP</label>
+                    <input asp-for="ERP" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Descricao" class="form-label">Descrição</label>
+                    <input asp-for="Descricao" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="TipoItem" class="form-label">Tipo</label>
+                    <input asp-for="TipoItem" class="form-control" />
+                </div>
+            </div>
+            <!-- Acabamento / Classificação -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Acabamento</label>
+                    <div class="form-check">
+                        <input asp-for="Acabamento" class="form-check-input" type="radio" value="Com Acabamento" id="acabCom" />
+                        <label class="form-check-label" for="acabCom">Com acabamento</label>
+                    </div>
+                    <div class="form-check">
+                        <input asp-for="Acabamento" class="form-check-input" type="radio" value="Sem Acabamento" id="acabSem" />
+                        <label class="form-check-label" for="acabSem">Sem acabamento</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Classificação</label>
+                    <div class="form-check">
+                        <input asp-for="Classificacao" class="form-check-input" type="radio" value="1" id="classSimples" />
+                        <label class="form-check-label" for="classSimples">Simples</label>
+                    </div>
+                    <div class="form-check">
+                        <input asp-for="Classificacao" class="form-check-input" type="radio" value="2" id="classComposto" />
+                        <label class="form-check-label" for="classComposto">Composto</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Tabela de Desenhos -->
+            <div class="mb-3">
+                <h5>Desenhos</h5>
+                <datalist id="desenhosList">
+                    @foreach (var d in Model.AllDesenhos)
+                    {
+                        <option value="@d.Value">@d.Text</option>
+                    }
+                </datalist>
+                <table class="table table-sm mb-2" id="tblDesenhos">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>Rev.</th>
+                            <th>Data Criação</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Desenhos.Count; i++)
+                        {
+                            <tr>
+                                <input type="hidden" asp-for="Desenhos[@i].Id" />
+                                <td><input asp-for="Desenhos[@i].Nome" class="form-control form-control-sm" list="desenhosList" /></td>
+                                <td><input asp-for="Desenhos[@i].Descricao" class="form-control form-control-sm" /></td>
+                                <td><input asp-for="Desenhos[@i].Revisao" class="form-control form-control-sm" /></td>
+                                <td><input asp-for="Desenhos[@i].DataCriacao" type="date" class="form-control form-control-sm" /></td>
+                                <td><button type="button" class="btn btn-sm btn-danger btn-remove-desenho">✕</button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <button type="button" id="btnAddDesenho" class="btn btn-success btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i>Adicionar Desenho
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         Seção 2: Revisões do ItemERP
+         ========================================== -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white"><strong>Seção 2: Revisões do ItemERP</strong></div>
+        <div class="card-body">
+            <table class="table table-sm mb-0" id="tblRevisoesItem">
+                <thead class="table-light">
+                    <tr><th>Nr</th><th>Motivo</th><th>Data</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Revisoes.Count; i++)
+                    {
+                        <tr>
+                            <input type="hidden" asp-for="Revisoes[@i].Id" />
+                            <td><input asp-for="Revisoes[@i].Numero" class="form-control form-control-sm" /></td>
+                            <td><input asp-for="Revisoes[@i].MotivoRevisao" class="form-control form-control-sm" /></td>
+                            <td><input asp-for="Revisoes[@i].DataRevisao" type="date" class="form-control form-control-sm" /></td>
+                            <td><button type="button" class="btn btn-sm btn-danger btn-remove-revisao">✕</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button type="button" id="btnAddRevisaoItem" class="btn btn-outline-secondary btn-sm mt-2">+ Revisão</button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         Seção 3: Propriedades – Produto
+         ========================================== -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white"><strong>Seção 3: Propriedades – Produto</strong></div>
+        <div class="card-body">
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label asp-for="ChapaAberta" class="form-label">Chapa Aberta</label>
+                    <input asp-for="ChapaAberta" type="number" step="0.01" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Espessura" class="form-label">Espessura</label>
+                    <input asp-for="Espessura" type="number" step="0.01" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Aco" class="form-label">Aço</label>
+                    <input asp-for="Aco" class="form-control" />
+                </div>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label asp-for="PesoLiquidoMetro" class="form-label">Peso Líquido</label>
+                    <input asp-for="PesoLiquidoMetro" type="number" step="0.01" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="PesoBrutoMetro" class="form-label">Peso Bruto</label>
+                    <input asp-for="PesoBrutoMetro" type="number" step="0.01" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="PesoLinear" class="form-label">Peso Linear</label>
+                    <input asp-for="PesoLinear" type="number" step="0.01" class="form-control" />
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="AreaSuperficial" class="form-label">Área Superficial</label>
+                    <input asp-for="AreaSuperficial" type="number" step="0.01" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="QuantidadeDobras" class="form-label">Quantidade de Dobras</label>
+                    <input asp-for="QuantidadeDobras" type="number" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         Seção 4: Perfis da Seção
+         ========================================== -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white"><strong>Seção 4: Perfis da Seção</strong></div>
+        <div class="card-body p-0">
+            <table class="table mb-0" id="tblPerfisSection">
+                <thead class="table-light"><tr><th>Perfil</th><th>Aço</th><th>Revisões</th><th></th></tr></thead>
+                <tbody>
+                    @for (int i = 0; i < Model.PerfisSection.Count; i++)
+                    {
+                        <tr>
+                            <input type="hidden" asp-for="PerfisSection[@i].Id" />
+                            <td>
+                                <select asp-for="PerfisSection[@i].PerfilId" asp-items="Model.AllPerfisSection" class="form-control">
+                                    <option value="">-- selecione --</option>
+                                </select>
+                            </td>
+                            <td><input asp-for="PerfisSection[@i].Aco" class="form-control" /></td>
+                            <td>
+                                <table class="table table-borderless mb-0">
+                                    <thead><tr><th>Nr</th><th>Motivo</th><th>Data</th></tr></thead>
+                                    <tbody id="revs_@i">
+                                        @for (int j = 0; j < Model.PerfisSection[i].Revisoes.Count; j++)
+                                        {
+                                            <tr>
+                                                <input type="hidden" asp-for="PerfisSection[@i].Revisoes[@j].Id" />
+                                                <td><input asp-for="PerfisSection[@i].Revisoes[@j].Numero" class="form-control form-control-sm" /></td>
+                                                <td><input asp-for="PerfisSection[@i].Revisoes[@j].MotivoRevisao" class="form-control form-control-sm" /></td>
+                                                <td><input asp-for="PerfisSection[@i].Revisoes[@j].DataRevisao" type="date" class="form-control form-control-sm" /></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <button type="button" class="btn btn-sm btn-outline-secondary mt-1" onclick="addRev(@i)">+ Revisão</button>
+                            </td>
+                            <td><button type="button" class="btn btn-sm btn-danger btn-remove-perfil">✕</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="p-3 d-flex gap-2">
+                <button type="button" id="btnAddPerfilSection" class="btn btn-success btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i>Adicionar Perfil
+                </button>
+                <a asp-controller="Perfis" asp-action="Create" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-file-earmark-plus me-1"></i>Criar Perfil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         Seção 5: Itens relacionados
+         ========================================== -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white"><strong>Seção 05: Itens relacionados</strong></div>
+        <div class="card-body">
+            <h5>Itens pintados</h5>
+            <table class="table table-sm mb-2" id="tblItensPintados">
+                <thead class="table-light"><tr><th>Item ERP</th><th>Desenho</th><th></th></tr></thead>
+                <tbody>
+                    @for (int i = 0; i < Model.ItensPintados.Count; i++)
+                    {
+                        <tr>
+                            <input type="hidden" asp-for="ItensPintados[@i].Id" />
+                            <td><select asp-for="ItensPintados[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-control form-control-sm"><option value="">-- selecione --</option></select></td>
+                            <td><select asp-for="ItensPintados[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-control form-control-sm"><option value="">-- selecione --</option></select></td>
+                            <td><button type="button" class="btn btn-sm btn-danger btn-remove-pintado">✕</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button type="button" id="btnAddPintado" class="btn btn-success btn-sm mb-3"><i class="bi bi-plus-lg me-1"></i>Adicionar</button>
+
+            <hr />
+
+            <h5>Itens galvanizados</h5>
+            <table class="table table-sm mb-2" id="tblItensGalva">
+                <thead class="table-light"><tr><th>Item ERP</th><th>Desenho</th><th></th></tr></thead>
+                <tbody>
+                    @for (int i = 0; i < Model.ItensGalvanizados.Count; i++)
+                    {
+                        <tr>
+                            <input type="hidden" asp-for="ItensGalvanizados[@i].Id" />
+                            <td><select asp-for="ItensGalvanizados[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-control form-control-sm"><option value="">-- selecione --</option></select></td>
+                            <td><select asp-for="ItensGalvanizados[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-control form-control-sm"><option value="">-- selecione --</option></select></td>
+                            <td><button type="button" class="btn btn-sm btn-danger btn-remove-galva">✕</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button type="button" id="btnAddGalva" class="btn btn-success btn-sm"><i class="bi bi-plus-lg me-1"></i>Adicionar</button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+     Seção 6: Famílias
+     ========================================== -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+            <strong>Seção 6: Famílias</strong>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Componentes -->
+                <div class="col-md-6">
+                    <h5>Componentes</h5>
+                    <table class="table table-sm mb-2" id="tblComponentesFamily">
+                        <thead class="table-light">
+                            <tr><th>Componente</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.ComponentesFamily.Count; i++)
+                            {
+                                <tr>
+                                    <input type="hidden" asp-for="ComponentesFamily[@i].Id" />
+                                    <td>
+                                        <select asp-for="ComponentesFamily[@i].ComponenteId"
+                                                asp-items="Model.AllComponentes"
+                                                class="form-control form-control-sm">
+                                            <option value="">-- selecione --</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="btn btn-sm btn-danger btn-remove-componente">
+                                            ✕
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <button type="button"
+                            id="btnAddComponenteFamily"
+                            class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-lg me-1"></i>Adicionar Componente
+                    </button>
+                </div>
+
+                <!-- Agrupadores -->
+                <div class="col-md-6">
+                    <h5>Agrupadores</h5>
+                    <table class="table table-sm mb-2" id="tblAgrupadoresFamily">
+                        <thead class="table-light">
+                            <tr><th>Agrupador</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.AgrupadoresFamily.Count; i++)
+                            {
+                                <tr>
+                                    <input type="hidden" asp-for="AgrupadoresFamily[@i].Id" />
+                                    <td>
+                                        <select asp-for="AgrupadoresFamily[@i].AgrupadorId"
+                                                asp-items="Model.AllAgrupadores"
+                                                class="form-control form-control-sm">
+                                            <option value="">-- selecione --</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="btn btn-sm btn-danger btn-remove-agrupador">
+                                            ✕
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <button type="button"
+                            id="btnAddAgrupadorFamily"
+                            class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-lg me-1"></i>Adicionar Agrupador
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <button type="submit" class="btn btn-primary mb-4">Salvar todas as configurações</button>
+</form>
+
+<div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+@section Scripts {
+    <script>
+        // Pré-carrega opções
+        const itensOptions          = `@Html.Raw(itensOptions)`;
+        const desenhosOptions       = `@Html.Raw(desenhosOptions)`;
+        const perfisOptions         = `@Html.Raw(perfisOptions)`;
+        const componentesOptions    = `@Html.Raw(string.Join("",
+          Model.AllComponentes.Select(c =>
+            $"<option value='{c.Value}'>{c.Text}</option>"
+          )
+        ))`;
+            const agrupadoresOptions    = `@Html.Raw(string.Join("",
+          Model.AllAgrupadores.Select(a =>
+            $"<option value='{a.Value}'>{a.Text}</option>"
+          )
+        ))`;
+
+        // 1) Desenhos
+        document.getElementById('btnAddDesenho').addEventListener('click', () => {
+            const tbody = document.querySelector('#tblDesenhos tbody'), idx = tbody.rows.length, row = document.createElement('tr');
+            row.innerHTML = `
+                <input type="hidden" name="Desenhos[${idx}].Id" value="0" />
+                <td><input name="Desenhos[${idx}].Nome" class="form-control form-control-sm" list="desenhosList" /></td>
+                <td><input name="Desenhos[${idx}].Descricao" class="form-control form-control-sm" /></td>
+                <td><input name="Desenhos[${idx}].Revisao" class="form-control form-control-sm" /></td>
+                <td><input name="Desenhos[${idx}].DataCriacao" type="date" class="form-control form-control-sm" /></td>
+                <td><button type="button" class="btn btn-sm btn-danger btn-remove-desenho">✕</button></td>`;
+            tbody.appendChild(row);
+        });
+        document.querySelector('#tblDesenhos').addEventListener('click', e => {
+            if (e.target.classList.contains('btn-remove-desenho')) e.target.closest('tr').remove();
+        });
+
+        // 2) Revisões
+        document.getElementById('btnAddRevisaoItem').addEventListener('click', () => {
+            const tbody = document.querySelector('#tblRevisoesItem tbody'), idx = tbody.rows.length, row = document.createElement('tr');
+            row.innerHTML = `
+                <input type="hidden" name="Revisoes[${idx}].Id" value="0" />
+                <td><input name="Revisoes[${idx}].Numero" class="form-control form-control-sm" /></td>
+                <td><input name="Revisoes[${idx}].MotivoRevisao" class="form-control form-control-sm" /></td>
+                <td><input name="Revisoes[${idx}].DataRevisao" type="date" class="form-control form-control-sm" /></td>
+                <td><button type="button" class="btn btn-sm btn-danger btn-remove-revisao">✕</button></td>`;
+            tbody.appendChild(row);
+        });
+        document.querySelector('#tblRevisoesItem').addEventListener('click', e => {
+            if (e.target.classList.contains('btn-remove-revisao')) e.target.closest('tr').remove();
+        });
+
+        // 3) Perfis
+        document.getElementById('btnAddPerfilSection').addEventListener('click', () => {
+            const tbody = document.querySelector('#tblPerfisSection tbody'), idx = tbody.rows.length, row = document.createElement('tr');
+            row.innerHTML = `
+                <input type="hidden" name="PerfisSection[${idx}].Id" value="0" />
+                <td><select name="PerfisSection[${idx}].PerfilId" class="form-control"><option value="">-- selecione --</option>${perfisOptions}</select></td>
+                <td><input name="PerfisSection[${idx}].Aco" class="form-control" /></td>
+                <td><table class="table table-borderless mb-0"><thead><tr><th>Nr</th><th>Motivo</th><th>Data</th></tr></thead><tbody id="revs_${idx}"></tbody></table>
+                    <button type="button" class="btn btn-sm btn-outline-secondary mt-1" onclick="addRev(${idx})">+ Revisão</button>
+                </td>
+                <td><button type="button" class="btn btn-sm btn-danger btn-remove-perfil">✕</button></td>`;
+            tbody.appendChild(row);
+        });
+        document.querySelector('#tblPerfisSection').addEventListener('click', e => {
+            if (e.target.classList.contains('btn-remove-perfil')) e.target.closest('tr').remove();
+        });
+        function addRev(perfIdx) {
+            const revTbody = document.getElementById(`revs_${perfIdx}`), rIdx = revTbody.rows.length, tr = document.createElement('tr');
+            tr.innerHTML = `
+                <input type="hidden" name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].Id" value="0" />
+                <td><input name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].Numero" class="form-control form-control-sm" /></td>
+                <td><input name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].MotivoRevisao" class="form-control form-control-sm" /></td>
+                <td><input name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].DataRevisao" type="date" class="form-control form-control-sm" /></td>`;
+            revTbody.appendChild(tr);
+        }
+
+        // 5.1) Itens Pintados
+        document.getElementById('btnAddPintado').addEventListener('click', () => {
+            const tbody = document.querySelector('#tblItensPintados tbody'), idx = tbody.rows.length, row = document.createElement('tr');
+            row.innerHTML = `
+                <input type="hidden" name="ItensPintados[${idx}].Id" value="0" />
+                <td><select name="ItensPintados[${idx}].ItemERPId" class="form-control form-control-sm"><option value="">-- selecione --</option>${itensOptions}</select></td>
+                <td><select name="ItensPintados[${idx}].DesenhoId" class="form-control form-control-sm"><option value="">-- selecione --</option>${desenhosOptions}</select></td>
+                <td><button type="button" class="btn btn-sm btn-danger btn-remove-pintado">✕</button></td>`;
+            tbody.appendChild(row);
+        });
+        document.querySelector('#tblItensPintados').addEventListener('click', e => {
+            if (e.target.classList.contains('btn-remove-pintado')) e.target.closest('tr').remove();
+        });
+
+        // 5.2) Itens Galvanizados
+        document.getElementById('btnAddGalva').addEventListener('click', () => {
+            const tbody = document.querySelector('#tblItensGalva tbody'), idx = tbody.rows.length, row = document.createElement('tr');
+            row.innerHTML = `
+                <input type="hidden" name="ItensGalvanizados[${idx}].Id" value="0" />
+                <td><select name="ItensGalvanizados[${idx}].ItemERPId" class="form-control form-control-sm"><option value="">-- selecione --</option>${itensOptions}</select></td>
+                <td><select name="ItensGalvanizados[${idx}].DesenhoId" class="form-control form-control-sm"><option value="">-- selecione --</option>${desenhosOptions}</select></td>
+                <td><button type="button" class="btn btn-sm btn-danger btn-remove-galva">✕</button></td>`;
+            tbody.appendChild(row);
+        });
+        document.querySelector('#tblItensGalva').addEventListener('click', e => {
+            if (e.target.classList.contains('btn-remove-galva')) e.target.closest('tr').remove();
+        });
+
+        // Seção 6: Componentes
+            document.getElementById('btnAddComponenteFamily').addEventListener('click', () => {
+              const tbody = document.querySelector('#tblComponentesFamily tbody');
+              const idx   = tbody.rows.length;
+              const row   = document.createElement('tr');
+              row.innerHTML = `
+                <input type="hidden" name="ComponentesFamily[${idx}].Id" value="0" />
+                <td>
+                  <select name="ComponentesFamily[${idx}].ComponenteId" class="form-control form-control-sm">
+                    <option value="">-- selecione --</option>
+                    ${componentesOptions}
+                  </select>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-danger btn-remove-componente">✕</button>
+                </td>`;
+              tbody.appendChild(row);
+            });
+            document.querySelector('#tblComponentesFamily').addEventListener('click', e => {
+              if (e.target.classList.contains('btn-remove-componente'))
+                e.target.closest('tr').remove();
+            });
+
+            // Seção 6: Agrupadores
+            document.getElementById('btnAddAgrupadorFamily').addEventListener('click', () => {
+              const tbody = document.querySelector('#tblAgrupadoresFamily tbody');
+              const idx   = tbody.rows.length;
+              const row   = document.createElement('tr');
+              row.innerHTML = `
+                <input type="hidden" name="AgrupadoresFamily[${idx}].Id" value="0" />
+                <td>
+                  <select name="AgrupadoresFamily[${idx}].AgrupadorId" class="form-control form-control-sm">
+                    <option value="">-- selecione --</option>
+                    ${agrupadoresOptions}
+                  </select>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-danger btn-remove-agrupador">✕</button>
+                </td>`;
+              tbody.appendChild(row);
+            });
+            document.querySelector('#tblAgrupadoresFamily').addEventListener('click', e => {
+              if (e.target.classList.contains('btn-remove-agrupador'))
+                e.target.closest('tr').remove();
+            });
+    </script>
+}

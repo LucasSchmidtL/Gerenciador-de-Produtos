@@ -1,0 +1,248 @@
+﻿@model Gerenciador_de_Produtos.Models.ViewModels.ConfiguradorComponenteViewModel
+@{
+    ViewData["Title"] = "Configurador de Componentes";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Configurador" method="post">
+    @Html.AntiForgeryToken()
+
+    @* Summary e lista detalhada de erros *@
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach (var entry in ViewData.ModelState.Where(m => m.Value.Errors.Count > 0))
+                {
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        <li><strong>@entry.Key</strong>: @error.ErrorMessage</li>
+                    }
+                }
+            </ul>
+        </div>
+    }
+
+    @* Guarda o Id do Componente *@
+    <input asp-for="Componente.Id" type="hidden" />
+
+    <!-- Dados Gerais -->
+    <div class="card mb-4">
+        <div class="card-header"><h5>Dados Gerais</h5></div>
+        <div class="card-body row g-3">
+            <div class="col-md-6">
+                <label asp-for="Componente.Nome" class="form-label"></label>
+                <input asp-for="Componente.Nome" class="form-control" />
+                <span asp-validation-for="Componente.Nome" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Componente.Descricao" class="form-label"></label>
+                <input asp-for="Componente.Descricao" class="form-control" />
+                <span asp-validation-for="Componente.Descricao" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Variáveis -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between">
+            <h5>Variáveis</h5>
+            <button type="button" id="btnAddVariable" class="btn btn-sm btn-primary">
+                Adicionar Variável
+            </button>
+        </div>
+        <div class="card-body p-0">
+            <table class="table mb-0" id="tblVariables">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Valor</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Variables.Count; i++)
+                    {
+                        var v = Model.Variables[i];
+                        <tr>
+                            <td>
+                                <input type="hidden" name="Variables[@i].Id" value="@v.Id" />
+                                <input type="hidden" name="Variables[@i].ComponenteId"
+                                       value="@Model.Componente.Id" />
+                                <input name="Variables[@i].Nome" value="@v.Nome"
+                                       class="form-control form-control-sm" />
+                            </td>
+                            <td>
+                                @* Apenas um textbox para Tipo *@
+                                <input name="Variables[@i].Tipo" value="@v.Tipo"
+                                       class="form-control form-control-sm" />
+                            </td>
+                            <td>
+                                <input name="Variables[@i].Valor" value="@v.Valor"
+                                       class="form-control form-control-sm" />
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-danger btn-remove-variable">
+                                    X
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Itens ERP -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between">
+            <h5>Itens ERP Vinculados</h5>
+            <button type="button" id="btnAddItemERP" class="btn btn-sm btn-primary">
+                Adicionar Item ERP
+            </button>
+        </div>
+        <div class="card-body p-0">
+            <table class="table mb-0" id="tblItemERPs">
+                <thead class="table-light">
+                    <tr>
+                        <th>ItemERP</th>
+                        <th>Descrição</th>
+                        <th>Tags</th>
+                        <th>Perfis</th>
+                        <th>Comprimento</th>
+                        <th>Max</th>
+                        <th>Altura</th>
+                        <th>Profund.</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int j = 0; j < Model.ComponentItems.Count; j++)
+                    {
+                        var ci = Model.ComponentItems[j];
+                        <tr>
+                            <td>
+                                <input type="hidden" name="ComponentItems[@j].Id" value="@ci.Id" />
+                                <input type="hidden" name="ComponentItems[@j].ComponenteId"
+                                       value="@Model.Componente.Id" />
+                                <select name="ComponentItems[@j].ItemERPId"
+                                        class="form-select form-select-sm">
+                                    @foreach (var opt in Model.AllItemERPs)
+                                    {
+                                        var sel = opt.Value == ci.ItemERPId.ToString();
+                                        <option value="@opt.Value" selected="@(sel ? "selected" : null)">
+                                            @opt.Text
+                                        </option>
+                                    }
+                                </select>
+                            </td>
+                            <td>@ci.ItemERP?.Descricao</td>
+                            <td>@ci.ItemERP?.Descricao</td>
+                            <td>
+                                @(ci.ItemERP != null
+                                    ? string.Join(", ", ci.ItemERP.Tags.Select(t => t.Nome))
+                                    : "")
+                            </td>
+                            <td>
+                                @(ci.ItemERP != null
+                                    ? string.Join(", ", ci.ItemERP.Perfis.Select(p => p.Descricao))
+                                    : "")
+                            </td>
+                            <td>
+                                <input name="ComponentItems[@j].Comprimento" value="@ci.Comprimento"
+                                       class="form-control form-control-sm" />
+                            </td>
+                            <td>@ci.ItemERP?.ComprimentoMaximo</td>
+                            <td>
+                                <input name="ComponentItems[@j].Altura" value="@ci.Altura"
+                                       class="form-control form-control-sm" />
+                            </td>
+                            <td>
+                                <input name="ComponentItems[@j].Profundidade"
+                                       value="@ci.Profundidade"
+                                       class="form-control form-control-sm" />
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-danger btn-remove-item">
+                                    X
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Salvar Configurações</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const bind = (sel, cls) =>
+            document.querySelectorAll(sel + ' ' + cls)
+                    .forEach(b => b.onclick = () => b.closest('tr').remove());
+
+          // Adicionar Variable
+          document.getElementById('btnAddVariable').onclick = () => {
+            const body = document.querySelector('#tblVariables tbody');
+            const idx  = body.rows.length;
+            const comp = document.querySelector('input[name="Componente.Id"]').value;
+            const row  = document.createElement('tr');
+            row.innerHTML = `
+              <td>
+                <input type="hidden" name="Variables[${idx}].Id" value="0" />
+                <input type="hidden" name="Variables[${idx}].ComponenteId" value="${comp}" />
+                <input name="Variables[${idx}].Nome" class="form-control form-control-sm" />
+              </td>
+              <td>
+                <input name="Variables[${idx}].Tipo" class="form-control form-control-sm" />
+              </td>
+              <td>
+                <input name="Variables[${idx}].Valor" class="form-control form-control-sm" />
+              </td>
+              <td>
+                <button type="button" class="btn btn-sm btn-danger btn-remove-variable">X</button>
+              </td>`;
+            body.appendChild(row);
+            bind('#tblVariables', '.btn-remove-variable');
+          };
+
+          // Adicionar ItemERP
+          document.getElementById('btnAddItemERP').onclick = () => {
+            const body = document.querySelector('#tblItemERPs tbody');
+            const idx  = body.rows.length;
+            const comp = document.querySelector('input[name="Componente.Id"]').value;
+            const opts = `@Html.Raw(string.Join("",
+                   Model.AllItemERPs.Select(o =>
+                     $"<option value='{o.Value}'>{o.Text}</option>"
+                   )
+                ))`;
+            const row  = document.createElement('tr');
+            row.innerHTML = `
+              <td>
+                <input type="hidden" name="ComponentItems[${idx}].Id" value="0" />
+                <input type="hidden" name="ComponentItems[${idx}].ComponenteId" value="${comp}" />
+                <select name="ComponentItems[${idx}].ItemERPId" class="form-select form-select-sm">
+                  ${opts}
+                </select>
+              </td>
+              <td></td><td></td><td></td>
+              <td><input name="ComponentItems[${idx}].Comprimento" class="form-control form-control-sm" /></td>
+              <td></td>
+              <td><input name="ComponentItems[${idx}].Altura" class="form-control form-control-sm" /></td>
+              <td><input name="ComponentItems[${idx}].Profundidade" class="form-control form-control-sm" /></td>
+              <td><button type="button" class="btn btn-sm btn-danger btn-remove-item">X</button></td>`;
+            body.appendChild(row);
+            bind('#tblItemERPs', '.btn-remove-item');
+          };
+
+          bind('#tblVariables', '.btn-remove-variable');
+          bind('#tblItemERPs',   '.btn-remove-item');
+        });
+    </script>
+}

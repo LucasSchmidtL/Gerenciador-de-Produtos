@@ -50,6 +50,10 @@
 
                 <div>
                     <span class="badge bg-secondary me-3">Nível @comp.Nivel</span>
+                    <a asp-action="Configurador" asp-route-id="@comp.Id"
+                       class="btn btn-sm btn-outline-primary rounded-pill py-0 px-2">
+                        <i class="bi bi-sliders me-1"></i>Configurar
+                    </a>
                     <a asp-action="Details" asp-route-id="@comp.Id"
                        class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
                         <i class="bi bi-eye me-1"></i>Detalhes

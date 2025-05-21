@@ -13,7 +13,6 @@ namespace Gerenciador_de_Produtos.Models
 
         public string? Descricao { get; set; }
 
-        [Required]
         public string Tipo { get; set; }
 
         [Required]

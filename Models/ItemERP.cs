@@ -17,7 +17,13 @@ namespace Gerenciador_de_Produtos.Models
         public long? Revisao { get; set; }
         public DateTime? DataCriacao { get; set; }
         public string? Status { get; set; }
+
+        // radio “Com Acabamento” / “Sem Acabamento”
         public string? Acabamento { get; set; }
+
+        // **texto livre** para o aço
+        public string? Aco { get; set; }        // <<--- aqui
+
         public long? ChapaAberta { get; set; }
         public float? AreaSuperficial { get; set; }
         public float? PesoLiquidoMetro { get; set; }
@@ -35,11 +41,15 @@ namespace Gerenciador_de_Produtos.Models
         public int? Passo { get; set; }
         public int? Classificacao { get; set; }
 
-        // relacionamentos existentes
+        // relacionamentos…
         public ICollection<AgrupadorItemERP> AgrupadorItensERP { get; set; } = new List<AgrupadorItemERP>();
         public ICollection<Tag> Tags { get; set; } = new List<Tag>();
         public ICollection<ComponenteItemERP> ComponenteItemERPs { get; set; } = new List<ComponenteItemERP>();
+        public ICollection<RevisaoItemERP> Revisoes { get; set; } = new List<RevisaoItemERP>();
         public ICollection<Desenho> Desenhos { get; set; } = new List<Desenho>();
         public ICollection<Perfil> Perfis { get; set; } = new List<Perfil>();
+        public ICollection<PerfilItemERP> PerfilItemERPs { get; set; } = new List<PerfilItemERP>();
+        public List<ItemERPRelacionado> ItensRelacionados { get; set; } = new();
     }
+
 }

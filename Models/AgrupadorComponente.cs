@@ -21,5 +21,7 @@ namespace Gerenciador_de_Produtos.Models
         public float? Profundidade { get; set; }
         public float? Altura { get; set; }
         public bool Status { get; set; }
+
+
     }
 }
