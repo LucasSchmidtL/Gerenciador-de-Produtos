@@ -113,6 +113,7 @@ namespace Gerenciador_de_Produtos.Models
 
         public ItemERP? ItemERP { get; set; } = null!;
 
-        #endregion
+        public ICollection<PerfilItemERP> PerfilItemERPs { get; set; } = new List<PerfilItemERP>();
+        #endregion 
     }
 }

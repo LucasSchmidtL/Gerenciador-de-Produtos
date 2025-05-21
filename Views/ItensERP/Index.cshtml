@@ -53,15 +53,20 @@
                 </div>
 
                 <div>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
-                        <i class="bi bi-eye me-1"></i>Details
-                    </a>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
-                        <i class="bi bi-pencil me-1"></i>Edit
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2">
-                        <i class="bi bi-trash me-1"></i>Delete
-                    </a>
+                    <div>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
+                            <i class="bi bi-eye me-1"></i>Details
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
+                            <i class="bi bi-pencil me-1"></i>Edit
+                        </a>
+                        <a asp-action="ConfiguradorItemERP" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary rounded-pill py-0 px-2 me-1">
+                            <i class="fas fa-sliders-h me-1"></i>Configurar
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2">
+                            <i class="bi bi-trash me-1"></i>Delete
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -71,7 +76,24 @@
                 <div class="row mb-2">
                     <div class="col-sm-4"><strong>Tipo:</strong> @item.TipoItem</div>
                     <div class="col-sm-4"><strong>Original:</strong> @item.ItemERPIdOriginal</div>
-                    <div class="col-sm-4"><strong>Revisão:</strong> @item.Revisao</div>
+                    <div class="col-sm-4">
+                        <strong>Revisão:</strong>
+                        @{
+                            // pega a maior revisão ou mostra “N/D” se não houver
+                            var maxRev = item.Revisoes.Any()
+                            ? item.Revisoes.Max(r => r.Numero)
+                            : (long?)null;
+                        }
+                        @if (maxRev.HasValue)
+                        {
+                            @maxRev
+                        }
+                        else
+                        {
+                            <span class="text-muted">N/D</span>
+                        }
+                    </div>
+
                 </div>
                 <div class="row mb-2">
                     <div class="col-sm-4"><strong>Data Criação:</strong> @(item.DataCriacao?.ToString("dd/MM/yyyy"))</div>

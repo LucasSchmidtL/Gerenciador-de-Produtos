@@ -4,27 +4,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Gerenciador_de_Produtos.Models
 {
-    [Index(nameof(Nome), IsUnique = true)]
+    // Se quiser deixar Nome único por ItemERP apenas, mude IsUnique para false por enquanto
+    [Index(nameof(Nome), IsUnique = false)]
     public class Desenho
     {
         [Key]
         public long DesenhoId { get; set; }
 
-        [Required]
         [MaxLength(100)]
-        public string Nome { get; set; } = null!;
+        public string? Nome { get; set; }        // agora opcional
 
-        [Required]
-        public string Descricao { get; set; } = null!;
+        public string? Descricao { get; set; }   // agora opcional
 
+        public DateTime? DataCriacao { get; set; }
         public long? Revisao { get; set; }
         public string? Status { get; set; }
         public string? Classificacao { get; set; }
         public long? SolicitacaoAlteracaoId { get; set; }
 
-        // 🔗 Relacionamento com ItemERP
         public int? ItemERPId { get; set; }
         public ItemERP? ItemERP { get; set; }
-
     }
 }

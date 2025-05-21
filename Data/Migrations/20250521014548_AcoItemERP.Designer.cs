@@ -4,6 +4,7 @@ using Gerenciador_de_Produtos.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gerenciador_de_Produtos.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521014548_AcoItemERP")]
+    partial class AcoItemERP
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,37 +390,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ItensERP");
-                });
-
-            modelBuilder.Entity("Gerenciador_de_Produtos.Models.ItemERPRelacionado", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<long>("DesenhoId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("ItemERPId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RelacionadoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Tipo")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DesenhoId");
-
-                    b.HasIndex("ItemERPId");
-
-                    b.HasIndex("RelacionadoId");
-
-                    b.ToTable("ItemERPRelacionados");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Norma", b =>
@@ -937,33 +909,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.Navigation("ItemERP");
                 });
 
-            modelBuilder.Entity("Gerenciador_de_Produtos.Models.ItemERPRelacionado", b =>
-                {
-                    b.HasOne("Gerenciador_de_Produtos.Models.Desenho", "Desenho")
-                        .WithMany()
-                        .HasForeignKey("DesenhoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Gerenciador_de_Produtos.Models.ItemERP", "ItemERP")
-                        .WithMany("ItensRelacionados")
-                        .HasForeignKey("ItemERPId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Gerenciador_de_Produtos.Models.ItemERP", "Relacionado")
-                        .WithMany()
-                        .HasForeignKey("RelacionadoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Desenho");
-
-                    b.Navigation("ItemERP");
-
-                    b.Navigation("Relacionado");
-                });
-
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Perfil", b =>
                 {
                     b.HasOne("Gerenciador_de_Produtos.Models.ItemERP", "ItemERP")
@@ -1090,8 +1035,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.Navigation("ComponenteItemERPs");
 
                     b.Navigation("Desenhos");
-
-                    b.Navigation("ItensRelacionados");
 
                     b.Navigation("PerfilItemERPs");
 
