@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Gerenciador_de_Produtos.Data;
 using Gerenciador_de_Produtos.Models;
 using Gerenciador_de_Produtos.Models.ViewModels;
+using Microsoft.VisualStudio.TextTemplating;
 
 namespace Gerenciador_de_Produtos.Controllers
 {
@@ -52,6 +53,48 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
 
+        // GET: ItensERP/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var item = await _context.ItensERP
+                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (item == null) return NotFound();
+
+            return View(item);
+        }
+
+
+
+        // POST: ItensERP/DeleteConfirmed/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var item = await _context.ItensERP
+                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (item == null)
+                return NotFound();
+
+            try
+            {
+                _context.ItensERP.Remove(item);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = $"Item {item.ERP} excluído com sucesso.";
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, "Erro ao excluir ItemERP com ID {ItemId}", id);
+                TempData["Erro"] = $"Não foi possível excluir o item {item.ERP}. Verifique se ele está vinculado a outros registros.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
         // GET: ItensERP/Create
         public IActionResult Create()
         {
@@ -82,7 +125,9 @@ namespace Gerenciador_de_Produtos.Controllers
                 AreaSuperficial = vm.AreaSuperficial,
                 PesoLiquidoMetro = vm.PesoLiquidoMetro,
                 PesoBrutoMetro = vm.PesoBrutoMetro,
-                QuantidadeDobras = vm.QuantidadeDobras
+                QuantidadeDobras = vm.QuantidadeDobras,
+                Status = vm.Status
+
             };
 
             _context.ItensERP.Add(item);
@@ -156,6 +201,8 @@ namespace Gerenciador_de_Produtos.Controllers
             item.PesoLiquidoMetro = vm.PesoLiquidoMetro;
             item.PesoBrutoMetro = vm.PesoBrutoMetro;
             item.QuantidadeDobras = vm.QuantidadeDobras;
+            item.Status = vm.Status;
+
 
             // Tags
             item.Tags.Clear();
@@ -165,7 +212,7 @@ namespace Gerenciador_de_Produtos.Controllers
             // Agrupadores
             _context.AgrupadorItemERPs.RemoveRange(item.AgrupadorItensERP);
             foreach (var agrId in vm.SelectedAgrupadorIds)
-                item.AgrupadorItensERP.Add(new AgrupadorItemERP { ItemERPId = item.Id, AgrupadorId = agrId, Status = true });
+                item.AgrupadorItensERP.Add(new AgrupadorItemERP { ItemERPId = item.Id, AgrupadorId = agrId, Status = "Ativo" });
 
             // Desenhos
             item.Desenhos.Clear();
@@ -191,7 +238,7 @@ namespace Gerenciador_de_Produtos.Controllers
             if (id == null) return NotFound();
 
             var item = await _context.ItensERP
-                .Include(i => i.AgrupadorItensERP)
+                .Include(i => i.AgrupadorItensERP).ThenInclude(ai => ai.Agrupador)
                 .Include(i => i.ComponenteItemERPs)
                 .Include(i => i.Desenhos)
                 .Include(i => i.Revisoes)
@@ -216,6 +263,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 PesoLiquidoMetro = item.PesoLiquidoMetro,
                 PesoBrutoMetro = item.PesoBrutoMetro,
                 QuantidadeDobras = item.QuantidadeDobras,
+                Status = item.Status,
 
                 // Seção 04
                 SelectedAgrupadorIds = item.AgrupadorItensERP.Select(ai => ai.AgrupadorId).ToList(),
@@ -349,11 +397,14 @@ namespace Gerenciador_de_Produtos.Controllers
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
                 .Include(i => i.ItensRelacionados)
                 .Include(i => i.ComponenteItemERPs)
-                .Include(i => i.AgrupadorItensERP)
+                .Include(i => i.AgrupadorItensERP).ThenInclude(ai => ai.Agrupador)
                 .FirstOrDefaultAsync(i => i.Id == vm.Id);
+
             if (item == null) return NotFound();
 
-            // 0) Campos básicos
+            // ----------------------------
+            // 0) Campos básicos do ItemERP
+            // ----------------------------
             item.ERP = vm.ERP;
             item.Descricao = vm.Descricao;
             item.TipoItem = vm.TipoItem;
@@ -365,9 +416,11 @@ namespace Gerenciador_de_Produtos.Controllers
             item.PesoLiquidoMetro = vm.PesoLiquidoMetro;
             item.PesoBrutoMetro = vm.PesoBrutoMetro;
             item.QuantidadeDobras = vm.QuantidadeDobras;
+            item.Status = vm.Status;
 
-            // 1) SEÇÃO 01 — Desenhos
-            await _context.Entry(item).Collection(i => i.Desenhos).LoadAsync();
+            // ----------------------------
+            // 1) Desenhos
+            // ----------------------------
             item.Desenhos.Clear();
             if (vm.Desenhos != null && vm.Desenhos.Any())
             {
@@ -396,9 +449,9 @@ namespace Gerenciador_de_Produtos.Controllers
                 }
             }
 
-
-
-            // 2) SEÇÃO 02 — Revisões do ItemERP
+            // ----------------------------
+            // 2) Revisões do ItemERP
+            // ----------------------------
             _context.RevisaoItemERPs.RemoveRange(item.Revisoes);
             foreach (var rvm in vm.Revisoes)
             {
@@ -411,15 +464,19 @@ namespace Gerenciador_de_Produtos.Controllers
                 });
             }
 
-            // 3) SEÇÃO 04 — Perfis
+            // ----------------------------
+            // 3) Perfis + Revisões
+            // ----------------------------
             _context.PerfilItemERPs.RemoveRange(item.PerfilItemERPs);
             foreach (var pvm in vm.PerfisSection)
             {
                 var perfilItem = new PerfilItemERP
                 {
                     ItemERPId = item.Id,
-                    PerfilId = pvm.PerfilId
+                    PerfilId = pvm.PerfilId,
+                    Aco = pvm.Aco
                 };
+
                 foreach (var rr in pvm.Revisoes)
                 {
                     perfilItem.Revisoes.Add(new RevisaoPerfilItemERP
@@ -430,32 +487,83 @@ namespace Gerenciador_de_Produtos.Controllers
                         PerfilItemERPId = perfilItem.Id
                     });
                 }
+
                 item.PerfilItemERPs.Add(perfilItem);
             }
 
-            // 4) Seção 04 — Agrupadores
+            // ----------------------------
+            // 4) Agrupadores (Seção 04)
+            // ----------------------------
             _context.AgrupadorItemERPs.RemoveRange(item.AgrupadorItensERP);
-            foreach (var agrId in vm.SelectedAgrupadorIds)
-                item.AgrupadorItensERP.Add(new AgrupadorItemERP { ItemERPId = item.Id, AgrupadorId = agrId, Status = true });
+            foreach (var agrId in vm.SelectedAgrupadorIds.Distinct())
+            {
+                item.AgrupadorItensERP.Add(new AgrupadorItemERP
+                {
+                    ItemERPId = item.Id,
+                    AgrupadorId = agrId,
+                    Status = "Ativo"
+                });
+            }
 
-            // 5) Seção 05 — Itens relacionados
+            // ----------------------------
+            // 5) Itens Relacionados
+            // ----------------------------
             _context.ItemERPRelacionados.RemoveRange(item.ItensRelacionados);
-            foreach (var r in vm.ItensPintados)
-                item.ItensRelacionados.Add(new ItemERPRelacionado { ItemERPId = item.Id, RelacionadoId = r.ItemERPId, DesenhoId = r.DesenhoId, Tipo = RelacionamentoTipo.Pintado });
-            foreach (var r in vm.ItensGalvanizados)
-                item.ItensRelacionados.Add(new ItemERPRelacionado { ItemERPId = item.Id, RelacionadoId = r.ItemERPId, DesenhoId = r.DesenhoId, Tipo = RelacionamentoTipo.Galvanizado });
 
-            // 6) Seção 06 — Famílias
+            foreach (var r in vm.ItensPintados)
+            {
+                item.ItensRelacionados.Add(new ItemERPRelacionado
+                {
+                    ItemERPId = item.Id,
+                    RelacionadoId = r.ItemERPId,
+                    DesenhoId = r.DesenhoId,
+                    Tipo = RelacionamentoTipo.Pintado
+                });
+            }
+
+            foreach (var r in vm.ItensGalvanizados)
+            {
+                item.ItensRelacionados.Add(new ItemERPRelacionado
+                {
+                    ItemERPId = item.Id,
+                    RelacionadoId = r.ItemERPId,
+                    DesenhoId = r.DesenhoId,
+                    Tipo = RelacionamentoTipo.Galvanizado
+                });
+            }
+
+            // ----------------------------
+            // 6) Famílias: Componentes e AgrupadoresFamily (sem sobrescrever agrupadores da seção 4)
+            // ----------------------------
             _context.ComponenteItemERPs.RemoveRange(item.ComponenteItemERPs);
-            _context.AgrupadorItemERPs.RemoveRange(item.AgrupadorItensERP);
             foreach (var c in vm.ComponentesFamily)
-                item.ComponenteItemERPs.Add(new ComponenteItemERP { ItemERPId = item.Id, ComponenteId = c.ComponenteId });
+            {
+                item.ComponenteItemERPs.Add(new ComponenteItemERP
+                {
+                    ItemERPId = item.Id,
+                    ComponenteId = c.ComponenteId,
+                    Status = "Ativo"
+                });
+            }
+
             foreach (var a in vm.AgrupadoresFamily)
-                item.AgrupadorItensERP.Add(new AgrupadorItemERP { ItemERPId = item.Id, AgrupadorId = a.AgrupadorId, Status = true });
+            {
+                // Adiciona agrupador *se ainda não tiver sido adicionado* na seção 04
+                if (!item.AgrupadorItensERP.Any(x => x.AgrupadorId == a.AgrupadorId))
+                {
+                    item.AgrupadorItensERP.Add(new AgrupadorItemERP
+                    {
+                        ItemERPId = item.Id,
+                        AgrupadorId = a.AgrupadorId,
+                        Status = "Ativo"
+                    });
+                }
+            }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
 
         // ---------------------------
@@ -477,8 +585,9 @@ namespace Gerenciador_de_Produtos.Controllers
                 .ToList();
 
             vm.AllPerfis = _context.Perfis
-                .Select(p => new SelectListItem(p.ERP ?? p.Id.ToString(), p.Id.ToString(), vm.SelectedPerfilIds.Contains(p.Id)))
-                .ToList();
+                 .Select(p => new SelectListItem(p.Descricao ?? $"Perfil {p.Id}", p.Id.ToString(), vm.SelectedPerfilIds.Contains(p.Id)))
+                 .ToList();
+
         }
 
         private void PopulateAuxLists(ConfiguradorItemERPViewModel vm)
@@ -492,8 +601,9 @@ namespace Gerenciador_de_Produtos.Controllers
                 .ToList();
 
             vm.AllPerfisSection = _context.Perfis
-                .Select(p => new SelectListItem(p.Descricao ?? p.ERP, p.Id.ToString()))
+                .Select(p => new SelectListItem(p.Descricao ?? $"Perfil {p.Id}", p.Id.ToString()))
                 .ToList();
+
 
             vm.AllItensERP = _context.ItensERP
                 .Select(i => new SelectListItem(i.ERP, i.Id.ToString()))

@@ -1,7 +1,7 @@
 ﻿@model Gerenciador_de_Produtos.Models.Perfil
 
 @{
-    ViewData["Title"] = $"Detalhes do Perfil - {Model.ERP}";
+    ViewData["Title"] = $"Detalhes do Perfil - {Model.Descricao}";
 }
 
 <h1 class="mb-4">Detalhes do Perfil</h1>
@@ -15,9 +15,6 @@
         <dl class="row">
 
             <!-- Informações Básicas -->
-            <dt class="col-sm-3">Código ERP</dt>
-            <dd class="col-sm-9">@Model.ERP</dd>
-
             <dt class="col-sm-3">Desenho</dt>
             <dd class="col-sm-9">@Model.Desenho</dd>
 

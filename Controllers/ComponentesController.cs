@@ -19,10 +19,8 @@ namespace Gerenciador_de_Produtos.Controllers
         {
             var lista = await _context.Componentes
                 .Include(c => c.VariaveisComponentes)
-                .Include(c => c.AgrupadorComponentes)
-                    .ThenInclude(ac => ac.Agrupador)
-                .Include(c => c.ComponenteItensERP)
-                    .ThenInclude(ci => ci.ItemERP)
+                .Include(c => c.AgrupadorComponentes).ThenInclude(ac => ac.Agrupador)
+                .Include(c => c.ComponenteItensERP).ThenInclude(ci => ci.ItemERP)
                 .ToListAsync();
 
             return View(lista);
@@ -33,13 +31,10 @@ namespace Gerenciador_de_Produtos.Controllers
         {
             var componente = _context.Componentes
                 .Include(c => c.VariaveisComponentes)
-                .Include(c => c.ComponenteItensERP)
-                    .ThenInclude(ci => ci.ItemERP)
-                        .ThenInclude(i => i.Tags)
-                .Include(c => c.ComponenteItensERP)
-                    .ThenInclude(ci => ci.ItemERP)
-                        .ThenInclude(i => i.Perfis)
+                .Include(c => c.ComponenteItensERP).ThenInclude(ci => ci.ItemERP).ThenInclude(i => i.Tags)
+                .Include(c => c.ComponenteItensERP).ThenInclude(ci => ci.ItemERP).ThenInclude(i => i.Perfis)
                 .FirstOrDefault(c => c.Id == id);
+
             if (componente == null) return NotFound();
 
             var allItemErps = _context.ItensERP
@@ -56,12 +51,14 @@ namespace Gerenciador_de_Produtos.Controllers
                         ComponenteId = v.ComponenteId,
                         Nome = v.Nome,
                         Valor = v.Valor,
-                        Tipo = v.Tipo
+                        Tipo = v.Tipo,
+                        Descricao = v.Descricao // ✅ Correção aplicada
                     })
                     .ToList(),
                 ComponentItems = componente.ComponenteItensERP.ToList(),
                 AllItemERPs = allItemErps
             };
+
             return View(vm);
         }
 
@@ -74,6 +71,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 vm.AllItemERPs = _context.ItensERP
                     .Select(i => new SelectListItem { Text = i.ERP, Value = i.Id.ToString() })
                     .ToList();
+
                 return View(vm);
             }
 
@@ -81,9 +79,10 @@ namespace Gerenciador_de_Produtos.Controllers
                 .Include(c => c.VariaveisComponentes)
                 .Include(c => c.ComponenteItensERP)
                 .FirstOrDefaultAsync(c => c.Id == vm.Componente.Id);
+
             if (componente == null) return NotFound();
 
-            // 1) Variáveis
+            // 1) Atualizar Variáveis
             var toRemoveVars = componente.VariaveisComponentes
                 .Where(v => !vm.Variables.Any(x => x.Id == v.Id))
                 .ToList();
@@ -93,11 +92,13 @@ namespace Gerenciador_de_Produtos.Controllers
             {
                 var existing = componente.VariaveisComponentes
                     .FirstOrDefault(v => v.Id == vModel.Id);
+
                 if (existing != null)
                 {
                     existing.Nome = vModel.Nome;
                     existing.Valor = vModel.Valor;
                     existing.Tipo = vModel.Tipo;
+                    existing.Descricao = vModel.Descricao; 
                 }
                 else
                 {
@@ -106,12 +107,13 @@ namespace Gerenciador_de_Produtos.Controllers
                         ComponenteId = componente.Id,
                         Nome = vModel.Nome,
                         Valor = vModel.Valor,
-                        Tipo = vModel.Tipo
+                        Tipo = vModel.Tipo,
+                        Descricao = vModel.Descricao 
                     });
                 }
             }
 
-            // 2) Itens ERP
+            // 2) Atualizar Itens ERP
             var toRemoveItems = componente.ComponenteItensERP
                 .Where(ci => !vm.ComponentItems.Any(x => x.Id == ci.Id))
                 .ToList();
@@ -121,6 +123,7 @@ namespace Gerenciador_de_Produtos.Controllers
             {
                 var existing = componente.ComponenteItensERP
                     .FirstOrDefault(ci => ci.Id == itemModel.Id);
+
                 if (existing != null)
                 {
                     existing.ItemERPId = itemModel.ItemERPId;
@@ -149,17 +152,10 @@ namespace Gerenciador_de_Produtos.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // CRUD Básico
+        public IActionResult Create() => View();
 
-
-        // GET: Componentes/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Componentes/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Nome,Descricao,Nivel")] Componente componente)
         {
             if (ModelState.IsValid)
@@ -171,26 +167,18 @@ namespace Gerenciador_de_Produtos.Controllers
             return View(componente);
         }
 
-        // GET: Componentes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-                return NotFound();
-
+            if (id == null) return NotFound();
             var componente = await _context.Componentes.FindAsync(id);
-            if (componente == null)
-                return NotFound();
-
+            if (componente == null) return NotFound();
             return View(componente);
         }
 
-        // POST: Componentes/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Descricao,Nivel")] Componente componente)
         {
-            if (id != componente.Id)
-                return NotFound();
+            if (id != componente.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -201,56 +189,27 @@ namespace Gerenciador_de_Produtos.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ComponenteExists(componente.Id))
-                        return NotFound();
-                    else
-                        throw;
+                    if (!ComponenteExists(componente.Id)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             return View(componente);
         }
 
-        // GET: Componentes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
             var componente = await _context.Componentes
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (componente == null)
-                return NotFound();
+
+            if (componente == null) return NotFound();
 
             return View(componente);
         }
 
-        // GET: Componentes/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-                return NotFound();
-
-            var componente = await _context.Componentes
-                .Include(c => c.VariaveisComponentes)
-                .Include(c => c.AgrupadorComponentes)
-                    .ThenInclude(ac => ac.Agrupador)
-                .Include(c => c.ComponenteItensERP)
-                    .ThenInclude(ci => ci.ItemERP)
-                        .ThenInclude(i => i.Tags)
-                .Include(c => c.ComponenteItensERP)
-                    .ThenInclude(ci => ci.ItemERP)
-                        .ThenInclude(i => i.Perfis)
-                .FirstOrDefaultAsync(c => c.Id == id);
-
-            if (componente == null)
-                return NotFound();
-
-            return View(componente);
-        }
-
-
-        // POST: Componentes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -264,9 +223,23 @@ namespace Gerenciador_de_Produtos.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ComponenteExists(int id)
+        public async Task<IActionResult> Details(int? id)
         {
-            return _context.Componentes.Any(e => e.Id == id);
+            if (id == null) return NotFound();
+
+            var componente = await _context.Componentes
+                .Include(c => c.VariaveisComponentes)
+                .Include(c => c.AgrupadorComponentes).ThenInclude(ac => ac.Agrupador)
+                .Include(c => c.ComponenteItensERP).ThenInclude(ci => ci.ItemERP).ThenInclude(i => i.Tags)
+                .Include(c => c.ComponenteItensERP).ThenInclude(ci => ci.ItemERP).ThenInclude(i => i.Perfis)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (componente == null) return NotFound();
+
+            return View(componente);
         }
+
+        private bool ComponenteExists(int id) =>
+            _context.Componentes.Any(e => e.Id == id);
     }
 }

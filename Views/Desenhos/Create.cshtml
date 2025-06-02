@@ -8,22 +8,7 @@
 <h4>Desenho</h4>
 <hr />
 
-<!-- LOG DE DEBUG PARA MODELSTATE -->
-@if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
-{
-    <div class="alert alert-warning">
-        <strong>Problemas encontrados:</strong>
-        <ul>
-            @foreach (var entry in ViewData.ModelState)
-            {
-                foreach (var error in entry.Value.Errors)
-                {
-                    <li><strong>@entry.Key:</strong> @error.ErrorMessage</li>
-                }
-            }
-        </ul>
-    </div>
-}
+
 
 <div class="row">
     <div class="col-md-6">
@@ -50,9 +35,14 @@
 
             <div class="form-group">
                 <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
+                <select asp-for="Status" class="form-control">
+                    <option value="Ativo" selected="@(Model?.Status == "Ativo" ? "selected" : null)">Ativo</option>
+                    <option value="Não Ativo" selected="@(Model?.Status == "Não Ativo" ? "selected" : null)">Não Ativo</option>
+                    <option value="Obsoleto" selected="@(Model?.Status == "Obsoleto" ? "selected" : null)">Obsoleto</option>
+                </select>
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
+
 
             <div class="form-group">
                 <label asp-for="Classificacao" class="control-label"></label>

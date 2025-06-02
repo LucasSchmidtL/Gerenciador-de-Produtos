@@ -1,5 +1,5 @@
-﻿@model Gerenciador_de_Produtos.Models.Perfil
-
+﻿@model Gerenciador_de_Produtos.Models.ViewModels.PerfilItemERPViewModel
+    
 @{
     ViewData["Title"] = "Criar Novo Perfil";
 }
@@ -17,11 +17,6 @@
 
             <h5 class="text-secondary mt-4">Informações Básicas</h5>
             <div class="row g-3">
-                <div class="col-md-3">
-                    <label asp-for="ERP" class="form-label"></label>
-                    <input asp-for="ERP" class="form-control" />
-                    <span asp-validation-for="ERP" class="text-danger"></span>
-                </div>
                 <div class="col-md-3">
                     <label asp-for="Desenho" class="form-label"></label>
                     <input asp-for="Desenho" class="form-control" />
@@ -259,11 +254,12 @@
 
             <h5 class="text-secondary mt-4">Relacionamento</h5>
             <div class="row g-3">
-                <div class="col-md-4">
-                    <label asp-for="ItemERPId" class="form-label"></label>
-                    <input asp-for="ItemERPId" class="form-control" />
-                    <span asp-validation-for="ItemERPId" class="text-danger"></span>
+                <div class="col-md-6">
+                    <label class="form-label">Itens ERP vinculados</label>
+                    <select asp-for="ItensERPSelecionados" asp-items="Model.TodosItensERP" class="form-select" multiple></select>
+                    <span asp-validation-for="ItensERPSelecionados" class="text-danger"></span>
                 </div>
+
             </div>
 
             <div class="mt-4">

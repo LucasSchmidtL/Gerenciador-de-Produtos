@@ -2,7 +2,7 @@
     ViewData["Title"] = "Importar Perfis";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 class="mb-3">@ViewData["Title"]</h1>
 
 <p>
     <a asp-action="DownloadTemplate" class="btn btn-sm btn-outline-primary">
@@ -10,19 +10,38 @@
     </a>
 </p>
 
+<!-- Mensagem de sucesso -->
+@if (TempData["Success"] != null)
+{
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    @Html.Raw(TempData["Success"])
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+}
+
+<!-- Mensagens de erro -->
+@if (TempData["ErroImportacao"] != null)
+{
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    @Html.Raw(TempData["ErroImportacao"])
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+}
+
 <form asp-action="Import" method="post" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
-    <div class="form-group">
-        <label for="file">Arquivo CSV</label>
+
+    <div class="form-group mb-3">
+        <label for="file" class="form-label">Arquivo CSV</label>
         <input type="file" name="file" id="file" class="form-control" accept=".csv" />
         @{
             var fileErrors = ViewData.ModelState["file"]?.Errors;
             if (fileErrors?.Count > 0)
             {
-                <div class="text-danger">@fileErrors[0].ErrorMessage</div>
-                ;
+            <div class="text-danger mt-1">@fileErrors[0].ErrorMessage</div>
             }
         }
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Importar</button>
+
+    <button type="submit" class="btn btn-primary">Importar</button>
 </form>

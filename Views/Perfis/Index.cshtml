@@ -41,7 +41,7 @@
 
 @foreach (var perfil in Model)
 {
-    <div class="card mb-4" data-search="@perfil.ERP @perfil.Descricao">
+    <div class="card mb-4" data-search="@perfil.Descricao">
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
                 <button class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-2 toggle-btn"
@@ -52,7 +52,7 @@
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
                 <div class="flex-grow-1">
-                    <strong>@perfil.ERP</strong> – @perfil.Descricao<br />
+                    <strong>@perfil.Descricao</strong><br />
                     <small class="text-muted">
                         Desenho: @perfil.Desenho |
                         Tipo: @perfil.TipoSecao |

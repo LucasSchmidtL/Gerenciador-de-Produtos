@@ -89,10 +89,14 @@
                                 <td>@item.Profundidade</td>
                                 <td>@item.Quantidade</td>
                                 <td>
-                                    <span class="badge @(item.Status ? "bg-success" : "bg-secondary")">
-                                        @(item.Status ? "Ativo" : "Inativo")
+                                    <span class="badge
+        @(item.Status == "Ativo" ? "bg-success" :
+          item.Status == "Obsoleto" ? "bg-danger" :
+          "bg-secondary")">
+                                        @item.Status
                                     </span>
                                 </td>
+
                                 <td>
                                     <a asp-action="Details" asp-route-id="@item.Id"
                                        class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">

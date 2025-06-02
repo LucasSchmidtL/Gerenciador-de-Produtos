@@ -12,17 +12,17 @@
     @Html.ValidationSummary(false, "", new { @class = "text-danger" })
     @if (!ViewData.ModelState.IsValid)
     {
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach (var entry in ViewData.ModelState.Where(m => m.Value.Errors.Count > 0))
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach (var entry in ViewData.ModelState.Where(m => m.Value.Errors.Count > 0))
                 {
                     foreach (var error in entry.Value.Errors)
                     {
-                        <li><strong>@entry.Key</strong>: @error.ErrorMessage</li>
+            <li><strong>@entry.Key</strong>: @error.ErrorMessage</li>
                     }
                 }
-            </ul>
-        </div>
+        </ul>
+    </div>
     }
 
     @* Guarda o Id do Componente *@
@@ -60,6 +60,7 @@
                         <th>Nome</th>
                         <th>Tipo</th>
                         <th>Valor</th>
+                        <th>Descrição</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -67,29 +68,33 @@
                     @for (int i = 0; i < Model.Variables.Count; i++)
                     {
                         var v = Model.Variables[i];
-                        <tr>
-                            <td>
-                                <input type="hidden" name="Variables[@i].Id" value="@v.Id" />
-                                <input type="hidden" name="Variables[@i].ComponenteId"
-                                       value="@Model.Componente.Id" />
-                                <input name="Variables[@i].Nome" value="@v.Nome"
-                                       class="form-control form-control-sm" />
-                            </td>
-                            <td>
-                                @* Apenas um textbox para Tipo *@
-                                <input name="Variables[@i].Tipo" value="@v.Tipo"
-                                       class="form-control form-control-sm" />
-                            </td>
-                            <td>
-                                <input name="Variables[@i].Valor" value="@v.Valor"
-                                       class="form-control form-control-sm" />
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-danger btn-remove-variable">
-                                    X
-                                </button>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            <input type="hidden" name="Variables[@i].Id" value="@v.Id" />
+                            <input type="hidden" name="Variables[@i].ComponenteId"
+                                   value="@Model.Componente.Id" />
+                            <input name="Variables[@i].Nome" value="@v.Nome"
+                                   class="form-control form-control-sm" />
+                        </td>
+                        <td>
+                            @* Apenas um textbox para Tipo *@
+                            <input name="Variables[@i].Tipo" value="@v.Tipo"
+                                   class="form-control form-control-sm" />
+                        </td>
+                        <td>
+                            <input name="Variables[@i].Valor" value="@v.Valor"
+                                   class="form-control form-control-sm" />
+                        </td>
+                        <td>
+                            <input name="Variables[@i].Descricao" value="@v.Descricao"
+                                   class="form-control form-control-sm" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-danger btn-remove-variable">
+                                X
+                            </button>
+                        </td>
+                    </tr>
                     }
                 </tbody>
             </table>
@@ -113,65 +118,65 @@
                         <th>Tags</th>
                         <th>Perfis</th>
                         <th>Comprimento</th>
-                        <th>Max</th>
+                        <th>Compr. Máx</th>
                         <th>Altura</th>
-                        <th>Profund.</th>
+                        <th>Profundidade</th>
+                        <th>Qtde</th>
+                        <th>Status</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @for (int j = 0; j < Model.ComponentItems.Count; j++)
-                    {
-                        var ci = Model.ComponentItems[j];
-                        <tr>
-                            <td>
-                                <input type="hidden" name="ComponentItems[@j].Id" value="@ci.Id" />
-                                <input type="hidden" name="ComponentItems[@j].ComponenteId"
-                                       value="@Model.Componente.Id" />
-                                <select name="ComponentItems[@j].ItemERPId"
-                                        class="form-select form-select-sm">
-                                    @foreach (var opt in Model.AllItemERPs)
-                                    {
-                                        var sel = opt.Value == ci.ItemERPId.ToString();
-                                        <option value="@opt.Value" selected="@(sel ? "selected" : null)">
-                                            @opt.Text
-                                        </option>
-                                    }
-                                </select>
-                            </td>
-                            <td>@ci.ItemERP?.Descricao</td>
-                            <td>@ci.ItemERP?.Descricao</td>
-                            <td>
-                                @(ci.ItemERP != null
-                                    ? string.Join(", ", ci.ItemERP.Tags.Select(t => t.Nome))
-                                    : "")
-                            </td>
-                            <td>
-                                @(ci.ItemERP != null
-                                    ? string.Join(", ", ci.ItemERP.Perfis.Select(p => p.Descricao))
-                                    : "")
-                            </td>
-                            <td>
-                                <input name="ComponentItems[@j].Comprimento" value="@ci.Comprimento"
-                                       class="form-control form-control-sm" />
-                            </td>
-                            <td>@ci.ItemERP?.ComprimentoMaximo</td>
-                            <td>
-                                <input name="ComponentItems[@j].Altura" value="@ci.Altura"
-                                       class="form-control form-control-sm" />
-                            </td>
-                            <td>
-                                <input name="ComponentItems[@j].Profundidade"
-                                       value="@ci.Profundidade"
-                                       class="form-control form-control-sm" />
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-danger btn-remove-item">
-                                    X
-                                </button>
-                            </td>
-                        </tr>
-                    }
+        {
+            var ci = Model.ComponentItems[j];
+                    <tr>
+                        <td>
+                            <input type="hidden" name="ComponentItems[@j].Id" value="@ci.Id" />
+                            <input type="hidden" name="ComponentItems[@j].ComponenteId" value="@Model.Componente.Id" />
+                            <select name="ComponentItems[@j].ItemERPId" class="form-select form-select-sm">
+                                @foreach (var opt in Model.AllItemERPs)
+                        {
+                            var sel = opt.Value == ci.ItemERPId.ToString();
+                                <option value="@opt.Value" selected="@(sel ? "selected" : null)">@opt.Text</option>
+                        }
+                            </select>
+                        </td>
+                        <td>@ci.ItemERP?.Descricao</td>
+                        <td>
+                            @(ci.ItemERP != null ? string.Join(", ", ci.ItemERP.Tags.Select(t => t.Nome)) : "")
+                        </td>
+                        <td>
+                            @(ci.ItemERP != null ? string.Join(", ", ci.ItemERP.Perfis.Select(p => p.Descricao)) : "")
+                        </td>
+                        <td>
+                            <input name="ComponentItems[@j].Comprimento" value="@ci.Comprimento" class="form-control form-control-sm" />
+                        </td>
+                        <td>@ci.ItemERP?.ComprimentoMaximo</td>
+                        <td>
+                            <input name="ComponentItems[@j].Altura" value="@ci.Altura" class="form-control form-control-sm" />
+                        </td>
+                        <td>
+                            <input name="ComponentItems[@j].Profundidade" value="@ci.Profundidade" class="form-control form-control-sm" />
+                        </td>
+                        <td>
+                            <input name="ComponentItems[@j].Quantidade" value="@ci.Quantidade" class="form-control form-control-sm" />
+                        </td>
+                        <td>
+                            <select name="ComponentItems[@j].Status" class="form-select form-select-sm">
+                                <option value="Ativo" selected="@(ci.Status == "Ativo" ? "selected" : null)">Ativo</option>
+                                <option value="Não Ativo" selected="@(ci.Status == "Não Ativo" ? "selected" : null)">Não Ativo</option>
+                                <option value="Obsoleto" selected="@(ci.Status == "Obsoleto" ? "selected" : null)">Obsoleto</option>
+                            </select>
+                        </td>
+
+
+
+                        <td>
+                            <button type="button" class="btn btn-sm btn-danger btn-remove-item">X</button>
+                        </td>
+                    </tr>
+        }
                 </tbody>
             </table>
         </div>
@@ -182,67 +187,83 @@
 
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-          const bind = (sel, cls) =>
+    document.addEventListener('DOMContentLoaded', () => {
+        const bind = (sel, cls) =>
             document.querySelectorAll(sel + ' ' + cls)
-                    .forEach(b => b.onclick = () => b.closest('tr').remove());
+                .forEach(b => b.onclick = () => b.closest('tr').remove());
 
-          // Adicionar Variable
-          document.getElementById('btnAddVariable').onclick = () => {
+        // Adicionar Variable
+        document.getElementById('btnAddVariable').onclick = () => {
             const body = document.querySelector('#tblVariables tbody');
-            const idx  = body.rows.length;
+            const idx = body.rows.length;
             const comp = document.querySelector('input[name="Componente.Id"]').value;
-            const row  = document.createElement('tr');
+            const row = document.createElement('tr');
             row.innerHTML = `
-              <td>
-                <input type="hidden" name="Variables[${idx}].Id" value="0" />
-                <input type="hidden" name="Variables[${idx}].ComponenteId" value="${comp}" />
-                <input name="Variables[${idx}].Nome" class="form-control form-control-sm" />
-              </td>
-              <td>
-                <input name="Variables[${idx}].Tipo" class="form-control form-control-sm" />
-              </td>
-              <td>
-                <input name="Variables[${idx}].Valor" class="form-control form-control-sm" />
-              </td>
-              <td>
-                <button type="button" class="btn btn-sm btn-danger btn-remove-variable">X</button>
-              </td>`;
+                <td>
+                    <input type="hidden" name="Variables[${idx}].Id" value="0" />
+                    <input type="hidden" name="Variables[${idx}].ComponenteId" value="${comp}" />
+                    <input name="Variables[${idx}].Nome" class="form-control form-control-sm" />
+                </td>
+                <td>
+                    <input name="Variables[${idx}].Tipo" class="form-control form-control-sm" />
+                </td>
+                <td>
+                    <input name="Variables[${idx}].Valor" class="form-control form-control-sm" />
+                </td>
+                <td>
+                    <input name="Variables[${idx}].Descricao" class="form-control form-control-sm" />
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger btn-remove-variable">X</button>
+                </td>`;
             body.appendChild(row);
             bind('#tblVariables', '.btn-remove-variable');
-          };
+        };
 
-          // Adicionar ItemERP
-          document.getElementById('btnAddItemERP').onclick = () => {
+        // Adicionar ItemERP
+        document.getElementById('btnAddItemERP').onclick = () => {
             const body = document.querySelector('#tblItemERPs tbody');
-            const idx  = body.rows.length;
+            const idx = body.rows.length;
             const comp = document.querySelector('input[name="Componente.Id"]').value;
             const opts = `@Html.Raw(string.Join("",
-                   Model.AllItemERPs.Select(o =>
-                     $"<option value='{o.Value}'>{o.Text}</option>"
-                   )
-                ))`;
-            const row  = document.createElement('tr');
+                Model.AllItemERPs.Select(o =>
+                    $"<option value='{o.Value}'>{o.Text}</option>"
+                )
+            ))`;
+
+            const row = document.createElement('tr');
             row.innerHTML = `
-              <td>
-                <input type="hidden" name="ComponentItems[${idx}].Id" value="0" />
-                <input type="hidden" name="ComponentItems[${idx}].ComponenteId" value="${comp}" />
-                <select name="ComponentItems[${idx}].ItemERPId" class="form-select form-select-sm">
-                  ${opts}
-                </select>
-              </td>
-              <td></td><td></td><td></td>
-              <td><input name="ComponentItems[${idx}].Comprimento" class="form-control form-control-sm" /></td>
-              <td></td>
-              <td><input name="ComponentItems[${idx}].Altura" class="form-control form-control-sm" /></td>
-              <td><input name="ComponentItems[${idx}].Profundidade" class="form-control form-control-sm" /></td>
-              <td><button type="button" class="btn btn-sm btn-danger btn-remove-item">X</button></td>`;
+                <td>
+                    <input type="hidden" name="ComponentItems[${idx}].Id" value="0" />
+                    <input type="hidden" name="ComponentItems[${idx}].ComponenteId" value="${comp}" />
+                    <select name="ComponentItems[${idx}].ItemERPId" class="form-select form-select-sm">
+                        ${opts}
+                    </select>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><input name="ComponentItems[${idx}].Comprimento" class="form-control form-control-sm" /></td>
+                <td></td>
+                <td><input name="ComponentItems[${idx}].Altura" class="form-control form-control-sm" /></td>
+                <td><input name="ComponentItems[${idx}].Profundidade" class="form-control form-control-sm" /></td>
+                <td><input name="ComponentItems[${idx}].Quantidade" class="form-control form-control-sm" /></td>
+                <td>
+                    <select name="ComponentItems[${idx}].Status" class="form-select form-select-sm">
+                        <option value="Ativo">Ativo</option>
+                        <option value="Não Ativo">Não Ativo</option>
+                        <option value="Obsoleto">Obsoleto</option>
+                    </select>
+
+                </td>
+                <td><button type="button" class="btn btn-sm btn-danger btn-remove-item">X</button></td>`;
             body.appendChild(row);
             bind('#tblItemERPs', '.btn-remove-item');
-          };
+        };
 
-          bind('#tblVariables', '.btn-remove-variable');
-          bind('#tblItemERPs',   '.btn-remove-item');
-        });
+        bind('#tblVariables', '.btn-remove-variable');
+        bind('#tblItemERPs', '.btn-remove-item');
+    });
     </script>
+
 }

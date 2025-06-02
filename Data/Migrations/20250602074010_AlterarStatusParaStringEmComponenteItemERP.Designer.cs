@@ -4,6 +4,7 @@ using Gerenciador_de_Produtos.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gerenciador_de_Produtos.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250602074010_AlterarStatusParaStringEmComponenteItemERP")]
+    partial class AlterarStatusParaStringEmComponenteItemERP
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -119,9 +122,8 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.Property<float?>("Quantidade")
                         .HasColumnType("real");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -465,6 +467,9 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Desenho")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ERP")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ItemERPId")

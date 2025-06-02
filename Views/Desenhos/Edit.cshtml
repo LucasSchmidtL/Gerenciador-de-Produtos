@@ -34,9 +34,14 @@
 
             <div class="form-group">
                 <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
+                <select asp-for="Status" class="form-control">
+                    <option value="Ativo" selected="@(Model.Status == "Ativo" ? "selected" : null)">Ativo</option>
+                    <option value="Não Ativo" selected="@(Model.Status == "Não Ativo" ? "selected" : null)">Não Ativo</option>
+                    <option value="Obsoleto" selected="@(Model.Status == "Obsoleto" ? "selected" : null)">Obsoleto</option>
+                </select>
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
+
 
             <div class="form-group">
                 <label asp-for="Classificacao" class="control-label"></label>

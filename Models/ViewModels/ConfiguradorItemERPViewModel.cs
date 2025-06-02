@@ -6,7 +6,7 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
 {
     public class DesenhoLinhaViewModel
     {
-        public long Id { get; set; }          // antes era int, agora long
+        public long Id { get; set; }          
         public string? Nome { get; set; }
         public string? Descricao { get; set; }
         public long? Revisao { get; set; }
@@ -49,7 +49,6 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public int AgrupadorId { get; set; }
     }
 
-    // *** A PARTIR DAQUI É O SEU VM ORIGINAL, COM AS PROPRIEDADES ABAIXO ADICIONADAS ***
 
     public class ConfiguradorItemERPViewModel
     {
@@ -57,6 +56,8 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public string? ERP { get; set; }
         public string? Descricao { get; set; }
         public string? TipoItem { get; set; }
+
+        public string? Status { get; set; }
 
         public string? Acabamento { get; set; }
         public int? Classificacao { get; set; }

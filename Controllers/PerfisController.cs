@@ -11,6 +11,7 @@ using CsvHelper.Configuration;
 using System.Globalization;
 using Gerenciador_de_Produtos.Data;
 using Gerenciador_de_Produtos.Models;
+using Gerenciador_de_Produtos.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Gerenciador_de_Produtos.Controllers
@@ -41,26 +42,93 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
         // GET: Perfis/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.ItemERPId = new SelectList(_context.ItensERP, "Id", "ERP");
-            return View();
+            var viewModel = new PerfilItemERPViewModel
+            {
+                TodosItensERP = await _context.ItensERP
+                    .Select(i => new SelectListItem
+                    {
+                        Value = i.Id.ToString(),
+                        Text = i.Descricao
+
+                    }).ToListAsync()
+            };
+
+            return View(viewModel);
         }
+
 
         // POST: Perfis/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ERP,Desenho,Descricao,TipoSecao,Peso,AreaBruta,AreaLiq,AreaEq,Ix,Sxt,Sxb,Zx,Rx,yt,yb,Ixy,Iy,Syl,Syr,Zy,ry,xl,xr,xo,yo,jx,jy,Cw,J,Ixe,Sxet,Sxeb,lye,Syel,Syer,p1,p2,p3,SimetricoX,SimetricoY,ItemERPId")] Perfil perfil)
+        public async Task<IActionResult> Create(PerfilItemERPViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(perfil);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                model.TodosItensERP = await _context.ItensERP
+                    .Select(i => new SelectListItem
+                    {
+                        Value = i.Id.ToString(),
+                        Text = $"{i.ERP} - {i.Descricao}"
+                    }).ToListAsync();
+
+                return View(model);
             }
 
-            ViewBag.ItemERPId = new SelectList(_context.ItensERP, "Id", "ERP", perfil.ItemERPId);
-            return View(perfil);
+            var perfil = new Perfil
+            {
+                Desenho = model.Desenho,
+                Descricao = model.Descricao,
+                TipoSecao = model.TipoSecao,
+                Peso = model.Peso,
+                AreaBruta = model.AreaBruta,
+                AreaLiq = model.AreaLiq,
+                AreaEq = model.AreaEq,
+                Ix = model.Ix,
+                Sxt = model.Sxt,
+                Sxb = model.Sxb,
+                Zx = model.Zx,
+                Rx = model.Rx,
+                yt = model.yt,
+                yb = model.yb,
+                Ixy = model.Ixy,
+                Iy = model.Iy,
+                Syl = model.Syl,
+                Syr = model.Syr,
+                Zy = model.Zy,
+                ry = model.ry,
+                xl = model.xl,
+                xr = model.xr,
+                xo = model.xo,
+                yo = model.yo,
+                jx = model.jx,
+                jy = model.jy,
+                Cw = model.Cw,
+                J = model.J,
+                Ixe = model.Ixe,
+                Sxet = model.Sxet,
+                Sxeb = model.Sxeb,
+                lye = model.lye,
+                Syel = model.Syel,
+                Syer = model.Syer,
+                p1 = model.p1,
+                p2 = model.p2,
+                p3 = model.p3,
+                SimetricoX = model.SimetricoX,
+                SimetricoY = model.SimetricoY,
+
+                // Vínculo com os ItensERP selecionados
+                PerfilItemERPs = model.ItensERPSelecionados
+                    .Select(itemId => new PerfilItemERP
+                    {
+                        ItemERPId = itemId
+                    }).ToList()
+            };
+
+            _context.Perfis.Add(perfil);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
 
@@ -76,7 +144,7 @@ namespace Gerenciador_de_Produtos.Controllers
         // POST: Perfis/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ERP,Desenho,Descricao,TipoSecao,Peso,AreaBruta,AreaLiq,AreaEq,Ix,Sxt,Sxb,Zx,Rx,yt,yb,Ixy,Iy,Syl,Syr,Zy,ry,xl,xr,xo,yo,jx,jy,Cw,J,Ixe,Sxet,Sxeb,lye,Syel,Syer,p1,p2,p3,SimetricoX,SimetricoY")] Perfil perfil)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Desenho,Descricao,TipoSecao,Peso,AreaBruta,AreaLiq,AreaEq,Ix,Sxt,Sxb,Zx,Rx,yt,yb,Ixy,Iy,Syl,Syr,Zy,ry,xl,xr,xo,yo,jx,jy,Cw,J,Ixe,Sxet,Sxeb,lye,Syel,Syer,p1,p2,p3,SimetricoX,SimetricoY")] Perfil perfil)
         {
             if (id != perfil.Id) return NotFound();
             if (ModelState.IsValid)
@@ -131,9 +199,9 @@ namespace Gerenciador_de_Produtos.Controllers
             var csvLines = new List<string>
             {
                 // Cabeçalho (sem Id)
-                "ERP,Desenho,Descricao,TipoSecao,Peso,AreaBruta,AreaLiq,AreaEq,Ix,Sxt,Sxb,Zx,Rx,yt,yb,Ixy,Iy,Syl,Syr,Zy,ry,xl,xr,xo,yo,jx,jy,Cw,J,Ixe,Sxet,Sxeb,lye,Syel,Syer,p1,p2,p3,SimetricoX,SimetricoY",
+                "Desenho,Descricao,TipoSecao,Peso,AreaBruta,AreaLiq,AreaEq,Ix,Sxt,Sxb,Zx,Rx,yt,yb,Ixy,Iy,Syl,Syr,Zy,ry,xl,xr,xo,yo,jx,jy,Cw,J,Ixe,Sxet,Sxeb,lye,Syel,Syer,p1,p2,p3,SimetricoX,SimetricoY",
                 // Exemplo de linha
-                "ERP123,DES001,Exemplo,SecaoA,12.5,100,95,90,200,30,25,50,5,10,8,2,150,20,15,75,8.7,3.2,1.5,0.5,0.5,0.8,0.9,0.2,0.1,180,25,20,5,3,1,0.5,0.3,0.2,TRUE,FALSE"
+                "DES-123,Nome-Perfil,SecaoA,12.5,100,95,90,200,30,25,50,5,10,8,2,150,20,15,75,8.7,3.2,1.5,0.5,0.5,0.8,0.9,0.2,0.1,180,25,20,5,3,1,0.5,0.3,0.2,TRUE,FALSE"
             };
             var csvContent = string.Join("\r\n", csvLines);
             var bytes = System.Text.Encoding.UTF8.GetBytes(csvContent);
@@ -151,6 +219,9 @@ namespace Gerenciador_de_Produtos.Controllers
                 return View();
             }
 
+            var erros = new List<string>();
+            var perfisImportados = new List<Perfil>();
+
             using var stream = file.OpenReadStream();
             using var reader = new StreamReader(stream);
             var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -161,12 +232,72 @@ namespace Gerenciador_de_Produtos.Controllers
             using var csv = new CsvReader(reader, csvConfig);
 
             var records = csv.GetRecords<Perfil>().ToList();
-            await _context.Perfis.AddRangeAsync(records);
-            await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"{records.Count} perfis importados com sucesso!";
+            foreach (var record in records)
+            {
+                // Cria o perfil e vincula ao ItemERP existente
+                var perfil = new Perfil
+                {
+                    Desenho = record.Desenho,
+                    Descricao = record.Descricao,
+                    TipoSecao = record.TipoSecao,
+                    Peso = record.Peso,
+                    AreaBruta = record.AreaBruta,
+                    AreaLiq = record.AreaLiq,
+                    AreaEq = record.AreaEq,
+                    Ix = record.Ix,
+                    Sxt = record.Sxt,
+                    Sxb = record.Sxb,
+                    Zx = record.Zx,
+                    Rx = record.Rx,
+                    yt = record.yt,
+                    yb = record.yb,
+                    Ixy = record.Ixy,
+                    Iy = record.Iy,
+                    Syl = record.Syl,
+                    Syr = record.Syr,
+                    Zy = record.Zy,
+                    ry = record.ry,
+                    xl = record.xl,
+                    xr = record.xr,
+                    xo = record.xo,
+                    yo = record.yo,
+                    jx = record.jx,
+                    jy = record.jy,
+                    Cw = record.Cw,
+                    J = record.J,
+                    Ixe = record.Ixe,
+                    Sxet = record.Sxet,
+                    Sxeb = record.Sxeb,
+                    lye = record.lye,
+                    Syel = record.Syel,
+                    Syer = record.Syer,
+                    p1 = record.p1,
+                    p2 = record.p2,
+                    p3 = record.p3,
+                    SimetricoX = record.SimetricoX,
+                    SimetricoY = record.SimetricoY
+                };
+
+                perfisImportados.Add(perfil);
+            }
+
+            if (perfisImportados.Any())
+            {
+                await _context.Perfis.AddRangeAsync(perfisImportados);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = $"{perfisImportados.Count} perfis importados com sucesso!";
+            }
+
+            if (erros.Any())
+            {
+                TempData["ErroImportacao"] = string.Join("<br/>", erros);
+            }
+
             return RedirectToAction(nameof(Index));
         }
+
+
 
         private bool PerfilExists(int id) => _context.Perfis.Any(e => e.Id == id);
     }

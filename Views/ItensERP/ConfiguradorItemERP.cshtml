@@ -42,6 +42,21 @@
                     <input asp-for="TipoItem" class="form-control" />
                 </div>
             </div>
+            
+            <!-- Status -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label asp-for="Status" class="form-label">Status</label>
+                    <select asp-for="Status" class="form-select">
+                        <option value="Ativo">Ativo</option>
+                        <option value="Não Ativo">Não Ativo</option>
+                        <option value="Obsoleto">Obsoleto</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+            </div>
+
+
             <!-- Acabamento / Classificação -->
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
@@ -73,7 +88,7 @@
                 <datalist id="desenhosList">
                     @foreach (var d in Model.AllDesenhos)
                     {
-                         <option value="@d.Text">@d.Text</option>
+                    <option value="@d.Text">@d.Text</option>
                     }
                 </datalist>
 

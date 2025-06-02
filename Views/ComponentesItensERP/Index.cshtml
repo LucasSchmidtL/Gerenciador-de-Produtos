@@ -51,9 +51,10 @@
                 </div>
 
                 <div>
-                    <span class="badge @(item.Status ? "bg-success" : "bg-secondary") me-3">
-                        @(item.Status ? "Ativo" : "Inativo")
+                    <span class="badge @(item.Status == "Ativo" ? "bg-success" : item.Status == "Obsoleto" ? "bg-danger" : "bg-secondary") me-3">
+                        @item.Status
                     </span>
+
                     <a asp-action="Details" asp-route-id="@item.Id"
                        class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
                         <i class="bi bi-eye me-1"></i>Detalhes

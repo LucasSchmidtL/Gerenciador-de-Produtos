@@ -86,8 +86,10 @@ namespace Gerenciador_de_Produtos.Controllers
                     _context.AgrupadorItemERPs.Add(new AgrupadorItemERP
                     {
                         AgrupadorId = model.Id,
-                        ItemERPId = itemId
+                        ItemERPId = itemId,
+                        Status = "Ativo"
                     });
+
                 }
                 await _context.SaveChangesAsync();
             }
@@ -149,8 +151,10 @@ namespace Gerenciador_de_Produtos.Controllers
                     _context.AgrupadorItemERPs.Add(new AgrupadorItemERP
                     {
                         AgrupadorId = id,
-                        ItemERPId = itemId
+                        ItemERPId = itemId,
+                        Status = "Ativo"
                     });
+
                 }
             }
 
