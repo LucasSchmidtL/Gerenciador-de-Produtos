@@ -142,6 +142,14 @@ namespace Gerenciador_de_Produtos.Data
                 .WithMany()
                 .HasForeignKey(r => r.DesenhoId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+            // TAG - Regras de contexto
+            modelBuilder.Entity<Tag>()
+                .HasIndex(t => t.Nome)
+                .IsUnique();
+
+
         }
     }
 }

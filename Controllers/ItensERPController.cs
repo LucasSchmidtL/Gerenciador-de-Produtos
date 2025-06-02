@@ -29,14 +29,15 @@ namespace Gerenciador_de_Produtos.Controllers
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Perfil)
+                .Include(i => i.ComponenteItemERPs).ThenInclude(ci => ci.Componente)
                 .ToListAsync();
+
             return View(itens);
         }
 
         // GET: ItensERP/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return NotFound();
             var item = await _context.ItensERP
                 .Include(i => i.Tags)
                 .Include(i => i.AgrupadorItensERP).ThenInclude(ai => ai.Agrupador)
@@ -44,10 +45,12 @@ namespace Gerenciador_de_Produtos.Controllers
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Perfil)
+                .Include(i => i.ComponenteItemERPs).ThenInclude(ci => ci.Componente)
                 .FirstOrDefaultAsync(i => i.Id == id);
             if (item == null) return NotFound();
             return View(item);
         }
+
 
         // GET: ItensERP/Create
         public IActionResult Create()
@@ -292,6 +295,44 @@ namespace Gerenciador_de_Produtos.Controllers
             return View(vm);
         }
 
+        // GET: ItensERP/ConfiguradorItemERP/Desenho
+        [HttpGet]
+        public async Task<JsonResult> GetDesenhoInfo(string nome)
+        {
+            var desenho = await _context.Desenhos.FirstOrDefaultAsync(d => d.Nome == nome);
+            if (desenho == null)
+                return Json(null);
+
+            return Json(new
+            {
+                descricao = desenho.Descricao,
+                revisao = desenho.Revisao,
+                dataCriacao = desenho.DataCriacao?.ToString("yyyy-MM-dd")
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BuscarDesenhos(string termo)
+        {
+            var desenhosBrutos = await _context.Desenhos
+                .Where(d => d.Nome.Contains(termo))
+                .Take(10)
+                .ToListAsync();
+
+            var desenhos = desenhosBrutos.Select(d => new
+            {
+                id = d.Nome,
+                text = d.Nome,
+                descricao = d.Descricao,
+                revisao = d.Revisao,
+                dataCriacao = d.DataCriacao?.ToString("yyyy-MM-dd")
+            });
+
+            return Json(desenhos);
+        }
+
+
+
         // POST: ItensERP/ConfiguradorItemERP
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfiguradorItemERP(ConfiguradorItemERPViewModel vm)
@@ -332,12 +373,30 @@ namespace Gerenciador_de_Produtos.Controllers
             {
                 foreach (var dvm in vm.Desenhos)
                 {
-                    if (dvm.Id <= 0) continue;
-                    var desenho = await _context.Desenhos.FindAsync(dvm.Id);
+                    Desenho desenho;
+
+                    if (dvm.Id > 0)
+                    {
+                        desenho = await _context.Desenhos.FindAsync(dvm.Id);
+                    }
+                    else
+                    {
+                        desenho = new Desenho
+                        {
+                            Nome = dvm.Nome,
+                            Descricao = dvm.Descricao,
+                            Revisao = dvm.Revisao,
+                            DataCriacao = dvm.DataCriacao ?? DateTime.Now
+                        };
+                        _context.Desenhos.Add(desenho);
+                    }
+
                     if (desenho != null)
                         item.Desenhos.Add(desenho);
                 }
             }
+
+
 
             // 2) SEÇÃO 02 — Revisões do ItemERP
             _context.RevisaoItemERPs.RemoveRange(item.Revisoes);

@@ -225,6 +225,31 @@ namespace Gerenciador_de_Produtos.Controllers
             return View(componente);
         }
 
+        // GET: Componentes/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var componente = await _context.Componentes
+                .Include(c => c.VariaveisComponentes)
+                .Include(c => c.AgrupadorComponentes)
+                    .ThenInclude(ac => ac.Agrupador)
+                .Include(c => c.ComponenteItensERP)
+                    .ThenInclude(ci => ci.ItemERP)
+                        .ThenInclude(i => i.Tags)
+                .Include(c => c.ComponenteItensERP)
+                    .ThenInclude(ci => ci.ItemERP)
+                        .ThenInclude(i => i.Perfis)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (componente == null)
+                return NotFound();
+
+            return View(componente);
+        }
+
+
         // POST: Componentes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

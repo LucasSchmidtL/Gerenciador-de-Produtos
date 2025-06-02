@@ -37,9 +37,14 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Tags/Create
         public async Task<IActionResult> Create()
         {
-            ViewBag.AllItemERPs = new SelectList(
-                await _context.ItensERP.ToListAsync(),
-                "Id", "ERP");
+            ViewBag.AllItemERPs = await _context.ItensERP
+            .Select(i => new SelectListItem
+            {
+                Value = i.Id.ToString(),
+                Text = $"{i.ERP} - {i.TipoItem} ({i.Descricao})"
+            })
+            .ToListAsync();
+
             return View();
         }
 
@@ -47,6 +52,11 @@ namespace Gerenciador_de_Produtos.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TagEditViewModel vm)
         {
+            if (_context.Tags.Any(t => t.Nome == vm.Nome))
+            {
+                ModelState.AddModelError("Nome", "Já existe uma tag com este nome.");
+            }
+
             if (!ModelState.IsValid)
             {
                 ViewBag.AllItemERPs = new SelectList(
@@ -93,6 +103,11 @@ namespace Gerenciador_de_Produtos.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(TagEditViewModel vm)
         {
+            if (_context.Tags.Any(t => t.Nome == vm.Nome && t.Id != vm.Id))
+            {
+                ModelState.AddModelError("Nome", "Já existe uma tag com este nome.");
+            }
+
             if (!ModelState.IsValid)
             {
                 vm.AllItemERPs = await _context.ItensERP
@@ -103,6 +118,7 @@ namespace Gerenciador_de_Produtos.Controllers
                     .ToListAsync();
                 return View(vm);
             }
+
 
             var tag = await _context.Tags
                 .Include(t => t.ItemERPs)

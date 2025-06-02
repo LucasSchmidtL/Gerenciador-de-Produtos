@@ -1,38 +1,152 @@
 ﻿@model Gerenciador_de_Produtos.Models.Perfil
 
 @{
-    ViewData["Title"] = "Detalhes do Perfil";
+    ViewData["Title"] = $"Detalhes do Perfil - {Model.ERP}";
 }
 
-<h1 class="mb-4">@ViewData["Title"]</h1>
+<h1 class="mb-4">Detalhes do Perfil</h1>
 
-<div class="card shadow-sm">
-    <div class="card-header bg-primary text-white py-2">
-        <h5 class="mb-0">@Model.ERP - @Model.Descricao</h5>
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Informações do Perfil</h5>
     </div>
-    <div class="card-body p-3">
-        <div class="table-responsive">
-            <table class="table table-sm table-hover">
-                <thead>
-                    <tr>
-                        <th class="py-1">Propriedade</th>
-                        <th class="py-1">Valor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var prop in typeof(Gerenciador_de_Produtos.Models.Perfil).GetProperties())
-                    {
-                        <tr>
-                            <td class="py-1 text-muted">@prop.Name</td>
-                            <td class="py-1">@(prop.GetValue(Model) ?? "-")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+
+    <div class="card-body">
+        <dl class="row">
+
+            <!-- Informações Básicas -->
+            <dt class="col-sm-3">Código ERP</dt>
+            <dd class="col-sm-9">@Model.ERP</dd>
+
+            <dt class="col-sm-3">Desenho</dt>
+            <dd class="col-sm-9">@Model.Desenho</dd>
+
+            <dt class="col-sm-3">Descrição</dt>
+            <dd class="col-sm-9">@Model.Descricao</dd>
+
+            <dt class="col-sm-3">Tipo de Seção</dt>
+            <dd class="col-sm-9">@Model.TipoSecao</dd>
+
+            <!-- Propriedades Físicas -->
+            <dt class="col-sm-3">Peso (kg/m)</dt>
+            <dd class="col-sm-9">@Model.Peso</dd>
+
+            <dt class="col-sm-3">Área Bruta</dt>
+            <dd class="col-sm-9">@Model.AreaBruta</dd>
+
+            <dt class="col-sm-3">Área Líquida</dt>
+            <dd class="col-sm-9">@Model.AreaLiq</dd>
+
+            <dt class="col-sm-3">Área Equivalente</dt>
+            <dd class="col-sm-9">@Model.AreaEq</dd>
+
+            <!-- Geometria X -->
+            <dt class="col-sm-3">Ix</dt>
+            <dd class="col-sm-9">@Model.Ix</dd>
+
+            <dt class="col-sm-3">Sxt</dt>
+            <dd class="col-sm-9">@Model.Sxt</dd>
+
+            <dt class="col-sm-3">Sxb</dt>
+            <dd class="col-sm-9">@Model.Sxb</dd>
+
+            <dt class="col-sm-3">Zx</dt>
+            <dd class="col-sm-9">@Model.Zx</dd>
+
+            <dt class="col-sm-3">Rx</dt>
+            <dd class="col-sm-9">@Model.Rx</dd>
+
+            <dt class="col-sm-3">yt</dt>
+            <dd class="col-sm-9">@Model.yt</dd>
+
+            <dt class="col-sm-3">yb</dt>
+            <dd class="col-sm-9">@Model.yb</dd>
+
+            <!-- Geometria Y -->
+            <dt class="col-sm-3">Ixy</dt>
+            <dd class="col-sm-9">@Model.Ixy</dd>
+
+            <dt class="col-sm-3">Iy</dt>
+            <dd class="col-sm-9">@Model.Iy</dd>
+
+            <dt class="col-sm-3">Syl</dt>
+            <dd class="col-sm-9">@Model.Syl</dd>
+
+            <dt class="col-sm-3">Syr</dt>
+            <dd class="col-sm-9">@Model.Syr</dd>
+
+            <dt class="col-sm-3">Zy</dt>
+            <dd class="col-sm-9">@Model.Zy</dd>
+
+            <dt class="col-sm-3">ry</dt>
+            <dd class="col-sm-9">@Model.ry</dd>
+
+            <!-- Coordenadas -->
+            <dt class="col-sm-3">xl</dt>
+            <dd class="col-sm-9">@Model.xl</dd>
+
+            <dt class="col-sm-3">xr</dt>
+            <dd class="col-sm-9">@Model.xr</dd>
+
+            <dt class="col-sm-3">xo</dt>
+            <dd class="col-sm-9">@Model.xo</dd>
+
+            <dt class="col-sm-3">yo</dt>
+            <dd class="col-sm-9">@Model.yo</dd>
+
+            <!-- Torção -->
+            <dt class="col-sm-3">jx</dt>
+            <dd class="col-sm-9">@Model.jx</dd>
+
+            <dt class="col-sm-3">jy</dt>
+            <dd class="col-sm-9">@Model.jy</dd>
+
+            <dt class="col-sm-3">Cw</dt>
+            <dd class="col-sm-9">@Model.Cw</dd>
+
+            <dt class="col-sm-3">J</dt>
+            <dd class="col-sm-9">@Model.J</dd>
+
+            <!-- Eixos Equivalentes -->
+            <dt class="col-sm-3">Ixe</dt>
+            <dd class="col-sm-9">@Model.Ixe</dd>
+
+            <dt class="col-sm-3">Sxet</dt>
+            <dd class="col-sm-9">@Model.Sxet</dd>
+
+            <dt class="col-sm-3">Sxeb</dt>
+            <dd class="col-sm-9">@Model.Sxeb</dd>
+
+            <dt class="col-sm-3">lye</dt>
+            <dd class="col-sm-9">@Model.lye</dd>
+
+            <dt class="col-sm-3">Syel</dt>
+            <dd class="col-sm-9">@Model.Syel</dd>
+
+            <dt class="col-sm-3">Syer</dt>
+            <dd class="col-sm-9">@Model.Syer</dd>
+
+            <!-- Parâmetros Auxiliares -->
+            <dt class="col-sm-3">p1</dt>
+            <dd class="col-sm-9">@Model.p1</dd>
+
+            <dt class="col-sm-3">p2</dt>
+            <dd class="col-sm-9">@Model.p2</dd>
+
+            <dt class="col-sm-3">p3</dt>
+            <dd class="col-sm-9">@Model.p3</dd>
+
+            <!-- Simetria -->
+            <dt class="col-sm-3">Simétrico em X</dt>
+            <dd class="col-sm-9">@((Model.SimetricoX) ? "Sim" : "Não")</dd>
+
+            <dt class="col-sm-3">Simétrico em Y</dt>
+            <dd class="col-sm-9">@((Model.SimetricoY) ? "Sim" : "Não")</dd>
+        </dl>
+
+        <div class="mt-4">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Editar</a>
+            <a asp-action="Index" class="btn btn-outline-secondary ms-2">Voltar</a>
         </div>
-    </div>
-    <div class="card-footer d-flex justify-content-end bg-light py-2">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-secondary me-2">Editar</a>
-        <a asp-action="Index" class="btn btn-sm btn-outline-primary">Voltar</a>
     </div>
 </div>

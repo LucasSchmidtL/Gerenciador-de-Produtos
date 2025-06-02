@@ -1,41 +1,53 @@
 ﻿@model Gerenciador_de_Produtos.Models.AgrupadorProduto
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Vínculo";
 }
 
-<h1>Details</h1>
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-link-45deg me-2"></i>Detalhes do Vínculo Produto ↔ Agrupador
+        </h5>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-light me-2">
+                <i class="bi bi-pencil-square"></i> Editar
+            </a>
+            <a asp-action="Index" class="btn btn-sm btn-outline-light">
+                <i class="bi bi-arrow-left-circle"></i> Voltar
+            </a>
+        </div>
+    </div>
 
-<div>
-    <h4>AgrupadorProduto</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Produto)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Produto.Familia)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Agrupador)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Agrupador.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Variavel)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Variavel)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-4 text-muted">Produto</dt>
+            <dd class="col-sm-8">@Model.Produto?.NomeComercial</dd>
+
+            <dt class="col-sm-4 text-muted">Família</dt>
+            <dd class="col-sm-8">@Model.Produto?.Familia</dd>
+
+            <dt class="col-sm-4 text-muted">Agrupador</dt>
+            <dd class="col-sm-8">@Model.Agrupador?.Nome</dd>
+
+            <dt class="col-sm-4 text-muted">Variável</dt>
+            <dd class="col-sm-8">@Model.Variavel ?? "—"</dd>
+
+            <dt class="col-sm-4 text-muted">Status</dt>
+            <dd class="col-sm-8">
+                @if (Model.Status)
+                {
+                <span class="badge bg-success">Ativo</span>
+                }
+                else
+                {
+                <span class="badge bg-secondary">Inativo</span>
+                }
+            </dd>
+        </dl>
+    </div>
 </div>
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>

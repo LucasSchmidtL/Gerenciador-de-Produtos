@@ -99,10 +99,10 @@ namespace Gerenciador_de_Produtos.Models
         public float? p3 { get; set; }
 
         [Display(Name = "Simétrico em X")]
-        public bool? SimetricoX { get; set; }
+        public bool SimetricoX { get; set; }
 
         [Display(Name = "Simétrico em Y")]
-        public bool? SimetricoY { get; set; }
+        public bool SimetricoY { get; set; }
 
         #endregion
 

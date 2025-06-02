@@ -4,6 +4,13 @@
     ViewData["Title"] = "Editar Tag";
 }
 
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <h1>Editar Tag</h1>
 
 <form asp-action="Edit" method="post">
@@ -18,9 +25,14 @@
 
     <div class="form-group mb-3">
         <label asp-for="SelectedItemERPIds" class="form-label">Itens ERP</label>
-        <select asp-for="SelectedItemERPIds"
-                asp-items="Model.AllItemERPs"
-                multiple class="form-select">
+        <select id="select-itens-erp"
+                name="SelectedItemERPIds"
+                multiple="multiple"
+                class="form-select">
+            @foreach (var item in Model.AllItemERPs)
+            {
+            <option value="@item.Value" selected="@item.Selected">@item.Text</option>
+            }
         </select>
     </div>
 
@@ -29,7 +41,15 @@
 </form>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script>
+        $(document).ready(function () {
+            $('#select-itens-erp').select2({
+                placeholder: "Filtrar Itens ERP...",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+    </script>
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

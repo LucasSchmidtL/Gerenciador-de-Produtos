@@ -73,9 +73,11 @@
                 <datalist id="desenhosList">
                     @foreach (var d in Model.AllDesenhos)
                     {
-                        <option value="@d.Value">@d.Text</option>
+                         <option value="@d.Text">@d.Text</option>
                     }
                 </datalist>
+
+
                 <table class="table table-sm mb-2" id="tblDesenhos">
                     <thead class="table-light">
                         <tr>
@@ -89,14 +91,14 @@
                     <tbody>
                         @for (int i = 0; i < Model.Desenhos.Count; i++)
                         {
-                            <tr>
-                                <input type="hidden" asp-for="Desenhos[@i].Id" />
-                                <td><input asp-for="Desenhos[@i].Nome" class="form-control form-control-sm" list="desenhosList" /></td>
-                                <td><input asp-for="Desenhos[@i].Descricao" class="form-control form-control-sm" /></td>
-                                <td><input asp-for="Desenhos[@i].Revisao" class="form-control form-control-sm" /></td>
-                                <td><input asp-for="Desenhos[@i].DataCriacao" type="date" class="form-control form-control-sm" /></td>
-                                <td><button type="button" class="btn btn-sm btn-danger btn-remove-desenho">✕</button></td>
-                            </tr>
+                        <tr>
+                            <input type="hidden" asp-for="Desenhos[@i].Id" />
+                            <td><input asp-for="Desenhos[@i].Nome" class="form-control form-control-sm" list="desenhosList" /></td>
+                            <td><input asp-for="Desenhos[@i].Descricao" class="form-control form-control-sm" /></td>
+                            <td><input asp-for="Desenhos[@i].Revisao" class="form-control form-control-sm" /></td>
+                            <td><input asp-for="Desenhos[@i].DataCriacao" type="date" class="form-control form-control-sm" /></td>
+                            <td><button type="button" class="btn btn-sm btn-danger btn-remove-desenho">✕</button></td>
+                        </tr>
                         }
                     </tbody>
                 </table>
@@ -387,6 +389,25 @@
         ))`;
 
         // 1) Desenhos
+
+        document.querySelector('#tblDesenhos').addEventListener('change', async (e) => {
+            if (e.target.name.includes("Desenhos") && e.target.name.includes("Nome")) {
+                const nome = e.target.value;
+                const row = e.target.closest('tr');
+
+                const response = await fetch(`/ItensERP/GetDesenhoInfo?nome=${encodeURIComponent(nome)}`);
+                const data = await response.json();
+
+                if (data) {
+                    row.querySelector('input[name$=".Descricao"]').value = data.descricao || '';
+                    row.querySelector('input[name$=".Revisao"]').value = data.revisao || '';
+                    row.querySelector('input[name$=".DataCriacao"]').value = data.dataCriacao || '';
+                }
+            }
+        });
+
+
+
         document.getElementById('btnAddDesenho').addEventListener('click', () => {
             const tbody = document.querySelector('#tblDesenhos tbody'), idx = tbody.rows.length, row = document.createElement('tr');
             row.innerHTML = `
@@ -401,6 +422,40 @@
         document.querySelector('#tblDesenhos').addEventListener('click', e => {
             if (e.target.classList.contains('btn-remove-desenho')) e.target.closest('tr').remove();
         });
+
+
+
+
+        document.getElementById('btnAddDesenhoSelect').addEventListener('click', () => {
+            const tbody = document.querySelector('#tblDesenhos tbody');
+            const idx = tbody.rows.length;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+        <input type="hidden" name="Desenhos[${idx}].Id" value="0" />
+        <td><input name="Desenhos[${idx}].Nome" class="form-control form-control-sm" list="desenhosList" /></td>
+        <td><input name="Desenhos[${idx}].Descricao" class="form-control form-control-sm" /></td>
+        <td><input name="Desenhos[${idx}].Revisao" class="form-control form-control-sm" /></td>
+        <td><input name="Desenhos[${idx}].DataCriacao" type="date" class="form-control form-control-sm" /></td>
+        <td><button type="button" class="btn btn-sm btn-danger btn-remove-desenho">✕</button></td>`;
+            tbody.appendChild(row);
+        });
+
+
+        document.getElementById('btnAddDesenhoManual').addEventListener('click', () => {
+            const tbody = document.querySelector('#tblDesenhos tbody');
+            const idx = tbody.rows.length;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+        <input type="hidden" name="Desenhos[${idx}].Id" value="0" />
+        <td><input name="Desenhos[${idx}].Nome" class="form-control form-control-sm" /></td>
+        <td><input name="Desenhos[${idx}].Descricao" class="form-control form-control-sm" /></td>
+        <td><input name="Desenhos[${idx}].Revisao" class="form-control form-control-sm" /></td>
+        <td><input name="Desenhos[${idx}].DataCriacao" type="date" class="form-control form-control-sm" /></td>
+        <td><button type="button" class="btn btn-sm btn-danger btn-remove-desenho">✕</button></td>`;
+            tbody.appendChild(row);
+        });
+
+
 
         // 2) Revisões
         document.getElementById('btnAddRevisaoItem').addEventListener('click', () => {

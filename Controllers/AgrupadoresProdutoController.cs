@@ -74,7 +74,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 Variavel = pa.Variavel,
                 Status = pa.Status
             };
-            return View(vm);
+            return View(pa);
         }
 
         // GET: AgrupadoresProduto/Create

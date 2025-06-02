@@ -112,26 +112,26 @@
                 </div>
                 @if (item.Tags.Any())
                 {
-                    <ul class="list-group list-group-flush">
-                        @foreach (var tag in item.Tags)
+                <ul class="list-group list-group-flush">
+                    @foreach (var tag in item.Tags)
                         {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                @tag.Nome
-                                <div>
-                                    <a asp-controller="Tags" asp-action="Edit" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
-                                        <i class="bi bi-pencil me-1"></i>Edit
-                                    </a>
-                                    <a asp-controller="Tags" asp-action="Details" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-info rounded-pill py-0 px-2">
-                                        <i class="bi bi-eye me-1"></i>Details
-                                    </a>
-                                </div>
-                            </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @tag.Nome
+                        <div>
+                            <a asp-controller="Tags" asp-action="Edit" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </a>
+                            <a asp-controller="Tags" asp-action="Details" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-info rounded-pill py-0 px-2">
+                                <i class="bi bi-eye me-1"></i>Details
+                            </a>
+                        </div>
+                    </li>
                         }
-                    </ul>
+                </ul>
                 }
                 else
                 {
-                    <div class="p-3 text-muted">Nenhuma tag vinculada</div>
+                <div class="p-3 text-muted">Nenhuma tag vinculada</div>
                 }
 
                 @* Agrupadores *@
@@ -143,29 +143,29 @@
                 </div>
                 @if (item.AgrupadorItensERP.Any())
                 {
-                    <ul class="list-group list-group-flush">
-                        @foreach (var v in item.AgrupadorItensERP)
+                <ul class="list-group list-group-flush">
+                    @foreach (var v in item.AgrupadorItensERP)
                         {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    @v.Agrupador.Nome (<small>@v.Agrupador.Id</small>)
-                                    <span class="badge bg-secondary ms-2">@(v.Status ? "Ativo" : "Inativo")</span>
-                                </div>
-                                <div>
-                                    <a asp-controller="AgrupadoresItensERP" asp-action="Edit" asp-route-id="@v.Id" class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
-                                        <i class="bi bi-pencil me-1"></i>Edit
-                                    </a>
-                                    <a asp-controller="AgrupadoresItensERP" asp-action="Details" asp-route-id="@v.Id" class="btn btn-sm btn-outlineinfo rounded-pill py-0 px-2">
-                                        <i class="bi bi-eye me-1"></i>Details
-                                    </a>
-                                </div>
-                            </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            @v.Agrupador.Nome (<small>@v.Agrupador.Id</small>)
+                            <span class="badge bg-secondary ms-2">@(v.Status ? "Ativo" : "Inativo")</span>
+                        </div>
+                        <div>
+                            <a asp-controller="AgrupadoresItensERP" asp-action="Edit" asp-route-id="@v.Id" class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </a>
+                            <a asp-controller="AgrupadoresItensERP" asp-action="Details" asp-route-id="@v.Id" class="btn btn-sm btn-outlineinfo rounded-pill py-0 px-2">
+                                <i class="bi bi-eye me-1"></i>Details
+                            </a>
+                        </div>
+                    </li>
                         }
-                    </ul>
+                </ul>
                 }
                 else
                 {
-                    <div class="p-3 text-muted">Sem agrupadores vinculados</div>
+                <div class="p-3 text-muted">Sem agrupadores vinculados</div>
                 }
 
                 @* Desenhos *@
@@ -174,35 +174,44 @@
                 </div>
                 @if (item.Desenhos.Any())
                 {
-                    <ul class="list-group list-group-flush mb-3">
-                        @foreach (var d in item.Desenhos)
+                <ul class="list-group list-group-flush mb-3">
+                    @foreach (var d in item.Desenhos)
                         {
-                            <li class="list-group-item">@d.Nome (ID: @d.DesenhoId)</li>
+                    <li class="list-group-item">@d.Nome (ID: @d.DesenhoId)</li>
                         }
-                    </ul>
+                </ul>
                 }
                 else
                 {
-                    <div class="p-3 text-muted">Nenhum desenho vinculado</div>
+                <div class="p-3 text-muted">Nenhum desenho vinculado</div>
                 }
 
                 @* Perfis *@
                 <div class="p-3 border-top">
                     <h5 class="d-inline">Perfis Vinculados</h5>
                 </div>
-                @if (item.Perfis.Any())
-                {
-                    <ul class="list-group list-group-flush mb-3">
-                        @foreach (var p in item.Perfis)
-                        {
-                            <li class="list-group-item">Perfil ID: @p.Id - @p.Descricao</li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <div class="p-3 text-muted">Nenhum perfil vinculado</div>
-                }
+                @if (item.PerfilItemERPs != null && item.PerfilItemERPs.Any())
+{
+                <ul class="list-group list-group-flush mb-3">
+                    @foreach (var pi in item.PerfilItemERPs)
+        {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            Perfil: <strong>@pi.Perfil?.Descricao ?? ("ID: " + pi.PerfilId)</strong>
+                        </span>
+                        @* Exibe quantidade de revisões se quiser *@
+                        <span class="badge bg-secondary">
+                            @pi.Revisoes?.Count() revisões
+                        </span>
+                    </li>
+        }
+                </ul>
+}
+else
+{
+                <div class="p-3 text-muted">Nenhum perfil vinculado</div>
+}
+
 
                 @* Componentes *@
                 <div class="p-3 border-top">
@@ -213,19 +222,19 @@
                 </div>
                 @if (item.ComponenteItemERPs != null && item.ComponenteItemERPs.Any())
                 {
-                    <ul class="list-group list-group-flush mb-3">
-                        @foreach (var comp in item.ComponenteItemERPs)
+                <ul class="list-group list-group-flush mb-3">
+                    @foreach (var comp in item.ComponenteItemERPs)
                         {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                @comp.Componente.Nome (<small>ID: @comp.Componente.Id</small>)
-                                <span class="badge bg-secondary ms-2">Qtd: @comp.Quantidade</span>
-                            </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @comp.Componente.Nome (<small>ID: @comp.Componente.Id</small>)
+                        <span class="badge bg-secondary ms-2">Qtd: @comp.Quantidade</span>
+                    </li>
                         }
-                    </ul>
+                </ul>
                 }
                 else
                 {
-                    <div class="p-3 text-muted">Nenhum componente vinculado</div>
+                <div class="p-3 text-muted">Nenhum componente vinculado</div>
                 }
             </div>
         </div>
