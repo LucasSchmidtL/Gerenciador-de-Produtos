@@ -16,7 +16,8 @@
 
 <div class="mb-4">
     <h3 class="fw-bold mb-3">@ViewData["Title"]</h3>
-    <div class="row g-2">
+
+    <div class="row g-2 mb-2">
         <div class="col-auto">
             <a asp-action="Create" class="btn btn-primary">
                 <i class="bi bi-plus-lg me-1"></i>Criar Novo
@@ -26,14 +27,36 @@
             <input id="searchInput" class="form-control" placeholder="Buscar Nome ou Descrição..." />
         </div>
     </div>
+
+    <!-- Filtros adicionais -->
+    <div class="row g-2 mb-3">
+        <div class="col-md-3">
+            <select id="filtroStatus" class="form-select">
+                <option value="">Filtrar por Status</option>
+                <option value="Ativo">Ativo</option>
+                <option value="Não Ativo">Não Ativo</option>
+                <option value="Obsoleto">Obsoleto</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input id="filtroClassificacao" class="form-control" placeholder="Filtrar por Classificação..." />
+        </div>
+        <div class="col-md-3">
+            <input id="filtroSolicitacao" class="form-control" placeholder="Filtrar por Solicitação de Alteração..." />
+        </div>
+    </div>
 </div>
 
 @foreach (var item in Model)
 {
-    <div class="card mb-4 shadow-sm" data-search="@item.Nome @item.Descricao">
+    var searchText = $"{item.Nome} {item.Descricao} {item.Status} {item.Classificacao} {item.SolicitacaoAlteracaoId}";
+    <div class="card mb-4 shadow-sm"
+         data-search="@searchText.ToLowerInvariant()"
+         data-status="@item.Status"
+         data-classificacao="@item.Classificacao?.ToLowerInvariant()"
+         data-solicitacao="@item.SolicitacaoAlteracaoId?.ToString().ToLowerInvariant()">
         <div class="card-header d-flex align-items-center justify-content-between bg-light">
             <div class="d-flex align-items-center flex-grow-1">
-
                 <button class="btn btn-sm btn-outline-secondary me-3 toggle-btn"
                         data-bs-toggle="collapse"
                         data-bs-target="#details_@item.DesenhoId"
@@ -54,18 +77,14 @@
         <div class="collapse" id="details_@item.DesenhoId">
             <div class="card-body">
                 <div class="row mb-3">
-                    <div class="col-md-4">
-                        <strong>Revisão:</strong> @item.Revisao
-                    </div>
+                    <div class="col-md-4"><strong>Revisão:</strong> @item.Revisao</div>
                     <div class="col-md-4">
                         <strong>Status:</strong>
                         <span class="badge bg-@GetStatusColor(item.Status)">
                             @item.Status
                         </span>
                     </div>
-                    <div class="col-md-4">
-                        <strong>Classificação:</strong> @item.Classificacao
-                    </div>
+                    <div class="col-md-4"><strong>Classificação:</strong> @item.Classificacao</div>
                 </div>
 
                 <div class="mb-3">
@@ -108,18 +127,35 @@
 
 @section Scripts {
     <script>
-        document.getElementById('searchInput').addEventListener('input', function () {
-            var filtro = this.value.toLowerCase();
-            document.querySelectorAll('[data-search]').forEach(function (card) {
-                card.style.display = card.getAttribute('data-search').toLowerCase().includes(filtro) ? '' : 'none';
-            });
-        });
+        function filtrarCartoes() {
+            const termoBusca = document.getElementById('searchInput').value.toLowerCase();
+            const filtroStatus = document.getElementById('filtroStatus').value;
+            const filtroClassificacao = document.getElementById('filtroClassificacao').value.toLowerCase();
+            const filtroSolicitacao = document.getElementById('filtroSolicitacao').value.toLowerCase();
 
-        document.querySelectorAll('.toggle-btn').forEach(function (btn) {
-            btn.classList.add('toggle-collapsed');
-            btn.addEventListener('click', function () {
-                btn.classList.toggle('toggle-collapsed');
+            document.querySelectorAll('[data-search]').forEach(card => {
+                const search = card.getAttribute('data-search');
+                const status = card.getAttribute('data-status');
+                const classificacao = card.getAttribute('data-classificacao');
+                const solicitacao = card.getAttribute('data-solicitacao');
+
+                const correspondeTexto = search.includes(termoBusca);
+                const correspondeStatus = !filtroStatus || status === filtroStatus;
+                const correspondeClassificacao = !filtroClassificacao || classificacao.includes(filtroClassificacao);
+                const correspondeSolicitacao = !filtroSolicitacao || solicitacao.includes(filtroSolicitacao);
+
+                card.style.display = (correspondeTexto && correspondeStatus && correspondeClassificacao && correspondeSolicitacao) ? '' : 'none';
             });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', filtrarCartoes);
+        document.getElementById('filtroStatus').addEventListener('change', filtrarCartoes);
+        document.getElementById('filtroClassificacao').addEventListener('input', filtrarCartoes);
+        document.getElementById('filtroSolicitacao').addEventListener('input', filtrarCartoes);
+
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.classList.add('toggle-collapsed');
+            btn.addEventListener('click', () => btn.classList.toggle('toggle-collapsed'));
         });
     </script>
 }

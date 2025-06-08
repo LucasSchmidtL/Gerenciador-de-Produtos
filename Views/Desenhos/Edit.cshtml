@@ -6,80 +6,104 @@
     ViewData["Title"] = "Editar Desenho";
 }
 
-<h1 class="mb-4">@ViewData["Title"]</h1>
+<h1 class="display-6 fw-bold text-primary mb-4"><i class="bi bi-pencil-square me-2"></i>@ViewData["Title"]</h1>
 
-<div class="card shadow-sm border-0">
-    <div class="card-body">
+<!-- CARD: INFORMAÇÕES DO DESENHO -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-light border-bottom fw-semibold">
+        <i class="bi bi-info-circle me-1 text-primary"></i> Informações do Desenho
+    </div>
+    <div class="card-body p-4">
         <form asp-action="Edit" method="post">
             <input type="hidden" asp-for="DesenhoId" />
 
-            <div class="row g-3">
-                <div class="col-md-6 form-floating">
-                    <input asp-for="Nome" class="form-control" placeholder="Nome" />
-                    <label asp-for="Nome"></label>
-                    <span asp-validation-for="Nome" class="text-danger"></span>
+            <div class="row g-4 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Nome" class="form-label">Nome</label>
+                    <input asp-for="Nome" class="form-control" placeholder="Nome do desenho" />
                 </div>
 
-                <div class="col-md-6 form-floating">
+                <div class="col-md-6">
+                    <label asp-for="Descricao" class="form-label">Descrição</label>
                     <input asp-for="Descricao" class="form-control" placeholder="Descrição" />
-                    <label asp-for="Descricao"></label>
-                    <span asp-validation-for="Descricao" class="text-danger"></span>
                 </div>
 
-                <div class="col-md-3 form-floating">
-                    <input asp-for="Revisao" class="form-control" placeholder="Revisão" />
-                    <label asp-for="Revisao"></label>
-                    <span asp-validation-for="Revisao" class="text-danger"></span>
+                <div class="col-md-3">
+                    <label asp-for="Revisao" class="form-label">Revisão</label>
+                    <input asp-for="Revisao" class="form-control" />
                 </div>
 
-                <div class="col-md-3 form-floating">
+                <div class="col-md-3">
+                    <label asp-for="Status" class="form-label">Status</label>
                     <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<StatusDesenho>()">
                         <option value="">-- selecione --</option>
                     </select>
-                    <label asp-for="Status"></label>
-                    <span asp-validation-for="Status" class="text-danger"></span>
                 </div>
 
-                <div class="col-md-3 form-floating">
-                    <input asp-for="Classificacao" class="form-control" placeholder="Classificação" />
-                    <label asp-for="Classificacao"></label>
-                    <span asp-validation-for="Classificacao" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-3 form-floating">
-                    <input asp-for="SolicitacaoAlteracaoId" class="form-control" placeholder="Solicitação" />
-                    <label asp-for="SolicitacaoAlteracaoId"></label>
-                    <span asp-validation-for="SolicitacaoAlteracaoId" class="text-danger"></span>
-                </div>
-            </div>
-
-            <hr class="my-4" />
-
-            <div class="row g-3 mb-4">
                 <div class="col-md-3">
-                    <label class="form-label">Filtrar por Tipo</label>
-                    <select id="filtroTipo" class="form-select">
-                        <option value="">-- Todos --</option>
-                        <option value="Perfil">Perfil</option>
-                        <option value="Componente">Componente</option>
-                        <option value="Galvanizado">Galvanizado</option>
-                        <!-- Outros tipos se aplicável -->
-                    </select>
+                    <label asp-for="Classificacao" class="form-label">Classificação</label>
+                    <input asp-for="Classificacao" class="form-control" />
                 </div>
 
-                <div class="col-md-9">
-                    <label class="form-label">Itens ERP Relacionados</label>
-                    <select id="erpSelect" name="SelectedItemERPIds" multiple class="form-select w-100"></select>
-                    <span asp-validation-for="SelectedItemERPIds" class="text-danger"></span>
+                <div class="col-md-3">
+                    <label asp-for="SolicitacaoAlteracaoId" class="form-label">Solicitação</label>
+                    <input asp-for="SolicitacaoAlteracaoId" class="form-control" />
                 </div>
             </div>
 
-            <div class="d-flex justify-content-between mt-3">
-                <a asp-action="Index" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Voltar
+            <!-- CARD: RELACIONAR ITENS ERP -->
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-header bg-light border-bottom fw-semibold">
+                    <i class="bi bi-link-45deg text-success me-1"></i> Relacionar Itens ERP
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Tipo</label>
+                            <select id="filtroTipo" class="form-select">
+                                <option value="">-- Todos --</option>
+                                <option value="Perfil">Perfil</option>
+                                <option value="Componente">Componente</option>
+                                <option value="Galvanizado">Galvanizado</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <select id="filtroStatus" class="form-select">
+                                <option value="">-- Todos --</option>
+                                <option value="Ativo">Ativo</option>
+                                <option value="Não Ativo">Não Ativo</option>
+                                <option value="Obsoleto">Obsoleto</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Tag</label>
+                            <input id="filtroTag" class="form-control" placeholder="Digite uma tag" />
+                        </div>
+
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="button" id="limparFiltros" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-x-circle me-1"></i> Limpar Filtros
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Itens ERP Relacionados</label>
+                        <select id="erpSelect" name="SelectedItemERPIds" multiple class="form-select w-100"></select>
+                        <span asp-validation-for="SelectedItemERPIds" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="bi bi-arrow-left me-1"></i>Voltar
                 </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-save"></i> Salvar
+                <button type="submit" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-save me-1"></i>Salvar
                 </button>
             </div>
         </form>
@@ -98,60 +122,58 @@
         }
 
         const itensPreSelecionados = [
-            @foreach (var item in (List<SelectListItem>)ViewBag.ItensSelecionados)
-            {
-                <text>
-                            {
-                                id: '@item.Value',
-                                text: '@item.Text'
-                            },
-                </text>
-            }
+        @foreach (var item in (List<SelectListItem>)ViewBag.ItensSelecionados)
+        {
+            <text>{ id: '@item.Value', text: '@item.Text' },</text>
+        }
         ];
 
-        $('#erpSelect').select2({
-            // ... (seu código ajax aqui)
-        }).val(itensPreSelecionados.map(i => i.id)).trigger('change');
+        const $erpSelect = $('#erpSelect');
 
-        itensPreSelecionados.forEach(i => {
-            const option = new Option(i.text, i.id, true, true);
-            $('#erpSelect').append(option);
+        $erpSelect.select2({
+            placeholder: "Buscar Itens ERP...",
+            ajax: {
+                url: '/ItensERP/BuscarItensERP',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        term: params.term,
+                        tipo: $('#filtroTipo').val(),
+                        status: $('#filtroStatus').val(),
+                        tag: $('#filtroTag').val()
+                    };
+                },
+                processResults: function (data) {
+                    return { results: data };
+                },
+                cache: true
+            },
+            templateResult: formatItem,
+            templateSelection: function (item) {
+                if (!item.id) return item.text;
+                return item.text.split('|')[0];
+            },
+            width: '100%',
+            allowClear: true
         });
 
+        // Adiciona os itens já vinculados
+        itensPreSelecionados.forEach(i => {
+            const option = new Option(i.text, i.id, true, true);
+            $erpSelect.append(option).trigger('change');
+        });
 
+        // Recarrega os dados sem apagar os selecionados
+        $('#filtroTipo, #filtroStatus, #filtroTag').on('change input', function () {
+            $erpSelect.select2('open'); // só força novo carregamento
+        });
 
-        $(document).ready(function () {
-            const $select = $('#erpSelect').select2({
-                placeholder: "Buscar Itens ERP...",
-                ajax: {
-                    url: '/ItensERP/BuscarItensERP',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            term: params.term,
-                            tipo: $('#filtroTipo').val()
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data
-                        };
-                    },
-                    cache: true
-                },
-                templateResult: formatItem,
-                templateSelection: function (item) {
-                    if (!item.id) return item.text;
-                    return item.text.split('|')[0];
-                },
-                width: '100%',
-                allowClear: true
-            });
-
-            $('#filtroTipo').on('change', function () {
-                $select.val(null).trigger('change');
-            });
+        // Botão de limpar filtros
+        $('#limparFiltros').on('click', function () {
+            $('#filtroTipo, #filtroStatus').val('');
+            $('#filtroTag').val('');
+            $erpSelect.select2('open');
         });
     </script>
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Gerenciador_de_Produtos.Models.Enums;
 using Gerenciador_de_Produtos.Models.ViewModels;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,7 +14,13 @@ namespace Gerenciador_de_Produtos.Models
         public int Id { get; set; }
 
         public string? ERP { get; set; }
-        public string? TipoItem { get; set; }
+
+        [Required]
+        [EnumDataType(typeof(TipoItem))]
+        [Column(TypeName = "nvarchar(20)")]
+        public TipoItem TipoItem { get; set; }
+
+
         public string? ItemERPIdOriginal { get; set; }
         public string? Descricao { get; set; }
         public long? Revisao { get; set; }

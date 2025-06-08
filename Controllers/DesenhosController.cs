@@ -16,6 +16,7 @@ namespace Gerenciador_de_Produtos.Controllers
             _context = context;
         }
 
+
         public async Task<IActionResult> Index()
         {
             var desenhos = await _context.Desenhos
@@ -40,47 +41,58 @@ namespace Gerenciador_de_Produtos.Controllers
             return View(desenho);
         }
 
-
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var vm = new DesenhoViewModel
             {
-                AllItemERPs = _context.ItensERP
-                    .Select(i => new SelectListItem(i.ERP, i.Id.ToString()))
-                    .ToList()
+                AllItemERPs = await _context.ItensERP.Select(i => new SelectListItem(i.ERP, i.Id.ToString())).ToListAsync()
             };
             return View(vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(DesenhoViewModel vm)
+        public async Task<IActionResult> Create(DesenhoViewModel viewModel)
         {
-            if (!ModelState.IsValid)
+            if (await _context.Desenhos.AnyAsync(d => d.Nome == viewModel.Nome))
             {
-                vm.AllItemERPs = _context.ItensERP
-                    .Select(i => new SelectListItem(i.ERP, i.Id.ToString()))
-                    .ToList();
-                return View(vm);
+                ModelState.AddModelError("Nome", "Já existe um desenho com este nome.");
             }
 
-            var desenho = new Desenho
+            if (!ModelState.IsValid)
             {
-                Nome = vm.Nome,
-                Descricao = vm.Descricao,
-                Revisao = vm.Revisao,
-                Status = vm.Status,
-                Classificacao = vm.Classificacao,
-                SolicitacaoAlteracaoId = vm.SolicitacaoAlteracaoId,
-                DataCriacao = DateTime.Now,
-                DesenhoItemERPs = vm.SelectedItemERPIds.Select(id => new DesenhoItemERP
-                {
-                    ItemERPId = id
-                }).ToList()
+                viewModel.AllItemERPs = await _context.ItensERP
+                    .Select(i => new SelectListItem(i.ERP, i.Id.ToString()))
+                    .ToListAsync();
+
+                return View(viewModel);
+            }
+
+            var novoDesenho = new Desenho
+            {
+                Nome = viewModel.Nome,
+                Descricao = viewModel.Descricao,
+                Revisao = viewModel.Revisao,
+                Status = viewModel.Status,
+                Classificacao = viewModel.Classificacao,
+                SolicitacaoAlteracaoId = viewModel.SolicitacaoAlteracaoId
             };
 
-            _context.Desenhos.Add(desenho);
+            _context.Desenhos.Add(novoDesenho);
             await _context.SaveChangesAsync();
+
+            if (viewModel.SelectedItemERPIds != null)
+            {
+                var vinculos = viewModel.SelectedItemERPIds.Select(itemId => new DesenhoItemERP
+                {
+                    DesenhoId = novoDesenho.DesenhoId,
+                    ItemERPId = itemId
+                });
+
+                _context.DesenhoItemERPs.AddRange(vinculos);
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -107,6 +119,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 AllItemERPs = await _context.ItensERP
                     .Select(i => new SelectListItem(i.ERP, i.Id.ToString()))
                     .ToListAsync()
+
             };
 
             ViewBag.ItensSelecionados = await _context.ItensERP
@@ -129,9 +142,7 @@ namespace Gerenciador_de_Produtos.Controllers
 
             if (!ModelState.IsValid)
             {
-                vm.AllItemERPs = _context.ItensERP
-                    .Select(i => new SelectListItem(i.ERP, i.Id.ToString()))
-                    .ToList();
+                vm.AllItemERPs = await _context.ItensERP.Select(i => new SelectListItem(i.ERP, i.Id.ToString())).ToListAsync();
                 return View(vm);
             }
 
@@ -182,14 +193,16 @@ namespace Gerenciador_de_Produtos.Controllers
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
             var desenho = await _context.Desenhos
-                .Include(d => d.DesenhoItemERPs)
                 .FirstOrDefaultAsync(d => d.DesenhoId == id);
 
-            if (desenho != null)
-            {
-                _context.Desenhos.Remove(desenho);
-                await _context.SaveChangesAsync();
-            }
+            if (desenho == null) return NotFound();
+
+            var relacionamentos = _context.ItemERPRelacionados
+                .Where(r => r.DesenhoId == id);
+            _context.ItemERPRelacionados.RemoveRange(relacionamentos);
+
+            _context.Desenhos.Remove(desenho);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Gerenciador_de_Produtos.Models.Enums;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Gerenciador_de_Produtos.Models.ViewModels
 {
@@ -6,12 +7,12 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
     {
             public int Id { get; set; }
             public string? ERP { get; set; }
-            public string? TipoItem { get; set; }
+            public TipoItem TipoItem { get; set; }
             public string? ItemERPIdOriginal { get; set; }
             public string? Descricao { get; set; }
             public long? Revisao { get; set; }
             public DateTime? DataCriacao { get; set; }
-            public string? Status { get; set; }
+            public StatusItemERP Status { get; set; }
             public string? Acabamento { get; set; }
             public long? ChapaAberta { get; set; }
             public float? AreaSuperficial { get; set; }

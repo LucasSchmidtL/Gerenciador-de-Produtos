@@ -1,59 +1,51 @@
 ﻿@model Gerenciador_de_Produtos.Models.Desenho
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Excluir Desenho";
 }
 
-<h1>Delete</h1>
+<h1 class="display-6 fw-bold text-danger mb-4"><i class="bi bi-trash3-fill me-2"></i>@ViewData["Title"]</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Desenho</h4>
-    <hr />
-    <dl class="row">
-        <!-- Novo campo Nome -->
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
-
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Descricao)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Descricao)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Revisao)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Revisao)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Classificacao)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Classificacao)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SolicitacaoAlteracaoId)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SolicitacaoAlteracaoId)
-        </dd>
-    </dl>
-
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="DesenhoId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+<div class="alert alert-warning border-0 mb-4">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    Tem certeza que deseja excluir este desenho? Esta ação <strong>não poderá ser desfeita</strong>.
 </div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-light fw-semibold">
+        <i class="bi bi-file-earmark-text me-1 text-secondary"></i> Dados do Desenho
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Nome</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Nome)</dd>
+
+            <dt class="col-sm-3">Descrição</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Descricao)</dd>
+
+            <dt class="col-sm-3">Revisão</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Revisao)</dd>
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Status)</dd>
+
+            <dt class="col-sm-3">Classificação</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Classificacao)</dd>
+
+            <dt class="col-sm-3">Solicitação de Alteração</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.SolicitacaoAlteracaoId)</dd>
+        </dl>
+    </div>
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="DesenhoId" />
+    <div class="d-flex justify-content-between">
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-1"></i> Voltar
+        </a>
+        <button type="submit" class="btn btn-danger rounded-pill px-4">
+            <i class="bi bi-trash me-1"></i> Excluir
+        </button>
+    </div>
+</form>

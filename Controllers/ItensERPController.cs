@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Gerenciador_de_Produtos.Models.Enums;
 using Microsoft.Extensions.Logging;
 using Gerenciador_de_Produtos.Data;
 using Gerenciador_de_Produtos.Models;
@@ -35,26 +36,32 @@ namespace Gerenciador_de_Produtos.Controllers
 
         // GET: AJAX
         [HttpGet]
-        public async Task<IActionResult> BuscarItensERP(string term, string tipo)
+        public async Task<IActionResult> BuscarItensERP(string term, string tipoItem, string status)
         {
             var query = _context.ItensERP.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(term))
                 query = query.Where(i => i.ERP.Contains(term) || i.Descricao.Contains(term));
 
-            if (!string.IsNullOrWhiteSpace(tipo))
-                query = query.Where(i => i.TipoItem == tipo);
+            if (!string.IsNullOrWhiteSpace(tipoItem) && Enum.TryParse<TipoItem>(tipoItem, out var tipoEnum))
+                query = query.Where(i => i.TipoItem == tipoEnum);
+
+            if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<StatusItemERP>(status, out var statusEnum))
+                query = query.Where(i => i.Status == statusEnum);
+
 
             var resultados = await query
                 .OrderBy(i => i.ERP)
                 .Select(i => new
                 {
                     id = i.Id,
-                    text = $"{i.ERP}|{i.Descricao}|{i.TipoItem}"
-                }).ToListAsync();
+                    text = $"{i.ERP}|{i.Descricao}|{i.Status}"
+                })
+                .ToListAsync();
 
             return Json(resultados);
         }
+
 
 
 

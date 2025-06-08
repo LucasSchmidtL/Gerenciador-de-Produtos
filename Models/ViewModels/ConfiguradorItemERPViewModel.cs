@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Gerenciador_de_Produtos.Models.Enums;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -76,7 +77,7 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public int Id { get; set; }
         public string? ERP { get; set; }
         public string? Descricao { get; set; }
-        public string? TipoItem { get; set; }
+        public TipoItem TipoItem { get; set; }
 
         [Display(Name = "Status")]
         public StatusItemERP? Status { get; set; }
