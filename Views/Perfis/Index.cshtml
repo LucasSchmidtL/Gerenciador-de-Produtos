@@ -49,7 +49,7 @@
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
                 <h5 class="mb-0 ms-2 flex-grow-1">
-                    <strong>@vm.ERP</strong> – @vm.Descricao
+                    <strong>@vm.Descricao</strong>
                 </h5>
                 <a asp-action="Details" asp-route-id="@vm.Id"
                    class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
@@ -177,7 +177,7 @@
                                 <datalist id="erpList-@vm.Id">
                                     @foreach (var opt in vm.TodosItensERP)
                                     {
-                                        <option value="@opt.Text" data-id="@opt.Value"></option>
+                                        <option value="@opt.Value - @opt.Text"></option>
                                     }
                                 </datalist>
                                 <button type="button"
@@ -251,16 +251,19 @@
             const val = inp.value.trim();
             const opts = Array.from(document.querySelectorAll(`#erpList-${pid} option`));
 
-            let opt = opts.find(o => o.value === val)
-                   || opts.find(o => o.dataset.id === val);
-
-            if (!opt) {
-              alert('Item ERP não encontrado');
-              return;
+            if (!val.includes(' - ')) {
+                  alert('Formato inválido. Use "ID - Descrição".');
+                  return;
             }
 
-            const id   = opt.dataset.id;
-            const text = opt.value;
+            const [id, ...descParts] = val.split(' - ');
+            const text = descParts.join(' - ').trim();
+
+            if (!id || !text) {
+                alert('Item ERP inválido ou incompleto.');
+                return;
+            }
+
             const tbl  = document.querySelector(`#tblErp-${pid} tbody`);
 
             if ([...tbl.querySelectorAll('input[type=hidden]')].some(h => h.value === id)) {
