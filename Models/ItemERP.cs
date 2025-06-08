@@ -53,10 +53,13 @@ namespace Gerenciador_de_Produtos.Models
         public ICollection<Tag> Tags { get; set; } = new List<Tag>();
         public ICollection<ComponenteItemERP> ComponenteItemERPs { get; set; } = new List<ComponenteItemERP>();
         public ICollection<RevisaoItemERP> Revisoes { get; set; } = new List<RevisaoItemERP>();
-        public ICollection<Desenho> Desenhos { get; set; } = new List<Desenho>();
         public ICollection<Perfil> Perfis { get; set; } = new List<Perfil>();
         public ICollection<PerfilItemERP> PerfilItemERPs { get; set; } = new List<PerfilItemERP>();
         public List<ItemERPRelacionado> ItensRelacionados { get; set; } = new();
+        public ICollection<DesenhoItemERP> DesenhoItemERPs { get; set; } = new List<DesenhoItemERP>();
+
+
+
     }
 
 }

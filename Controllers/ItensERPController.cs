@@ -25,13 +25,38 @@ namespace Gerenciador_de_Produtos.Controllers
             var itens = await _context.ItensERP
                 .Include(i => i.Tags)
                 .Include(i => i.AgrupadorItensERP).ThenInclude(ai => ai.Agrupador)
-                .Include(i => i.Desenhos)
+                .Include(i => i.DesenhoItemERPs)
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Perfil)
                 .ToListAsync();
             return View(itens);
         }
+
+        // GET: AJAX
+        [HttpGet]
+        public async Task<IActionResult> BuscarItensERP(string term, string tipo)
+        {
+            var query = _context.ItensERP.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(term))
+                query = query.Where(i => i.ERP.Contains(term) || i.Descricao.Contains(term));
+
+            if (!string.IsNullOrWhiteSpace(tipo))
+                query = query.Where(i => i.TipoItem == tipo);
+
+            var resultados = await query
+                .OrderBy(i => i.ERP)
+                .Select(i => new
+                {
+                    id = i.Id,
+                    text = $"{i.ERP}|{i.Descricao}|{i.TipoItem}"
+                }).ToListAsync();
+
+            return Json(resultados);
+        }
+
+
 
         // GET: ItensERP/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -40,7 +65,7 @@ namespace Gerenciador_de_Produtos.Controllers
             var item = await _context.ItensERP
                 .Include(i => i.Tags)
                 .Include(i => i.AgrupadorItensERP).ThenInclude(ai => ai.Agrupador)
-                .Include(i => i.Desenhos)
+                .Include(i => i.DesenhoItemERPs)
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Perfil)
@@ -94,7 +119,7 @@ namespace Gerenciador_de_Produtos.Controllers
             var item = await _context.ItensERP
                 .Include(i => i.Tags)
                 .Include(i => i.AgrupadorItensERP)
-                .Include(i => i.Desenhos)
+                .Include(i => i.DesenhoItemERPs)
                 .Include(i => i.PerfilItemERPs)
                 .FirstOrDefaultAsync(i => i.Id == id);
             if (item == null) return NotFound();
@@ -115,7 +140,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 QuantidadeDobras = item.QuantidadeDobras,
                 SelectedTagIds = item.Tags.Select(t => t.Id).ToList(),
                 SelectedAgrupadorIds = item.AgrupadorItensERP.Select(ai => ai.AgrupadorId).ToList(),
-                SelectedDesenhoIds = item.Desenhos.Select(d => (int)d.DesenhoId).ToList(),
+                SelectedDesenhoIds = item.DesenhoItemERPs.Select(d => (int)d.DesenhoId).ToList(),
                 SelectedPerfilIds = item.PerfilItemERPs.Select(pi => pi.PerfilId).ToList()
             };
             PopulateSelections(vm);
@@ -136,7 +161,7 @@ namespace Gerenciador_de_Produtos.Controllers
             var item = await _context.ItensERP
                 .Include(i => i.Tags)
                 .Include(i => i.AgrupadorItensERP)
-                .Include(i => i.Desenhos)
+                .Include(i => i.DesenhoItemERPs)
                 .Include(i => i.PerfilItemERPs)
                 .FirstOrDefaultAsync(i => i.Id == id);
             if (item == null) return NotFound();
@@ -165,11 +190,16 @@ namespace Gerenciador_de_Produtos.Controllers
                 item.AgrupadorItensERP.Add(new AgrupadorItemERP { ItemERPId = item.Id, AgrupadorId = agrId, Status = true });
 
             // Desenhos
-            item.Desenhos.Clear();
+            item.DesenhoItemERPs.Clear();
             var desenhos = await _context.Desenhos
                 .Where(d => vm.SelectedDesenhoIds.Contains((int)d.DesenhoId))
                 .ToListAsync();
-            desenhos.ForEach(d => item.Desenhos.Add(d));
+            desenhos.ForEach(d => item.DesenhoItemERPs.Add(new DesenhoItemERP
+            {
+                ItemERPId = item.Id,
+                DesenhoId = d.DesenhoId
+            }));
+
 
             // Perfis
             item.PerfilItemERPs.Clear();
@@ -190,7 +220,7 @@ namespace Gerenciador_de_Produtos.Controllers
             var item = await _context.ItensERP
                 .Include(i => i.AgrupadorItensERP)
                 .Include(i => i.ComponenteItemERPs)
-                .Include(i => i.Desenhos)
+                .Include(i => i.DesenhoItemERPs)
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
                 .Include(i => i.ItensRelacionados)
@@ -239,13 +269,13 @@ namespace Gerenciador_de_Produtos.Controllers
                 SelectedAgrupadorIds = item.AgrupadorItensERP.Select(ai => ai.AgrupadorId).ToList(),
 
                 // Seção 01 — monta lista de linhas completas
-                Desenhos = item.Desenhos.Select(d => new DesenhoLinhaViewModel
+                Desenhos = item.DesenhoItemERPs.Select(d => new DesenhoLinhaViewModel
                 {
                     Id = (int)d.DesenhoId,
-                    Nome = d.Nome,
-                    Descricao = d.Descricao,
-                    Revisao = d.Revisao,
-                    DataCriacao = d.DataCriacao
+                    Nome = d.Desenho!.Nome,
+                    Descricao = d.Desenho!.Descricao,
+                    Revisao = d.Desenho!.Revisao,
+                    DataCriacao = d.Desenho!.DataCriacao
                 }).ToList(),
 
                 // Seção 02
@@ -362,7 +392,7 @@ namespace Gerenciador_de_Produtos.Controllers
             }
 
             var item = await _context.ItensERP
-                .Include(i => i.Desenhos)
+                .Include(i => i.DesenhoItemERPs)
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
                 .Include(i => i.ItensRelacionados)
@@ -386,16 +416,19 @@ namespace Gerenciador_de_Produtos.Controllers
             item.QuantidadeDobras = vm.QuantidadeDobras;
 
             // 1) SEÇÃO 01 — Desenhos
-            await _context.Entry(item).Collection(i => i.Desenhos).LoadAsync();
-            item.Desenhos.Clear();
+            await _context.Entry(item).Collection(i => i.DesenhoItemERPs).LoadAsync();
+            item.DesenhoItemERPs.Clear();
             if (vm.Desenhos != null && vm.Desenhos.Any())
             {
                 foreach (var dvm in vm.Desenhos)
                 {
                     if (dvm.Id <= 0) continue;
-                    var desenho = await _context.Desenhos.FindAsync(dvm.Id);
-                    if (desenho != null)
-                        item.Desenhos.Add(desenho);
+                    item.DesenhoItemERPs.Add(new DesenhoItemERP
+                    {
+                        ItemERPId = item.Id,
+                        DesenhoId = dvm.Id
+                    });
+
                 }
             }
 

@@ -1,4 +1,4 @@
-﻿@model Gerenciador_de_Produtos.Models.Desenho
+﻿@model Gerenciador_de_Produtos.Models.ViewModels.DesenhoViewModel
 @using Gerenciador_de_Produtos.Models
 @using Microsoft.AspNetCore.Mvc.Rendering
 
@@ -10,61 +10,150 @@
 
 <div class="card shadow-sm border-0">
     <div class="card-body">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post">
             <input type="hidden" asp-for="DesenhoId" />
 
-            <div class="mb-3">
-                <label asp-for="Nome" class="form-label"></label>
-                <input asp-for="Nome" class="form-control" />
-                <span asp-validation-for="Nome" class="text-danger"></span>
+            <div class="row g-3">
+                <div class="col-md-6 form-floating">
+                    <input asp-for="Nome" class="form-control" placeholder="Nome" />
+                    <label asp-for="Nome"></label>
+                    <span asp-validation-for="Nome" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 form-floating">
+                    <input asp-for="Descricao" class="form-control" placeholder="Descrição" />
+                    <label asp-for="Descricao"></label>
+                    <span asp-validation-for="Descricao" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-3 form-floating">
+                    <input asp-for="Revisao" class="form-control" placeholder="Revisão" />
+                    <label asp-for="Revisao"></label>
+                    <span asp-validation-for="Revisao" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-3 form-floating">
+                    <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<StatusDesenho>()">
+                        <option value="">-- selecione --</option>
+                    </select>
+                    <label asp-for="Status"></label>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-3 form-floating">
+                    <input asp-for="Classificacao" class="form-control" placeholder="Classificação" />
+                    <label asp-for="Classificacao"></label>
+                    <span asp-validation-for="Classificacao" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-3 form-floating">
+                    <input asp-for="SolicitacaoAlteracaoId" class="form-control" placeholder="Solicitação" />
+                    <label asp-for="SolicitacaoAlteracaoId"></label>
+                    <span asp-validation-for="SolicitacaoAlteracaoId" class="text-danger"></span>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Descricao" class="form-label"></label>
-                <input asp-for="Descricao" class="form-control" />
-                <span asp-validation-for="Descricao" class="text-danger"></span>
+            <hr class="my-4" />
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label">Filtrar por Tipo</label>
+                    <select id="filtroTipo" class="form-select">
+                        <option value="">-- Todos --</option>
+                        <option value="Perfil">Perfil</option>
+                        <option value="Componente">Componente</option>
+                        <option value="Galvanizado">Galvanizado</option>
+                        <!-- Outros tipos se aplicável -->
+                    </select>
+                </div>
+
+                <div class="col-md-9">
+                    <label class="form-label">Itens ERP Relacionados</label>
+                    <select id="erpSelect" name="SelectedItemERPIds" multiple class="form-select w-100"></select>
+                    <span asp-validation-for="SelectedItemERPIds" class="text-danger"></span>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Revisao" class="form-label"></label>
-                <input asp-for="Revisao" class="form-control" />
-                <span asp-validation-for="Revisao" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Status" class="form-label"></label>
-                <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<StatusDesenho>()">
-                    <option value="">-- selecione --</option>
-                </select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Classificacao" class="form-label"></label>
-                <input asp-for="Classificacao" class="form-control" />
-                <span asp-validation-for="Classificacao" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="SolicitacaoAlteracaoId" class="form-label"></label>
-                <input asp-for="SolicitacaoAlteracaoId" class="form-control" />
-                <span asp-validation-for="SolicitacaoAlteracaoId" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="ItemERPId" class="form-label"></label>
-                <select asp-for="ItemERPId" class="form-select" asp-items="ViewBag.ItemERPId"></select>
-                <span asp-validation-for="ItemERPId" class="text-danger"></span>
-            </div>
-
-            <div class="d-flex justify-content-between">
-                <a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
-                <button type="submit" class="btn btn-primary">Salvar</button>
+            <div class="d-flex justify-content-between mt-3">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Salvar
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 @section Scripts {
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        function formatItem(item) {
+            if (!item.id) return item.text;
+            const parts = item.text.split('|');
+            return $('<span><strong>' + parts[0] + '</strong> - ' + parts[1] + ' <small class="text-muted">(' + parts[2] + ')</small></span>');
+        }
+
+        const itensPreSelecionados = [
+            @foreach (var item in (List<SelectListItem>)ViewBag.ItensSelecionados)
+            {
+                <text>
+                            {
+                                id: '@item.Value',
+                                text: '@item.Text'
+                            },
+                </text>
+            }
+        ];
+
+        $('#erpSelect').select2({
+            // ... (seu código ajax aqui)
+        }).val(itensPreSelecionados.map(i => i.id)).trigger('change');
+
+        itensPreSelecionados.forEach(i => {
+            const option = new Option(i.text, i.id, true, true);
+            $('#erpSelect').append(option);
+        });
+
+
+
+        $(document).ready(function () {
+            const $select = $('#erpSelect').select2({
+                placeholder: "Buscar Itens ERP...",
+                ajax: {
+                    url: '/ItensERP/BuscarItensERP',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            term: params.term,
+                            tipo: $('#filtroTipo').val()
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    cache: true
+                },
+                templateResult: formatItem,
+                templateSelection: function (item) {
+                    if (!item.id) return item.text;
+                    return item.text.split('|')[0];
+                },
+                width: '100%',
+                allowClear: true
+            });
+
+            $('#filtroTipo').on('change', function () {
+                $select.val(null).trigger('change');
+            });
+        });
+    </script>
+
     @await Html.PartialAsync("_ValidationScriptsPartial")
 }

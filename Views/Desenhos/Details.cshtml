@@ -1,67 +1,86 @@
 ﻿@model Gerenciador_de_Produtos.Models.Desenho
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Desenho";
 }
 
-<h1>Detalhes do Desenho</h1>
+<h1 class="mb-4">@ViewData["Title"]</h1>
 
-<div>
-    <h4>Desenho</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-light border-bottom">
+        <h5 class="mb-0">Informações do Desenho</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <strong>ID:</strong> @Model.DesenhoId
+            </div>
+            <div class="col-md-6">
+                <strong>Nome:</strong> @Model.Nome
+            </div>
+            <div class="col-md-6">
+                <strong>Descrição:</strong> @Model.Descricao
+            </div>
+            <div class="col-md-6">
+                <strong>Revisão:</strong> @Model.Revisao
+            </div>
+            <div class="col-md-6">
+                <strong>Status:</strong>
+                <span class="badge bg-@GetStatusColor(Model.Status)">
+                    @Model.Status
+                </span>
+            </div>
+            <div class="col-md-6">
+                <strong>Classificação:</strong> @Model.Classificacao
+            </div>
+            <div class="col-md-6">
+                <strong>Solicitação Alteração:</strong> @Model.SolicitacaoAlteracaoId
+            </div>
+            <div class="col-md-6">
+                <strong>Data Criação:</strong> @(Model.DataCriacao?.ToString("dd/MM/yyyy") ?? "N/D")
+            </div>
+        </div>
+    </div>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Descricao)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Descricao)
-        </dd>
-
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Revisao)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Revisao)
-        </dd>
-
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Classificacao)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Classificacao)
-        </dd>
-
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SolicitacaoAlteracaoId)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SolicitacaoAlteracaoId)
-        </dd>
-
-        <dt class="col-sm-2">
-            Item ERP
-        </dt>
-        <dd class="col-sm-10">
-            @Model.ItemERP?.ERP (@Model.ItemERPId)
-        </dd>
-    </dl>
+    <div class="card-footer border-top bg-light">
+        <h5 class="mb-2">Itens ERP Relacionados</h5>
+        @if (Model.DesenhoItemERPs != null && Model.DesenhoItemERPs.Any())
+        {
+            <ul class="list-group list-group-flush">
+                @foreach (var item in Model.DesenhoItemERPs)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>@item.ItemERP?.ERP</span>
+                        <small class="text-muted">ID: @item.ItemERPId</small>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted">Nenhum item ERP vinculado a este desenho.</p>
+        }
+    </div>
 </div>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.DesenhoId" class="btn btn-sm btn-outline-secondary">Edit</a>
-    <a asp-action="Index" class="btn btn-sm btn-outline-info">Back to List</a>
+<div class="d-flex justify-content-between">
+    <a asp-action="Edit" asp-route-id="@Model.DesenhoId" class="btn btn-outline-secondary">
+        <i class="bi bi-pencil-square me-1"></i> Editar
+    </a>
+    <a asp-action="Index" class="btn btn-outline-info">
+        <i class="bi bi-arrow-left me-1"></i> Voltar
+    </a>
 </div>
+
+@functions {
+    private string GetStatusColor(StatusDesenho status)
+    {
+        return status switch
+        {
+            StatusDesenho.Ativo => "success",
+            StatusDesenho.NaoAtivo => "warning",
+            StatusDesenho.Obsoleto => "danger",
+            _ => "secondary"
+        };
+    }
+}

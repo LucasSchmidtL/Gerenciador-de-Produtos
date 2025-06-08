@@ -27,8 +27,10 @@ namespace Gerenciador_de_Produtos.Models
         public string? Classificacao { get; set; }
         public long? SolicitacaoAlteracaoId { get; set; }
 
-        public int? ItemERPId { get; set; }
-        public ItemERP? ItemERP { get; set; }
+        public ICollection<DesenhoItemERP> DesenhoItemERPs { get; set; } = new List<DesenhoItemERP>();
+
+
+
     }
 
     public enum StatusDesenho

@@ -148,17 +148,23 @@ namespace Gerenciador_de_Produtos.Controllers
             }
 
             // 3.6) ItemERP - Desenho
-            foreach (var d in desenhos)
+            var desenhoItemERPs = await _context.DesenhoItemERPs
+                .Include(die => die.Desenho)
+                .Include(die => die.ItemERP)
+                .ToListAsync();
+
+            foreach (var die in desenhoItemERPs)
             {
                 edges.Add(new
                 {
-                    from = $"item-{d.ItemERPId}",
-                    to = $"des-{d.DesenhoId}"
+                    from = $"item-{die.ItemERP.Id}",
+                    to = $"des-{die.Desenho.DesenhoId}"
                 });
             }
+        
 
-            // 3.7) Agrupador - Componente
-            var agrComps = await _context.AgrupadorComponentes
+        // 3.7) Agrupador - Componente
+        var agrComps = await _context.AgrupadorComponentes
                                          .Include(ac => ac.Componente)
                                          .Include(ac => ac.Agrupador)
                                          .ToListAsync();

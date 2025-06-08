@@ -31,13 +31,13 @@
     </div>
     <div class="card-footer p-0">
         <h5 class="m-3">Desenhos Vinculados</h5>
-        @if (Model.Desenhos != null && Model.Desenhos.Any())
+        @if (Model.DesenhoItemERPs != null && Model.DesenhoItemERPs.Any())
         {
             <ul class="list-group list-group-flush">
-                @foreach (var d in Model.Desenhos)
+                @foreach (var d in Model.DesenhoItemERPs)
                 {
                     <li class="list-group-item">
-                        @d.Nome (ID: @d.DesenhoId)
+                        @d.Desenho?.Nome (ID: @d.DesenhoId)
                     </li>
                 }
             </ul>
@@ -48,7 +48,7 @@
         }
 
         <h5 class="m-3">Perfis Vinculados</h5>
-        @if (Model.Perfis != null && Model.Perfis.Any())
+        @if (Model.PerfilItemERPs != null && Model.PerfilItemERPs.Any())
         {
             <ul class="list-group list-group-flush">
                 @foreach (var p in Model.Perfis)

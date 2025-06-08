@@ -4,7 +4,6 @@
     ViewData["Title"] = "Desenhos";
 }
 
-<!-- Estilos de rotação do ícone (mova para site.css se preferir) -->
 <style>
     .toggle-icon {
         transition: transform 0.3s ease;
@@ -24,50 +23,84 @@
             </a>
         </div>
         <div class="col">
-            <input id="searchInput"
-                   class="form-control"
-                   placeholder="Buscar Nome ou Descrição..." />
+            <input id="searchInput" class="form-control" placeholder="Buscar Nome ou Descrição..." />
         </div>
     </div>
 </div>
 
 @foreach (var item in Model)
 {
-    <div class="card mb-4" data-search="@item.Nome @item.Descricao">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <!-- toggle à esquerda -->
-                <button class="btn btn-sm btn-outline-secondary me-2 toggle-btn"
+    <div class="card mb-4 shadow-sm" data-search="@item.Nome @item.Descricao">
+        <div class="card-header d-flex align-items-center justify-content-between bg-light">
+            <div class="d-flex align-items-center flex-grow-1">
+
+                <button class="btn btn-sm btn-outline-secondary me-3 toggle-btn"
                         data-bs-toggle="collapse"
                         data-bs-target="#details_@item.DesenhoId"
-                        aria-expanded="false"
-                        aria-controls="details_@item.DesenhoId">
+                        aria-expanded="false">
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
-
-                <div class="flex-grow-1">
-                    <strong>Nome:</strong> @item.Nome (@item.DesenhoId)<br />
+                <div>
+                    <strong>@item.Nome</strong> <span class="text-muted">(ID: @item.DesenhoId)</span><br />
                     <small class="text-muted">@item.Descricao</small>
                 </div>
-
-                <div>
-                    <a asp-action="Edit" asp-route-id="@item.DesenhoId" class="btn btn-sm btn-outline-secondary">Edit</a>
-                    <a asp-action="Details" asp-route-id="@item.DesenhoId" class="btn btn-sm btn-outline-info">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.DesenhoId" class="btn btn-sm btn-outline-danger">Delete</a>
-                </div>
+            </div>
+            <div>
+                <a asp-action="Edit" asp-route-id="@item.DesenhoId" class="btn btn-sm btn-outline-secondary">Editar</a>
+                <a asp-action="Delete" asp-route-id="@item.DesenhoId" class="btn btn-sm btn-outline-danger">Excluir</a>
             </div>
         </div>
 
         <div class="collapse" id="details_@item.DesenhoId">
             <div class="card-body">
-                <div class="row mb-2">
-                    <div class="col-sm-4"><strong>Revisão:</strong> @item.Revisao</div>
-                    <div class="col-sm-4"><strong>Status:</strong> @item.Status</div>
-                    <div class="col-sm-4"><strong>Classificação:</strong> @item.Classificacao</div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>Revisão:</strong> @item.Revisao
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Status:</strong>
+                        <span class="badge bg-@GetStatusColor(item.Status)">
+                            @item.Status
+                        </span>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Classificação:</strong> @item.Classificacao
+                    </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-6"><strong>Solicitação Alteração:</strong> @item.SolicitacaoAlteracaoId</div>
+
+                <div class="mb-3">
+                    <strong>Solicitação de Alteração:</strong> @item.SolicitacaoAlteracaoId
                 </div>
+
+                <hr class="my-3" />
+
+                @if (item.DesenhoItemERPs != null && item.DesenhoItemERPs.Any())
+                {
+                    <h6 class="mb-2">Itens ERP Vinculados</h6>
+                    <table class="table table-sm table-hover table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ERP</th>
+                                <th>Descrição</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var link in item.DesenhoItemERPs)
+                            {
+                                <tr>
+                                    <td>@link.ItemERP?.ERP</td>
+                                    <td>@link.ItemERP?.Descricao</td>
+                                    <td>@link.ItemERP?.TipoItem</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="text-muted">Nenhum Item ERP vinculado.</div>
+                }
             </div>
         </div>
     </div>
@@ -75,23 +108,31 @@
 
 @section Scripts {
     <script>
-        // filtro de busca em tempo real
-        document
-          .getElementById('searchInput')
-          .addEventListener('keyup', function() {
+        document.getElementById('searchInput').addEventListener('input', function () {
             var filtro = this.value.toLowerCase();
-            document.querySelectorAll('[data-search]').forEach(function(card) {
-              var texto = card.getAttribute('data-search').toLowerCase();
-              card.style.display = texto.includes(filtro) ? '' : 'none';
+            document.querySelectorAll('[data-search]').forEach(function (card) {
+                card.style.display = card.getAttribute('data-search').toLowerCase().includes(filtro) ? '' : 'none';
             });
-          });
+        });
 
-        // inicializa todos fechados e rotaciona ícone
-        document.querySelectorAll('.toggle-btn').forEach(function(btn) {
+        document.querySelectorAll('.toggle-btn').forEach(function (btn) {
             btn.classList.add('toggle-collapsed');
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 btn.classList.toggle('toggle-collapsed');
             });
         });
     </script>
+}
+
+@functions {
+    private string GetStatusColor(StatusDesenho status)
+    {
+        return status switch
+        {
+            StatusDesenho.Ativo => "success",
+            StatusDesenho.NaoAtivo => "warning",
+            StatusDesenho.Obsoleto => "secondary",
+            _ => "dark"
+        };
+    }
 }

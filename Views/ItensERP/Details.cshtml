@@ -162,7 +162,7 @@
 
 
         <h5 class="m-3">Desenhos Vinculados</h5>
-        @if (Model.Desenhos != null && Model.Desenhos.Any())
+        @if (Model.DesenhoItemERPs != null && Model.DesenhoItemERPs.Any())
         {
             <table class="table table-sm table-bordered mb-4">
                 <thead class="table-light">
@@ -174,13 +174,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var d in Model.Desenhos)
+                    @foreach (var d in Model.DesenhoItemERPs)
                     {
                         <tr>
-                            <td>@d.Nome</td>
-                            <td>@d.Descricao</td>
-                            <td>@d.Revisao</td>
-                            <td>@d.Status</td>
+                            <td>@d.Desenho?.Nome</td>
+                            <td>@d.Desenho?.Descricao</td>
+                            <td>@d.Desenho?.Revisao</td>
+                            <td>@d.Desenho?.Status</td>
                         </tr>
                     }
                 </tbody>
@@ -190,6 +190,7 @@
         {
             <div class="p-3 text-muted">Nenhum desenho vinculado</div>
         }
+
 
         <h5 class="m-3">Perfis Vinculados</h5>
         @if (Model.Perfis != null && Model.Perfis.Any())

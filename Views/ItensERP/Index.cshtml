@@ -172,12 +172,14 @@
                 <div class="p-3 border-top">
                     <h5 class="d-inline">Desenhos Vinculados</h5>
                 </div>
-                @if (item.Desenhos.Any())
+                @if (item.DesenhoItemERPs.Any())
                 {
                     <ul class="list-group list-group-flush mb-3">
-                        @foreach (var d in item.Desenhos)
+                        @foreach (var d in item.DesenhoItemERPs)
                         {
-                            <li class="list-group-item">@d.Nome (ID: @d.DesenhoId)</li>
+                            <li class="list-group-item">
+                                @d.Desenho?.Nome (ID: @d.DesenhoId)
+                            </li>
                         }
                     </ul>
                 }

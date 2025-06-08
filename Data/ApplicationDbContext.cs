@@ -25,7 +25,9 @@ namespace Gerenciador_de_Produtos.Data
         public DbSet<VariavelAgrupador> VariaveisAgrupadores { get; set; }
         public DbSet<VariavelComponente> VariaveisComponentes { get; set; }
         public DbSet<Tag> Tags { get; set; }
+
         public DbSet<Desenho> Desenhos { get; set; }
+        public DbSet<DesenhoItemERP> DesenhoItemERPs { get; set; }
         public DbSet<Perfil> Perfis { get; set; }
         public DbSet<ItemERP> ItensERP { get; set; }
         public DbSet<Secao> Secao { get; set; }
@@ -81,11 +83,19 @@ namespace Gerenciador_de_Produtos.Data
                 .HasForeignKey(ci => ci.ItemERPId);
 
             // ItemERP ⇄ Desenhos
-            modelBuilder.Entity<Desenho>()
-                .HasOne(d => d.ItemERP)
-                .WithMany(i => i.Desenhos)
-                .HasForeignKey(d => d.ItemERPId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<DesenhoItemERP>()
+                .HasKey(di => new { di.DesenhoId, di.ItemERPId });
+
+            modelBuilder.Entity<DesenhoItemERP>()
+                .HasOne(di => di.Desenho)
+                .WithMany(d => d.DesenhoItemERPs)
+                .HasForeignKey(di => di.DesenhoId);
+
+            modelBuilder.Entity<DesenhoItemERP>()
+                .HasOne(di => di.ItemERP)
+                .WithMany(e => e.DesenhoItemERPs)
+                .HasForeignKey(di => di.ItemERPId);
+
 
             // ItemERP ⇄ Revisões do Item
             modelBuilder.Entity<RevisaoItemERP>()
