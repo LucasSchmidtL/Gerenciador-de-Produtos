@@ -3,7 +3,8 @@
     public enum RelacionamentoTipo
     {
         Pintado = 1,
-        Galvanizado = 2
+        Galvanizado = 2,
+        Integrante = 3
     }
 
     public class ItemERPRelacionado

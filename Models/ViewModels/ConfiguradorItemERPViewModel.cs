@@ -35,6 +35,11 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public int Id { get; set; }
         public int ItemERPId { get; set; }
         public long DesenhoId { get; set; }
+
+        public long ItemPaiId { get; set; }
+        public string? ItemPaiERP { get; set; }
+        public string? DesenhoNome { get; set; }
+
     }
 
     public class FamilyComponenteViewModel
@@ -82,6 +87,14 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
 
         public List<RelatedItemViewModel> ItensPintados { get; set; } = new();
         public List<RelatedItemViewModel> ItensGalvanizados { get; set; } = new();
+        public List<RelatedItemViewModel> ItensIntegrantes { get; set; } = new();
+
+        public List<RelatedItemViewModel> ApareceComoIntegrante { get; set; } = new();
+        public List<RelatedItemViewModel> ApareceComoPintado { get; set; } = new();
+        public List<RelatedItemViewModel> ApareceComoGalvanizado { get; set; } = new();
+
+
+
 
         public List<FamilyComponenteViewModel> ComponentesFamily { get; set; } = new();
         public List<FamilyAgrupadorViewModel> AgrupadoresFamily { get; set; } = new();

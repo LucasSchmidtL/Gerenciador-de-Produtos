@@ -36,7 +36,12 @@ namespace Gerenciador_de_Produtos.Controllers
             var produtos = await _context.Produtos.ToListAsync();
             var perfis = await _context.Perfis.ToListAsync();
             var desenhos = await _context.Desenhos.ToListAsync();
-            var relacoes = await _context.ItemERPRelacionados.ToListAsync();
+            var relacoes = await _context.ItemERPRelacionados
+                .Include(r => r.Desenho)
+                .Include(r => r.Relacionado)
+                .Include(r => r.ItemERP)
+                .ToListAsync();
+
 
             var nodes = new List<object>();
             var edges = new List<object>();

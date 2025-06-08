@@ -198,6 +198,26 @@ namespace Gerenciador_de_Produtos.Controllers
 
             if (item == null) return NotFound();
 
+            var apareceComoIntegrante = await _context.ItemERPRelacionados
+                 .Include(r => r.ItemERP)  // <- ItemPai (quem tem o relacionamento)
+                 .Include(r => r.Desenho)
+                 .Where(r => r.RelacionadoId == id && r.Tipo == RelacionamentoTipo.Integrante)
+                 .ToListAsync();
+
+            var apareceComoPintado = await _context.ItemERPRelacionados
+                .Include(r => r.ItemERP)
+                .Include(r => r.Desenho)
+                .Where(r => r.RelacionadoId == id && r.Tipo == RelacionamentoTipo.Pintado)
+                .ToListAsync();
+
+            var apareceComoGalvanizado = await _context.ItemERPRelacionados
+                .Include(r => r.ItemERP)
+                .Include(r => r.Desenho)
+                .Where(r => r.RelacionadoId == id && r.Tipo == RelacionamentoTipo.Galvanizado)
+                .ToListAsync();
+
+
+
             // monta VM
             var vm = new ConfiguradorItemERPViewModel
             {
@@ -269,6 +289,44 @@ namespace Gerenciador_de_Produtos.Controllers
                         ItemERPId = r.RelacionadoId,
                         DesenhoId = r.DesenhoId
                     }).ToList(),
+
+                ItensIntegrantes = item.ItensRelacionados
+                    .Where(r => r.Tipo == RelacionamentoTipo.Integrante)
+                    .Select(r => new RelatedItemViewModel
+                    {
+                        Id = r.Id,
+                        ItemERPId = r.RelacionadoId,
+                        DesenhoId = r.DesenhoId
+                    }).ToList(),
+
+                ApareceComoIntegrante = apareceComoIntegrante.Select(r => new RelatedItemViewModel
+                {
+                    ItemERPId = r.RelacionadoId,
+                    ItemPaiId = r.ItemERPId,
+                    ItemPaiERP = r.ItemERP?.ERP,
+                    DesenhoId = r.DesenhoId,
+                    DesenhoNome = r.Desenho?.Nome
+                }).ToList(),
+
+                ApareceComoPintado = apareceComoPintado.Select(r => new RelatedItemViewModel
+                {
+                    ItemERPId = r.RelacionadoId,
+                    ItemPaiId = r.ItemERPId,
+                    ItemPaiERP = r.ItemERP?.ERP,
+                    DesenhoId = r.DesenhoId,
+                    DesenhoNome = r.Desenho?.Nome
+                }).ToList(),
+
+                ApareceComoGalvanizado = apareceComoGalvanizado.Select(r => new RelatedItemViewModel
+                {
+                    ItemERPId = r.RelacionadoId,
+                    ItemPaiId = r.ItemERPId,
+                    ItemPaiERP = r.ItemERP?.ERP,
+                    DesenhoId = r.DesenhoId,
+                    DesenhoNome = r.Desenho?.Nome
+                }).ToList(),
+
+
 
                 // Seção 06 — famílias
                 ComponentesFamily = item.ComponenteItemERPs.Select(ci => new FamilyComponenteViewModel
@@ -385,6 +443,15 @@ namespace Gerenciador_de_Produtos.Controllers
                 item.ItensRelacionados.Add(new ItemERPRelacionado { ItemERPId = item.Id, RelacionadoId = r.ItemERPId, DesenhoId = r.DesenhoId, Tipo = RelacionamentoTipo.Pintado });
             foreach (var r in vm.ItensGalvanizados)
                 item.ItensRelacionados.Add(new ItemERPRelacionado { ItemERPId = item.Id, RelacionadoId = r.ItemERPId, DesenhoId = r.DesenhoId, Tipo = RelacionamentoTipo.Galvanizado });
+            foreach (var r in vm.ItensIntegrantes)
+                item.ItensRelacionados.Add(new ItemERPRelacionado
+                {
+                    ItemERPId = item.Id,
+                    RelacionadoId = r.ItemERPId,
+                    DesenhoId = r.DesenhoId,
+                    Tipo = RelacionamentoTipo.Integrante
+                });
+
 
             // 6) Seção 06 — Famílias
             _context.ComponenteItemERPs.RemoveRange(item.ComponenteItemERPs);

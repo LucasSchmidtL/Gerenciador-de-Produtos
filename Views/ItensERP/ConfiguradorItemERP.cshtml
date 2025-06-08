@@ -239,41 +239,202 @@
     <div class="card mb-4">
         <div class="card-header bg-secondary text-white"><strong>Seção 05: Itens relacionados</strong></div>
         <div class="card-body">
-            <h5>Itens pintados</h5>
-            <table class="table table-sm mb-2" id="tblItensPintados">
-                <thead class="table-light"><tr><th>Item ERP</th><th>Desenho</th><th></th></tr></thead>
-                <tbody>
-                    @for (int i = 0; i < Model.ItensPintados.Count; i++)
-                    {
-                        <tr>
-                            <input type="hidden" asp-for="ItensPintados[@i].Id" />
-                            <td><select asp-for="ItensPintados[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-control form-control-sm"><option value="">-- selecione --</option></select></td>
-                            <td><select asp-for="ItensPintados[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-control form-control-sm"><option value="">-- selecione --</option></select></td>
-                            <td><button type="button" class="btn btn-sm btn-danger btn-remove-pintado">✕</button></td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <button type="button" id="btnAddPintado" class="btn btn-success btn-sm mb-3"><i class="bi bi-plus-lg me-1"></i>Adicionar</button>
 
-            <hr />
+            <!-- Subcard: Itens integrantes -->
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <strong>Itens integrantes</strong>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm mb-2" id="tblItensIntegrantes">
+                        <thead class="table-light"><tr><th>Item ERP</th><th>Desenho</th><th></th></tr></thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.ItensIntegrantes.Count; i++)
+                            {
+                                <tr>
+                                    <input type="hidden" asp-for="ItensIntegrantes[@i].Id" />
+                                    <td>
+                                        <div class="input-group">
+                                            <select asp-for="ItensIntegrantes[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-select form-select-sm">
+                                                <option value="">-- selecione --</option>
+                                            </select>
+                                            <a class="btn btn-outline-secondary btn-sm" target="_blank"
+                                               href="@Url.Action("ConfiguradorItemERP", "ItensERP", new { id = Model.ItensIntegrantes[@i].ItemERPId })">
+                                                🔧
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <select asp-for="ItensIntegrantes[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-select form-select-sm">
+                                            <option value="">-- selecione --</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-danger btn-remove-integrante">✕</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <button type="button" id="btnAddIntegrante" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-lg me-1"></i>Adicionar Integrante
+                    </button>
+                </div>
+            </div>
 
-            <h5>Itens galvanizados</h5>
-            <table class="table table-sm mb-2" id="tblItensGalva">
-                <thead class="table-light"><tr><th>Item ERP</th><th>Desenho</th><th></th></tr></thead>
-                <tbody>
-                    @for (int i = 0; i < Model.ItensGalvanizados.Count; i++)
-                    {
-                        <tr>
-                            <input type="hidden" asp-for="ItensGalvanizados[@i].Id" />
-                            <td><select asp-for="ItensGalvanizados[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-control form-control-sm"><option value="">-- selecione --</option></select></td>
-                            <td><select asp-for="ItensGalvanizados[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-control form-control-sm"><option value="">-- selecione --</option></select></td>
-                            <td><button type="button" class="btn btn-sm btn-danger btn-remove-galva">✕</button></td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <button type="button" id="btnAddGalva" class="btn btn-success btn-sm"><i class="bi bi-plus-lg me-1"></i>Adicionar</button>
+            <!-- Subcard: Itens pintados -->
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <strong>Itens pintados</strong>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm mb-2" id="tblItensPintados">
+                        <thead class="table-light"><tr><th>Item ERP</th><th>Desenho</th><th></th></tr></thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.ItensPintados.Count; i++)
+                            {
+                                <tr>
+                                    <input type="hidden" asp-for="ItensPintados[@i].Id" />
+                                    <td>
+                                        <div class="input-group">
+                                            <select asp-for="ItensPintados[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-select form-select-sm">
+                                                <option value="">-- selecione --</option>
+                                            </select>
+                                            <a class="btn btn-outline-secondary btn-sm" target="_blank"
+                                               href="@Url.Action("ConfiguradorItemERP", "ItensERP", new { id = Model.ItensPintados[@i].ItemERPId })">
+                                                🔧
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <select asp-for="ItensPintados[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-select form-select-sm">
+                                            <option value="">-- selecione --</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-danger btn-remove-pintado">✕</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <button type="button" id="btnAddPintado" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-lg me-1"></i>Adicionar Pintado
+                    </button>
+                </div>
+            </div>
+
+            <!-- Subcard: Itens galvanizados -->
+            <div class="card mb-0">
+                <div class="card-header bg-light">
+                    <strong>Itens galvanizados</strong>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm mb-2" id="tblItensGalva">
+                        <thead class="table-light"><tr><th>Item ERP</th><th>Desenho</th><th></th></tr></thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.ItensGalvanizados.Count; i++)
+                            {
+                                <tr>
+                                    <input type="hidden" asp-for="ItensGalvanizados[@i].Id" />
+                                    <td>
+                                        <div class="input-group">
+                                            <select asp-for="ItensGalvanizados[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-select form-select-sm">
+                                                <option value="">-- selecione --</option>
+                                            </select>
+                                            <a class="btn btn-outline-secondary btn-sm" target="_blank"
+                                               href="@Url.Action("ConfiguradorItemERP", "ItensERP", new { id = Model.ItensGalvanizados[@i].ItemERPId })">
+                                                🔧
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <select asp-for="ItensGalvanizados[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-select form-select-sm">
+                                            <option value="">-- selecione --</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-danger btn-remove-galva">✕</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <button type="button" id="btnAddGalva" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-lg me-1"></i>Adicionar Galvanizado
+                    </button>
+                </div>
+            </div>
+            <hr class="my-4" />
+            <h5 class="mb-3 fw-semibold text-dark">
+                <i class="bi bi-diagram-2 me-1 text-muted"></i>Este item aparece em outros como parte de:
+            </h5>
+
+            @if (Model.ApareceComoPintado.Any())
+            {
+                <div class="card shadow-sm border mb-3 rounded-3">
+                    <div class="card-header bg-light text-dark fw-semibold">
+                        <i class="bi bi-brush me-1 text-muted"></i>Como Pintado
+                    </div>
+                    <div class="card-body">
+                        <ul class="mb-0 list-unstyled">
+                            @foreach (var item in Model.ApareceComoPintado)
+                            {
+                                <li class="mb-1">
+                                    <a href="@Url.Action("ConfiguradorItemERP", new { id = item.ItemPaiId })" class="text-decoration-none fw-medium">
+                                        <i class="bi bi-link-45deg me-1 text-primary"></i>@item.ItemPaiERP
+                                    </a>
+                                    <span class="text-muted small"> — Desenho: <strong>@item.DesenhoNome</strong></span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+
+            @if (Model.ApareceComoGalvanizado.Any())
+            {
+                <div class="card shadow-sm border mb-3 rounded-3">
+                    <div class="card-header bg-light text-dark fw-semibold">
+                        <i class="bi bi-droplet-half me-1 text-muted"></i>Como Galvanizado
+                    </div>
+                    <div class="card-body">
+                        <ul class="mb-0 list-unstyled">
+                            @foreach (var item in Model.ApareceComoGalvanizado)
+                            {
+                                <li class="mb-1">
+                                    <a href="@Url.Action("ConfiguradorItemERP", new { id = item.ItemPaiId })" class="text-decoration-none fw-medium">
+                                        <i class="bi bi-link-45deg me-1 text-primary"></i>@item.ItemPaiERP
+                                    </a>
+                                    <span class="text-muted small"> — Desenho: <strong>@item.DesenhoNome</strong></span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+
+            @if (Model.ApareceComoIntegrante.Any())
+            {
+                <div class="card shadow-sm border mb-3 rounded-3">
+                    <div class="card-header bg-light text-dark fw-semibold">
+                        <i class="bi bi-diagram-3 me-1 text-muted"></i>Como Integrante
+                    </div>
+                    <div class="card-body">
+                        <ul class="mb-0 list-unstyled">
+                            @foreach (var item in Model.ApareceComoIntegrante)
+                            {
+                                <li class="mb-1">
+                                    <a href="@Url.Action("ConfiguradorItemERP", new { id = item.ItemPaiId })" class="text-decoration-none fw-medium">
+                                        <i class="bi bi-link-45deg me-1 text-primary"></i>@item.ItemPaiERP
+                                    </a>
+                                    <span class="text-muted small"> — Desenho: <strong>@item.DesenhoNome</strong></span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 
@@ -442,6 +603,36 @@
                 <td><input name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].DataRevisao" type="date" class="form-control form-control-sm" /></td>`;
             revTbody.appendChild(tr);
         }
+
+                // 5.0) Itens Integrantes
+        document.getElementById('btnAddIntegrante').addEventListener('click', () => {
+            const tbody = document.querySelector('#tblItensIntegrantes tbody'),
+                  idx   = tbody.rows.length,
+                  row   = document.createElement('tr');
+            row.innerHTML = `
+                <input type="hidden" name="ItensIntegrantes[${idx}].Id" value="0" />
+                <td>
+                    <select name="ItensIntegrantes[${idx}].ItemERPId" class="form-control form-control-sm">
+                        <option value="">-- selecione --</option>
+                        ${itensOptions}
+                    </select>
+                </td>
+                <td>
+                    <select name="ItensIntegrantes[${idx}].DesenhoId" class="form-control form-control-sm">
+                        <option value="">-- selecione --</option>
+                        ${desenhosOptions}
+                    </select>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger btn-remove-integrante">✕</button>
+                </td>`;
+            tbody.appendChild(row);
+        });
+        document.querySelector('#tblItensIntegrantes').addEventListener('click', e => {
+            if (e.target.classList.contains('btn-remove-integrante'))
+                e.target.closest('tr').remove();
+        });
+
 
         // 5.1) Itens Pintados
         document.getElementById('btnAddPintado').addEventListener('click', () => {
