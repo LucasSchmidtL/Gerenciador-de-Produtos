@@ -18,11 +18,29 @@ namespace Gerenciador_de_Produtos.Models
 
         public DateTime? DataCriacao { get; set; }
         public long? Revisao { get; set; }
-        public string? Status { get; set; }
+
+        [Required]
+        [EnumDataType(typeof(StatusDesenho))]
+        [Column(TypeName = "nvarchar(20)")]
+        public StatusDesenho Status { get; set; }
+
         public string? Classificacao { get; set; }
         public long? SolicitacaoAlteracaoId { get; set; }
 
         public int? ItemERPId { get; set; }
         public ItemERP? ItemERP { get; set; }
     }
+
+    public enum StatusDesenho
+    {
+        [Display(Name = "Ativo")]
+        Ativo,
+
+        [Display(Name = "Não Ativo")]
+        NaoAtivo,
+
+        [Display(Name = "Obsoleto")]
+        Obsoleto
+    }
+
 }
