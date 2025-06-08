@@ -27,8 +27,102 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Perfis
         public async Task<IActionResult> Index()
         {
-            var perfis = await _context.Perfis.ToListAsync();
-            return View(perfis);
+            // carrega perfis com seus itens ERP
+            var perfis = await _context.Perfis
+                .Include(p => p.PerfilItemERPs)
+                .ToListAsync();
+
+            // lista base de todos os ItensERP (ERP + Descrição)
+            var allErps = await _context.ItensERP
+                .Select(i => new SelectListItem
+                {
+                    Value = i.Id.ToString(),
+                    Text = $"{i.ERP} – {i.Descricao}"
+                })
+                .ToListAsync();
+
+            // mapeia para o ViewModel
+            var vm = perfis.Select(p => new PerfilItemERPViewModel
+            {
+                Id = p.Id,
+                Desenho = p.Desenho,
+                Descricao = p.Descricao,
+                TipoSecao = p.TipoSecao,
+                Peso = p.Peso,
+                AreaBruta = p.AreaBruta,
+                AreaLiq = p.AreaLiq,
+                AreaEq = p.AreaEq,
+                Ix = p.Ix,
+                Sxt = p.Sxt,
+                Sxb = p.Sxb,
+                Zx = p.Zx,
+                Rx = p.Rx,
+                yt = p.yt,
+                yb = p.yb,
+                Ixy = p.Ixy,
+                Iy = p.Iy,
+                Syl = p.Syl,
+                Syr = p.Syr,
+                Zy = p.Zy,
+                ry = p.ry,
+                xl = p.xl,
+                xr = p.xr,
+                xo = p.xo,
+                yo = p.yo,
+                jx = p.jx,
+                jy = p.jy,
+                Cw = p.Cw,
+                J = p.J,
+                Ixe = p.Ixe,
+                Sxet = p.Sxet,
+                Sxeb = p.Sxeb,
+                lye = p.lye,
+                Syel = p.Syel,
+                Syer = p.Syer,
+                p1 = p.p1,
+                p2 = p.p2,
+                p3 = p.p3,
+                SimetricoX = p.SimetricoX,
+                SimetricoY = p.SimetricoY,
+
+                // popula dropdown + selecionados
+                TodosItensERP = allErps,
+                ItensERPSelecionados = p.PerfilItemERPs.Select(pi => pi.ItemERPId).ToList()
+            })
+            .ToList();
+
+            return View(vm);
+        }
+
+        // POST: Perfis/AtualizaItens
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AtualizaItens(PerfilItemERPViewModel vm)
+        {
+            if (!vm.Id.HasValue) return BadRequest();
+
+            var perfil = await _context.Perfis
+                .Include(p => p.PerfilItemERPs)
+                .FirstOrDefaultAsync(p => p.Id == vm.Id.Value);
+
+            if (perfil == null) return NotFound();
+
+            // limpa os antigos vínculos
+            _context.PerfilItemERPs.RemoveRange(perfil.PerfilItemERPs);
+
+            // adiciona os novos (evita duplicatas)
+            foreach (var itemId in vm.ItensERPSelecionados.Distinct())
+            {
+                perfil.PerfilItemERPs.Add(new PerfilItemERP
+                {
+                    PerfilId = perfil.Id,
+                    ItemERPId = itemId
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Itens ERP atualizados!";
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Perfis/Details/5

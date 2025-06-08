@@ -1,10 +1,9 @@
-﻿@model IEnumerable<Gerenciador_de_Produtos.Models.Perfil>
+﻿@model List<Gerenciador_de_Produtos.Models.ViewModels.PerfilItemERPViewModel>
 
 @{
     ViewData["Title"] = "Perfis";
 }
 
-<!-- Estilos de rotação do ícone (mova para site.css se preferir) -->
 <style>
     .toggle-icon {
         transition: transform 0.3s ease;
@@ -17,7 +16,7 @@
 
 <div class="mb-4">
     <h3 class="fw-bold mb-3">@ViewData["Title"]</h3>
-    <div class="row g-2">
+    <div class="row g-2 mb-3">
         <div class="col-auto">
             <a asp-action="Import" class="btn btn-secondary rounded-pill py-0 px-3">
                 <i class="bi bi-file-earmark-arrow-up me-1"></i>Importar CSV
@@ -27,92 +26,197 @@
             </a>
         </div>
         <div class="col">
-            <input id="searchInput"
-                   class="form-control"
-                   placeholder="Buscar perfil..." />
+            <input id="searchInput" class="form-control" placeholder="Buscar perfil..." />
         </div>
     </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
 </div>
 
-@if (TempData["Success"] != null)
+@foreach (var vm in Model)
 {
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-
-@foreach (var perfil in Model)
-{
-    <div class="card mb-4" data-search="@perfil.ERP @perfil.Descricao">
+    <div class="card mb-4" data-search="@vm.ERP @vm.Descricao">
+        <!-- HEADER PRINCIPAL -->
         <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <button class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-2 toggle-btn"
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary toggle-btn"
                         data-bs-toggle="collapse"
-                        data-bs-target="#details_@perfil.Id"
-                        aria-expanded="false"
-                        aria-controls="details_@perfil.Id">
+                        data-bs-target="#details_@vm.Id"
+                        aria-expanded="false">
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
-                <div class="flex-grow-1">
-                    <strong>@perfil.ERP</strong> – @perfil.Descricao<br />
-                    <small class="text-muted">
-                        Desenho: @perfil.Desenho |
-                        Tipo: @perfil.TipoSecao |
-                        Peso: @perfil.Peso
-                    </small>
-                </div>
-                <div>
-                    <a asp-action="Details" asp-route-id="@perfil.Id"
-                       class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
-                        <i class="bi bi-eye me-1"></i>Detalhes
-                    </a>
-                    <a asp-action="Edit" asp-route-id="@perfil.Id"
-                       class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
-                        <i class="bi bi-pencil me-1"></i>Editar
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@perfil.Id"
-                       class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2">
-                        <i class="bi bi-trash me-1"></i>Excluir
-                    </a>
-                </div>
+                <h5 class="mb-0 ms-2 flex-grow-1">
+                    <strong>@vm.ERP</strong> – @vm.Descricao
+                </h5>
+                <a asp-action="Details" asp-route-id="@vm.Id"
+                   class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
+                    <i class="bi bi-eye me-1"></i>Detalhes
+                </a>
+                <a asp-action="Edit" asp-route-id="@vm.Id"
+                   class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
+                    <i class="bi bi-pencil me-1"></i>Editar
+                </a>
+                <a asp-action="Delete" asp-route-id="@vm.Id"
+                   class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2">
+                    <i class="bi bi-trash me-1"></i>Excluir
+                </a>
             </div>
         </div>
-        <div class="collapse" id="details_@perfil.Id">
-            <div class="card-body">
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
-                    <div class="col">
-                        <p><strong>Área Bruta:</strong> @perfil.AreaBruta</p>
-                        <p><strong>Área Líquida:</strong> @perfil.AreaLiq</p>
-                        <p><strong>Área Eq.:</strong> @perfil.AreaEq</p>
-                        <p><strong>Ix:</strong> @perfil.Ix</p>
-                        <p><strong>Sxt:</strong> @perfil.Sxt</p>
+
+        <!-- CORPO COLAPSÁVEL -->
+        <div class="collapse" id="details_@vm.Id">
+            <div class="card-body p-0">
+
+                <!-- SUB-CARD 1: DADOS DO PERFIL -->
+                <div class="card mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <strong>Dados do Perfil</strong>
                     </div>
-                    <div class="col">
-                        <p><strong>Sxb:</strong> @perfil.Sxb</p>
-                        <p><strong>Zx:</strong> @perfil.Zx</p>
-                        <p><strong>Rx:</strong> @perfil.Rx</p>
-                        <p><strong>yt:</strong> @perfil.yt</p>
-                        <p><strong>yb:</strong> @perfil.yb</p>
-                    </div>
-                    <div class="col">
-                        <p><strong>Ixy:</strong> @perfil.Ixy</p>
-                        <p><strong>Iy:</strong> @perfil.Iy</p>
-                        <p><strong>Syl:</strong> @perfil.Syl</p>
-                        <p><strong>Syr:</strong> @perfil.Syr</p>
-                        <p><strong>Zy:</strong> @perfil.Zy</p>
-                    </div>
-                    <div class="col">
-                        <p><strong>ry:</strong> @perfil.ry</p>
-                        <p><strong>xl:</strong> @perfil.xl</p>
-                        <p><strong>xr:</strong> @perfil.xr</p>
-                        <p>
-                            <strong>Simétrico X:</strong>
-                            @(perfil.SimetricoX == true ? "Sim" : "Não")
-                        </p>
-                        <p>
-                            <strong>Simétrico Y:</strong>
-                            @(perfil.SimetricoY == true ? "Sim" : "Não")
-                        </p>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-3">ERP</dt>
+                            <dd class="col-sm-9">@vm.ERP</dd>
+
+                            <dt class="col-sm-3">Desenho</dt>
+                            <dd class="col-sm-9">@vm.Desenho</dd>
+
+                            <dt class="col-sm-3">Tipo de Seção</dt>
+                            <dd class="col-sm-9">@vm.TipoSecao</dd>
+
+                            <dt class="col-sm-3">Peso</dt>
+                            <dd class="col-sm-9">@vm.Peso</dd>
+
+                            <dt class="col-sm-3">Área Bruta</dt>
+                            <dd class="col-sm-9">@vm.AreaBruta</dd>
+
+                            <dt class="col-sm-3">Área Líquida</dt>
+                            <dd class="col-sm-9">@vm.AreaLiq</dd>
+
+                            <dt class="col-sm-3">Área Eq.</dt>
+                            <dd class="col-sm-9">@vm.AreaEq</dd>
+
+                            <dt class="col-sm-3">Ix</dt>
+                            <dd class="col-sm-9">@vm.Ix</dd>
+
+                            <dt class="col-sm-3">Sxt</dt>
+                            <dd class="col-sm-9">@vm.Sxt</dd>
+
+                            <dt class="col-sm-3">Sxb</dt>
+                            <dd class="col-sm-9">@vm.Sxb</dd>
+
+                            <dt class="col-sm-3">Zx</dt>
+                            <dd class="col-sm-9">@vm.Zx</dd>
+
+                            <dt class="col-sm-3">Rx</dt>
+                            <dd class="col-sm-9">@vm.Rx</dd>
+
+                            <dt class="col-sm-3">yt</dt>
+                            <dd class="col-sm-9">@vm.yt</dd>
+
+                            <dt class="col-sm-3">yb</dt>
+                            <dd class="col-sm-9">@vm.yb</dd>
+
+                            <dt class="col-sm-3">Ixy</dt>
+                            <dd class="col-sm-9">@vm.Ixy</dd>
+
+                            <dt class="col-sm-3">Iy</dt>
+                            <dd class="col-sm-9">@vm.Iy</dd>
+
+                            <dt class="col-sm-3">Syl</dt>
+                            <dd class="col-sm-9">@vm.Syl</dd>
+
+                            <dt class="col-sm-3">Syr</dt>
+                            <dd class="col-sm-9">@vm.Syr</dd>
+
+                            <dt class="col-sm-3">Zy</dt>
+                            <dd class="col-sm-9">@vm.Zy</dd>
+
+                            <dt class="col-sm-3">ry</dt>
+                            <dd class="col-sm-9">@vm.ry</dd>
+
+                            <dt class="col-sm-3">xl</dt>
+                            <dd class="col-sm-9">@vm.xl</dd>
+
+                            <dt class="col-sm-3">xr</dt>
+                            <dd class="col-sm-9">@vm.xr</dd>
+
+                            <dt class="col-sm-3">xo</dt>
+                            <dd class="col-sm-9">@vm.xo</dd>
+
+                            <dt class="col-sm-3">yo</dt>
+                            <dd class="col-sm-9">@vm.yo</dd>
+
+                            <dt class="col-sm-3">Simétrico X</dt>
+                            <dd class="col-sm-9">@((vm.SimetricoX) ? "Sim" : "Não")</dd>
+
+                            <dt class="col-sm-3">Simétrico Y</dt>
+                            <dd class="col-sm-9">@((vm.SimetricoY) ? "Sim" : "Não")</dd>
+                        </dl>
                     </div>
                 </div>
+
+                <!-- SUB-CARD 2: ITENS ERP VINCULADOS -->
+                <div class="card mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <strong>Itens ERP</strong>
+                    </div>
+                    <div class="card-body">
+
+                        <form asp-action="AtualizaItens" method="post">
+                            @Html.AntiForgeryToken()
+                            <input name="Id" type="hidden" value="@vm.Id" />
+
+                            <div class="input-group mb-3">
+                                <input class="form-control"
+                                       id="erpSearch-@vm.Id"
+                                       placeholder="Digite ERP ou descrição"
+                                       list="erpList-@vm.Id" />
+                                <datalist id="erpList-@vm.Id">
+                                    @foreach (var opt in vm.TodosItensERP)
+                                    {
+                                        <option value="@opt.Text" data-id="@opt.Value"></option>
+                                    }
+                                </datalist>
+                                <button type="button"
+                                        class="btn btn-primary"
+                                        data-pid="@vm.Id">
+                                    <i class="bi bi-plus-lg me-1"></i>Adicionar
+                                </button>
+                            </div>
+
+                            <table class="table table-sm mb-3" id="tblErp-@vm.Id">
+                                <thead class="table-light">
+                                    <tr><th>ERP</th><th>Descrição</th><th></th></tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < vm.ItensERPSelecionados.Count; i++)
+                                    {
+                                        var id = vm.ItensERPSelecionados[i];
+                                        var text = vm.TodosItensERP.First(x => x.Value == id.ToString()).Text;
+                                        var parts = text.Split('–', 2).Select(s => s.Trim()).ToArray();
+                                        <tr>
+                                            <input name="ItensERPSelecionados[@i]" type="hidden" value="@id" />
+                                            <td>@parts[0]</td>
+                                            <td>@(parts.Length > 1 ? parts[1] : "")</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-danger btn-remove">✕</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-save me-1"></i>Salvar Itens
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -120,25 +224,66 @@
 
 @section Scripts {
     <script>
-        // filtro em tempo real
-        document
-          .getElementById('searchInput')
+        // inicia toggles fechados
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+          btn.classList.add('toggle-collapsed');
+          btn.addEventListener('click', () => btn.classList.toggle('toggle-collapsed'));
+        });
+
+        // filtro de cards
+        document.getElementById('searchInput')
           .addEventListener('input', function() {
-            var filtro = this.value.toLowerCase();
-            document
-              .querySelectorAll('[data-search]')
-              .forEach(function(card) {
-                var texto = card.getAttribute('data-search').toLowerCase();
-                card.style.display = texto.includes(filtro) ? '' : 'none';
-              });
+            const term = this.value.toLowerCase();
+            document.querySelectorAll('[data-search]').forEach(card => {
+              card.style.display =
+                card.getAttribute('data-search').toLowerCase().includes(term)
+                ? '' : 'none';
+            });
           });
 
-        // inicia todos toggles fechados
-        document.querySelectorAll('.toggle-btn').forEach(function(btn) {
-          btn.classList.add('toggle-collapsed');
-          btn.addEventListener('click', function() {
-            btn.classList.toggle('toggle-collapsed');
-          });
+        // ADD / REMOVE Itens ERP
+        document.addEventListener('click', e => {
+          // ADICIONAR
+          const addBtn = e.target.closest('button[data-pid]');
+          if (addBtn) {
+            const pid = addBtn.dataset.pid;
+            const inp = document.getElementById(`erpSearch-${pid}`);
+            const val = inp.value.trim();
+            const opts = Array.from(document.querySelectorAll(`#erpList-${pid} option`));
+
+            let opt = opts.find(o => o.value === val)
+                   || opts.find(o => o.dataset.id === val);
+
+            if (!opt) {
+              alert('Item ERP não encontrado');
+              return;
+            }
+
+            const id   = opt.dataset.id;
+            const text = opt.value;
+            const tbl  = document.querySelector(`#tblErp-${pid} tbody`);
+
+            if ([...tbl.querySelectorAll('input[type=hidden]')].some(h => h.value === id)) {
+              inp.value = '';
+              return;
+            }
+
+            const parts = text.split('–',2).map(s => s.trim());
+            const idx   = tbl.rows.length;
+            const tr    = document.createElement('tr');
+            tr.innerHTML = `
+              <input name="ItensERPSelecionados[${idx}]" type="hidden" value="${id}" />
+              <td>${parts[0]}</td>
+              <td>${parts.length>1?parts[1]:""}</td>
+              <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove">✕</button></td>`;
+            tbl.appendChild(tr);
+            inp.value = '';
+          }
+
+          // REMOVER
+          if (e.target.classList.contains('btn-remove')) {
+            e.target.closest('tr').remove();
+          }
         });
     </script>
 }

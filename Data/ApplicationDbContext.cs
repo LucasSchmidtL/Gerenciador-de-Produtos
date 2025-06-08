@@ -115,13 +115,6 @@ namespace Gerenciador_de_Produtos.Data
                 .HasForeignKey(rp => rp.PerfilItemERPId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Perfil ⇄ ItemERP original (caso ainda use)
-            modelBuilder.Entity<Perfil>()
-                .HasOne(p => p.ItemERP)
-                .WithMany(i => i.Perfis)
-                .HasForeignKey(p => p.ItemERPId)
-                .OnDelete(DeleteBehavior.Cascade);
-
             // ItemERPRelacionado ⇄ ItemERP (pai)
             modelBuilder.Entity<ItemERPRelacionado>()
                 .HasOne(r => r.ItemERP)
