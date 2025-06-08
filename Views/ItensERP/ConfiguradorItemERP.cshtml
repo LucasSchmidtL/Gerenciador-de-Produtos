@@ -1,4 +1,7 @@
 ﻿@model Gerenciador_de_Produtos.Models.ViewModels.ConfiguradorItemERPViewModel
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Mvc.Rendering
+
 
 @{
     ViewData["Title"] = $"Configurador de {Model.ERP}";
@@ -44,7 +47,7 @@
             </div>
             <!-- Acabamento / Classificação -->
             <div class="row g-3 mb-4">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label">Acabamento</label>
                     <div class="form-check">
                         <input asp-for="Acabamento" class="form-check-input" type="radio" value="Com Acabamento" id="acabCom" />
@@ -55,7 +58,7 @@
                         <label class="form-check-label" for="acabSem">Sem acabamento</label>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label">Classificação</label>
                     <div class="form-check">
                         <input asp-for="Classificacao" class="form-check-input" type="radio" value="1" id="classSimples" />
@@ -66,7 +69,16 @@
                         <label class="form-check-label" for="classComposto">Composto</label>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <label asp-for="Status" class="form-label">Status</label>
+                    <select asp-for="Status" class="form-select"
+                            asp-items="Html.GetEnumSelectList<StatusItemERP>()">
+                        <option value="">-- selecione --</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
             </div>
+
             <!-- Tabela de Desenhos -->
             <div class="mb-3">
                 <h5>Desenhos</h5>
@@ -255,7 +267,7 @@
                                     <input type="hidden" asp-for="ItensIntegrantes[@i].Id" />
                                     <td>
                                         <div class="input-group">
-                                            <select asp-for="ItensIntegrantes[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-select form-select-sm">
+                                            <select asp-for="ItensIntegrantes[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-select form-select-sm select2">
                                                 <option value="">-- selecione --</option>
                                             </select>
                                             <a class="btn btn-outline-secondary btn-sm" target="_blank"
@@ -265,7 +277,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <select asp-for="ItensIntegrantes[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-select form-select-sm">
+                                        <select asp-for="ItensIntegrantes[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-select form-select-sm select2">
                                             <option value="">-- selecione --</option>
                                         </select>
                                     </td>
@@ -297,7 +309,7 @@
                                     <input type="hidden" asp-for="ItensPintados[@i].Id" />
                                     <td>
                                         <div class="input-group">
-                                            <select asp-for="ItensPintados[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-select form-select-sm">
+                                            <select asp-for="ItensPintados[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-select form-select-sm select2">
                                                 <option value="">-- selecione --</option>
                                             </select>
                                             <a class="btn btn-outline-secondary btn-sm" target="_blank"
@@ -307,7 +319,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <select asp-for="ItensPintados[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-select form-select-sm">
+                                        <select asp-for="ItensPintados[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-select form-select-sm select2">
                                             <option value="">-- selecione --</option>
                                         </select>
                                     </td>
@@ -339,7 +351,7 @@
                                     <input type="hidden" asp-for="ItensGalvanizados[@i].Id" />
                                     <td>
                                         <div class="input-group">
-                                            <select asp-for="ItensGalvanizados[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-select form-select-sm">
+                                            <select asp-for="ItensGalvanizados[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-select form-select-sm select2">
                                                 <option value="">-- selecione --</option>
                                             </select>
                                             <a class="btn btn-outline-secondary btn-sm" target="_blank"
@@ -349,7 +361,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <select asp-for="ItensGalvanizados[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-select form-select-sm">
+                                        <select asp-for="ItensGalvanizados[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-select form-select-sm select2">
                                             <option value="">-- selecione --</option>
                                         </select>
                                     </td>

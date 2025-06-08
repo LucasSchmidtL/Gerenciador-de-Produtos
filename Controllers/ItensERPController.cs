@@ -227,6 +227,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 TipoItem = item.TipoItem,
                 Acabamento = item.Acabamento,
                 Classificacao = item.Classificacao,
+                Status = item.Status,
                 ChapaAberta = item.ChapaAberta,
                 Espessura = item.Altura,
                 Aco = item.Aco,
@@ -376,6 +377,7 @@ namespace Gerenciador_de_Produtos.Controllers
             item.TipoItem = vm.TipoItem;
             item.Acabamento = vm.Acabamento;
             item.Classificacao = vm.Classificacao;
+            item.Status = vm.Status!.Value;
             item.ChapaAberta = vm.ChapaAberta;
             item.Altura = vm.Espessura;
             item.Aco = vm.Aco;

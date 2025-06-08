@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Gerenciador_de_Produtos.Models.ViewModels;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Gerenciador_de_Produtos.Models
 {
@@ -16,7 +18,12 @@ namespace Gerenciador_de_Produtos.Models
         public string? Descricao { get; set; }
         public long? Revisao { get; set; }
         public DateTime? DataCriacao { get; set; }
-        public string? Status { get; set; }
+
+        [Required]
+        [EnumDataType(typeof(StatusItemERP))]
+        [Column(TypeName = "nvarchar(20)")]
+        public StatusItemERP Status { get; set; }
+
 
         // radio “Com Acabamento” / “Sem Acabamento”
         public string? Acabamento { get; set; }

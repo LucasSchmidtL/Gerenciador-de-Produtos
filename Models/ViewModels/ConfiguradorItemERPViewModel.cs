@@ -1,9 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Gerenciador_de_Produtos.Models.ViewModels
 {
+
+    public enum StatusItemERP
+    {
+        [Display(Name = "Ativo")]
+        Ativo,
+
+        [Display(Name = "Não Ativo")]
+        NaoAtivo,
+
+        [Display(Name = "Obsoleto")]
+        Obsoleto
+    }
+
+
+
     public class DesenhoLinhaViewModel
     {
         public long Id { get; set; }          // antes era int, agora long
@@ -54,7 +70,6 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public int AgrupadorId { get; set; }
     }
 
-    // *** A PARTIR DAQUI É O SEU VM ORIGINAL, COM AS PROPRIEDADES ABAIXO ADICIONADAS ***
 
     public class ConfiguradorItemERPViewModel
     {
@@ -62,6 +77,11 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public string? ERP { get; set; }
         public string? Descricao { get; set; }
         public string? TipoItem { get; set; }
+
+        [Display(Name = "Status")]
+        public StatusItemERP? Status { get; set; }
+
+
 
         public string? Acabamento { get; set; }
         public int? Classificacao { get; set; }
