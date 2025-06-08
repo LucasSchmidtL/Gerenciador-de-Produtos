@@ -40,7 +40,6 @@ namespace Gerenciador_de_Produtos.Controllers
             var vm = perfis.Select(p => new PerfilItemERPViewModel
             {
                 Id = p.Id,
-                ERP = p.ERP,
                 Desenho = p.Desenho,
                 Descricao = p.Descricao,
                 TipoSecao = p.TipoSecao,
@@ -162,7 +161,6 @@ namespace Gerenciador_de_Produtos.Controllers
 
             var perfil = new Perfil
             {
-                ERP = vm.ERP,
                 Desenho = vm.Desenho,
                 Descricao = vm.Descricao,
                 TipoSecao = vm.TipoSecao,
@@ -224,7 +222,6 @@ namespace Gerenciador_de_Produtos.Controllers
             var vm = new PerfilItemERPViewModel
             {
                 Id = perfil.Id,
-                ERP = perfil.ERP,
                 Desenho = perfil.Desenho,
                 Descricao = perfil.Descricao,
                 TipoSecao = perfil.TipoSecao,
@@ -279,7 +276,7 @@ namespace Gerenciador_de_Produtos.Controllers
         // POST: Perfis/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(PerfilItemERPViewModel vm)
+        public async Task<IActionResult> Edit(int id, PerfilItemERPViewModel vm)
         {
             if (!vm.Id.HasValue) return BadRequest();
             if (!ModelState.IsValid)
@@ -298,7 +295,6 @@ namespace Gerenciador_de_Produtos.Controllers
                 .FirstOrDefaultAsync(p => p.Id == vm.Id.Value);
             if (perfil == null) return NotFound();
 
-            perfil.ERP = vm.ERP;
             perfil.Desenho = vm.Desenho;
             perfil.Descricao = vm.Descricao;
             perfil.TipoSecao = vm.TipoSecao;
@@ -340,16 +336,18 @@ namespace Gerenciador_de_Produtos.Controllers
             perfil.SimetricoY = vm.SimetricoY;
 
             _context.PerfilItemERPs.RemoveRange(perfil.PerfilItemERPs);
-            foreach (var id in vm.ItensERPSelecionados.Distinct())
+            foreach (var itemId in vm.ItensERPSelecionados.Distinct())
                 perfil.PerfilItemERPs.Add(new PerfilItemERP
                 {
                     PerfilId = perfil.Id,
-                    ItemERPId = id
+                    ItemERPId = itemId
                 });
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+
 
         // GET: Perfis/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -415,6 +413,8 @@ namespace Gerenciador_de_Produtos.Controllers
             TempData["Success"] = $"{records.Count} perfis importados com sucesso!";
             return RedirectToAction(nameof(Index));
         }
+
+
 
         private bool PerfilExists(int id)
             => _context.Perfis.Any(e => e.Id == id);

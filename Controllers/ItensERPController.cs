@@ -26,7 +26,7 @@ namespace Gerenciador_de_Produtos.Controllers
             var itens = await _context.ItensERP
                 .Include(i => i.Tags)
                 .Include(i => i.AgrupadorItensERP).ThenInclude(ai => ai.Agrupador)
-                .Include(i => i.DesenhoItemERPs)
+                .Include(i => i.DesenhoItemERPs).ThenInclude(di => di.Desenho)
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Perfil)
@@ -72,7 +72,7 @@ namespace Gerenciador_de_Produtos.Controllers
             var item = await _context.ItensERP
                 .Include(i => i.Tags)
                 .Include(i => i.AgrupadorItensERP).ThenInclude(ai => ai.Agrupador)
-                .Include(i => i.DesenhoItemERPs)
+                .Include(i => i.DesenhoItemERPs).ThenInclude(di => di.Desenho)
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Perfil)
@@ -276,14 +276,17 @@ namespace Gerenciador_de_Produtos.Controllers
                 SelectedAgrupadorIds = item.AgrupadorItensERP.Select(ai => ai.AgrupadorId).ToList(),
 
                 // Seção 01 — monta lista de linhas completas
-                Desenhos = item.DesenhoItemERPs.Select(d => new DesenhoLinhaViewModel
-                {
-                    Id = (int)d.DesenhoId,
-                    Nome = d.Desenho!.Nome,
-                    Descricao = d.Desenho!.Descricao,
-                    Revisao = d.Desenho!.Revisao,
-                    DataCriacao = d.Desenho!.DataCriacao
-                }).ToList(),
+                Desenhos = item.DesenhoItemERPs
+                    .Where(d => d.Desenho != null)
+                    .Select(d => new DesenhoLinhaViewModel
+                    {
+                        Id = (int)d.DesenhoId,
+                        Nome = d.Desenho!.Nome,
+                        Descricao = d.Desenho!.Descricao,
+                        Revisao = d.Desenho!.Revisao,
+                        DataCriacao = d.Desenho!.DataCriacao
+                    }).ToList(),
+
 
                 // Seção 02
                 Revisoes = item.Revisoes.Select(r => new RevisaoLinhaViewModel
@@ -399,7 +402,7 @@ namespace Gerenciador_de_Produtos.Controllers
             }
 
             var item = await _context.ItensERP
-                .Include(i => i.DesenhoItemERPs)
+                .Include(i => i.DesenhoItemERPs).ThenInclude(d => d.Desenho)
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
                 .Include(i => i.ItensRelacionados)
@@ -527,7 +530,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 .ToList();
 
             vm.AllPerfis = _context.Perfis
-                .Select(p => new SelectListItem(p.ERP ?? p.Id.ToString(), p.Id.ToString(), vm.SelectedPerfilIds.Contains(p.Id)))
+                .Select(p => new SelectListItem(p.Descricao ?? p.Id.ToString(), p.Id.ToString(), vm.SelectedPerfilIds.Contains(p.Id)))
                 .ToList();
         }
 
@@ -542,7 +545,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 .ToList();
 
             vm.AllPerfisSection = _context.Perfis
-                .Select(p => new SelectListItem(p.Descricao ?? p.ERP, p.Id.ToString()))
+                .Select(p => new SelectListItem(p.Descricao, p.Id.ToString()))
                 .ToList();
 
             vm.AllItensERP = _context.ItensERP

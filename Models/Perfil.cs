@@ -10,9 +10,6 @@ namespace Gerenciador_de_Produtos.Models
 
         #region Informações Básicas
 
-        [Display(Name = "Código ERP")]
-        public string? ERP { get; set; }
-
         [Display(Name = "Desenho")]
         public string? Desenho { get; set; }
 

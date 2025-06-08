@@ -4,6 +4,9 @@
     ViewData["Title"] = "Perfis";
 }
 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <style>
     .toggle-icon {
         transition: transform 0.3s ease;
@@ -15,14 +18,14 @@
 </style>
 
 <div class="mb-4">
-    <h3 class="fw-bold mb-3">@ViewData["Title"]</h3>
+    <h3 class="fw-bold mb-3"><i class="bi bi-diagram-3 me-2"></i>@ViewData["Title"]</h3>
     <div class="row g-2 mb-3">
         <div class="col-auto">
-            <a asp-action="Import" class="btn btn-secondary rounded-pill py-0 px-3">
-                <i class="bi bi-file-earmark-arrow-up me-1"></i>Importar CSV
+            <a asp-action="Import" class="btn btn-outline-dark rounded-pill px-3">
+                <i class="bi bi-upload me-1"></i> Importar CSV
             </a>
-            <a asp-action="Create" class="btn btn-primary rounded-pill py-0 px-3 ms-2">
-                <i class="bi bi-plus-lg me-1"></i>Novo Perfil
+            <a asp-action="Create" class="btn btn-primary rounded-pill px-3 ms-2">
+                <i class="bi bi-plus-circle me-1"></i> Novo Perfil
             </a>
         </div>
         <div class="col">
@@ -38,185 +41,86 @@
 
 @foreach (var vm in Model)
 {
-    <div class="card mb-4" data-search="@vm.ERP @vm.Descricao">
-        <!-- HEADER PRINCIPAL -->
-        <div class="card-header">
+    <div class="card mb-4 shadow-sm" data-search="@vm.ERP @vm.Descricao">
+        <div class="card-header d-flex justify-content-between align-items-center bg-light">
             <div class="d-flex align-items-center">
-                <button class="btn btn-sm btn-outline-secondary toggle-btn"
+                <button class="btn btn-sm btn-outline-secondary toggle-btn me-2"
                         data-bs-toggle="collapse"
                         data-bs-target="#details_@vm.Id"
                         aria-expanded="false">
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
-                <h5 class="mb-0 ms-2 flex-grow-1">
-                    <strong>@vm.Descricao</strong>
-                </h5>
-                <a asp-action="Details" asp-route-id="@vm.Id"
-                   class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
-                    <i class="bi bi-eye me-1"></i>Detalhes
+                <strong>@vm.Descricao</strong>
+            </div>
+            <div class="d-flex gap-2 ms-auto">
+                <a asp-action="Details" asp-route-id="@vm.Id" class="btn btn-outline-info rounded-pill px-3 py-1">
+                    <i class="bi bi-eye me-1"></i> Detalhes
                 </a>
-                <a asp-action="Edit" asp-route-id="@vm.Id"
-                   class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
-                    <i class="bi bi-pencil me-1"></i>Editar
+                <a asp-action="Edit" asp-route-id="@vm.Id" class="btn btn-outline-secondary rounded-pill px-3 py-1">
+                    <i class="bi bi-pencil me-1"></i> Editar
                 </a>
-                <a asp-action="Delete" asp-route-id="@vm.Id"
-                   class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2">
-                    <i class="bi bi-trash me-1"></i>Excluir
+                <a asp-action="Delete" asp-route-id="@vm.Id" class="btn btn-outline-danger rounded-pill px-3 py-1">
+                    <i class="bi bi-trash me-1"></i> Excluir
                 </a>
             </div>
         </div>
 
-        <!-- CORPO COLAPSÁVEL -->
         <div class="collapse" id="details_@vm.Id">
-            <div class="card-body p-0">
-
-                <!-- SUB-CARD 1: DADOS DO PERFIL -->
-                <div class="card mb-3">
-                    <div class="card-header bg-secondary text-white">
-                        <strong>Dados do Perfil</strong>
-                    </div>
-                    <div class="card-body">
-                        <dl class="row mb-0">
-                            <dt class="col-sm-3">ERP</dt>
-                            <dd class="col-sm-9">@vm.ERP</dd>
-
-                            <dt class="col-sm-3">Desenho</dt>
-                            <dd class="col-sm-9">@vm.Desenho</dd>
-
-                            <dt class="col-sm-3">Tipo de Seção</dt>
-                            <dd class="col-sm-9">@vm.TipoSecao</dd>
-
-                            <dt class="col-sm-3">Peso</dt>
-                            <dd class="col-sm-9">@vm.Peso</dd>
-
-                            <dt class="col-sm-3">Área Bruta</dt>
-                            <dd class="col-sm-9">@vm.AreaBruta</dd>
-
-                            <dt class="col-sm-3">Área Líquida</dt>
-                            <dd class="col-sm-9">@vm.AreaLiq</dd>
-
-                            <dt class="col-sm-3">Área Eq.</dt>
-                            <dd class="col-sm-9">@vm.AreaEq</dd>
-
-                            <dt class="col-sm-3">Ix</dt>
-                            <dd class="col-sm-9">@vm.Ix</dd>
-
-                            <dt class="col-sm-3">Sxt</dt>
-                            <dd class="col-sm-9">@vm.Sxt</dd>
-
-                            <dt class="col-sm-3">Sxb</dt>
-                            <dd class="col-sm-9">@vm.Sxb</dd>
-
-                            <dt class="col-sm-3">Zx</dt>
-                            <dd class="col-sm-9">@vm.Zx</dd>
-
-                            <dt class="col-sm-3">Rx</dt>
-                            <dd class="col-sm-9">@vm.Rx</dd>
-
-                            <dt class="col-sm-3">yt</dt>
-                            <dd class="col-sm-9">@vm.yt</dd>
-
-                            <dt class="col-sm-3">yb</dt>
-                            <dd class="col-sm-9">@vm.yb</dd>
-
-                            <dt class="col-sm-3">Ixy</dt>
-                            <dd class="col-sm-9">@vm.Ixy</dd>
-
-                            <dt class="col-sm-3">Iy</dt>
-                            <dd class="col-sm-9">@vm.Iy</dd>
-
-                            <dt class="col-sm-3">Syl</dt>
-                            <dd class="col-sm-9">@vm.Syl</dd>
-
-                            <dt class="col-sm-3">Syr</dt>
-                            <dd class="col-sm-9">@vm.Syr</dd>
-
-                            <dt class="col-sm-3">Zy</dt>
-                            <dd class="col-sm-9">@vm.Zy</dd>
-
-                            <dt class="col-sm-3">ry</dt>
-                            <dd class="col-sm-9">@vm.ry</dd>
-
-                            <dt class="col-sm-3">xl</dt>
-                            <dd class="col-sm-9">@vm.xl</dd>
-
-                            <dt class="col-sm-3">xr</dt>
-                            <dd class="col-sm-9">@vm.xr</dd>
-
-                            <dt class="col-sm-3">xo</dt>
-                            <dd class="col-sm-9">@vm.xo</dd>
-
-                            <dt class="col-sm-3">yo</dt>
-                            <dd class="col-sm-9">@vm.yo</dd>
-
-                            <dt class="col-sm-3">Simétrico X</dt>
-                            <dd class="col-sm-9">@((vm.SimetricoX) ? "Sim" : "Não")</dd>
-
-                            <dt class="col-sm-3">Simétrico Y</dt>
-                            <dd class="col-sm-9">@((vm.SimetricoY) ? "Sim" : "Não")</dd>
-                        </dl>
-                    </div>
+            <div class="card-body">
+                <!-- BLOCO DESTACADO: DADOS TÉCNICOS DO PERFIL -->
+                <div class="mb-4">
+                    <h6 class="text-primary fw-bold mb-3"><i class="bi bi-gear me-1"></i> Dados Técnicos</h6>
+                    <dl class="row">
+                        <dt class="col-sm-3">ERP</dt>
+                        <dd class="col-sm-9">@vm.ERP</dd>
+                        <dt class="col-sm-3">Desenho</dt>
+                        <dd class="col-sm-9">@vm.Desenho</dd>
+                        <dt class="col-sm-3">Tipo de Seção</dt>
+                        <dd class="col-sm-9">@vm.TipoSecao</dd>
+                    </dl>
                 </div>
 
-                <!-- SUB-CARD 2: ITENS ERP VINCULADOS -->
-                <div class="card mb-3">
-                    <div class="card-header bg-secondary text-white">
-                        <strong>Itens ERP</strong>
+                <!-- FORM DE ITENS ERP -->
+                <form asp-action="AtualizaItens" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Id" value="@vm.Id" />
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Tipo</label>
+                            <select id="filtroTipo_@vm.Id" class="form-select filtro-tipo">
+                                <option value="">-- Todos --</option>
+                                <option value="Perfil">Perfil</option>
+                                <option value="Componente">Componente</option>
+                                <option value="Galvanizado">Galvanizado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Status</label>
+                            <select id="filtroStatus_@vm.Id" class="form-select filtro-status">
+                                <option value="">-- Todos --</option>
+                                <option value="Ativo">Ativo</option>
+                                <option value="Não Ativo">Não Ativo</option>
+                                <option value="Obsoleto">Obsoleto</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tag</label>
+                            <input id="filtroTag_@vm.Id" class="form-control filtro-tag" placeholder="Digite uma tag" />
+                        </div>
                     </div>
-                    <div class="card-body">
 
-                        <form asp-action="AtualizaItens" method="post">
-                            @Html.AntiForgeryToken()
-                            <input name="Id" type="hidden" value="@vm.Id" />
-
-                            <div class="input-group mb-3">
-                                <input class="form-control"
-                                       id="erpSearch-@vm.Id"
-                                       placeholder="Digite ERP ou descrição"
-                                       list="erpList-@vm.Id" />
-                                <datalist id="erpList-@vm.Id">
-                                    @foreach (var opt in vm.TodosItensERP)
-                                    {
-                                        <option value="@opt.Value - @opt.Text"></option>
-                                    }
-                                </datalist>
-                                <button type="button"
-                                        class="btn btn-primary"
-                                        data-pid="@vm.Id">
-                                    <i class="bi bi-plus-lg me-1"></i>Adicionar
-                                </button>
-                            </div>
-
-                            <table class="table table-sm mb-3" id="tblErp-@vm.Id">
-                                <thead class="table-light">
-                                    <tr><th>ERP</th><th>Descrição</th><th></th></tr>
-                                </thead>
-                                <tbody>
-                                    @for (int i = 0; i < vm.ItensERPSelecionados.Count; i++)
-                                    {
-                                        var id = vm.ItensERPSelecionados[i];
-                                        var text = vm.TodosItensERP.First(x => x.Value == id.ToString()).Text;
-                                        var parts = text.Split('–', 2).Select(s => s.Trim()).ToArray();
-                                        <tr>
-                                            <input name="ItensERPSelecionados[@i]" type="hidden" value="@id" />
-                                            <td>@parts[0]</td>
-                                            <td>@(parts.Length > 1 ? parts[1] : "")</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-danger btn-remove">✕</button>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-save me-1"></i>Salvar Itens
-                            </button>
-                        </form>
-
+                    <div class="mb-3">
+                        <label class="form-label">Itens ERP Relacionados</label>
+                        <select id="erpSelect_@vm.Id" name="ItensERPSelecionados" multiple class="form-select w-100 erp-select"></select>
                     </div>
-                </div>
 
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success rounded-pill px-4">
+                            <i class="bi bi-save me-1"></i> Salvar Itens
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -224,69 +128,74 @@
 
 @section Scripts {
     <script>
-        // inicia toggles fechados
-        document.querySelectorAll('.toggle-btn').forEach(btn => {
-          btn.classList.add('toggle-collapsed');
-          btn.addEventListener('click', () => btn.classList.toggle('toggle-collapsed'));
-        });
+        const perfis = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Select(p => new
+            {
+                id = p.Id,
+                selecionados = p.TodosItensERP.Where(x => p.ItensERPSelecionados.Contains(int.Parse(x.Value))).Select(x => new { id = x.Value, text = x.Text })
+            })));
 
-        // filtro de cards
-        document.getElementById('searchInput')
-          .addEventListener('input', function() {
-            const term = this.value.toLowerCase();
-            document.querySelectorAll('[data-search]').forEach(card => {
-              card.style.display =
-                card.getAttribute('data-search').toLowerCase().includes(term)
-                ? '' : 'none';
+        function formatItem(item) {
+            if (!item.id) return item.text;
+            const parts = item.text.split('|');
+            return $('<span><strong>' + parts[0] + '</strong> - ' + parts[1] + ' <small class="text-muted">(' + parts[2] + ')</small></span>');
+        }
+
+        $(document).ready(function () {
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.add('toggle-collapsed');
+                btn.addEventListener('click', () => btn.classList.toggle('toggle-collapsed'));
             });
-          });
 
-        // ADD / REMOVE Itens ERP
-        document.addEventListener('click', e => {
-          // ADICIONAR
-          const addBtn = e.target.closest('button[data-pid]');
-          if (addBtn) {
-            const pid = addBtn.dataset.pid;
-            const inp = document.getElementById(`erpSearch-${pid}`);
-            const val = inp.value.trim();
-            const opts = Array.from(document.querySelectorAll(`#erpList-${pid} option`));
+            document.getElementById('searchInput').addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                document.querySelectorAll('[data-search]').forEach(card => {
+                    card.style.display = card.getAttribute('data-search').toLowerCase().includes(term) ? '' : 'none';
+                });
+            });
 
-            if (!val.includes(' - ')) {
-                  alert('Formato inválido. Use "ID - Descrição".');
-                  return;
-            }
+            perfis.forEach(p => {
+                const $select = $('#erpSelect_' + p.id);
+                const $tipo = $('#filtroTipo_' + p.id);
+                const $status = $('#filtroStatus_' + p.id);
+                const $tag = $('#filtroTag_' + p.id);
 
-            const [id, ...descParts] = val.split(' - ');
-            const text = descParts.join(' - ').trim();
+                $select.select2({
+                    placeholder: 'Buscar Itens ERP...',
+                    ajax: {
+                        url: '/ItensERP/BuscarItensERP',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                term: params.term,
+                                tipoItem: $tipo.val(),
+                                status: $status.val(),
+                                tag: $tag.val()
+                            };
+                        },
+                        processResults: function (data) {
+                            return { results: data };
+                        },
+                        cache: true
+                    },
+                    templateResult: formatItem,
+                    templateSelection: function (item) {
+                        if (!item.id) return item.text;
+                        return item.text.split('|')[0];
+                    },
+                    width: '100%',
+                    allowClear: true
+                });
 
-            if (!id || !text) {
-                alert('Item ERP inválido ou incompleto.');
-                return;
-            }
+                p.selecionados.forEach(i => {
+                    const option = new Option(i.text, i.id, true, true);
+                    $select.append(option).trigger('change');
+                });
 
-            const tbl  = document.querySelector(`#tblErp-${pid} tbody`);
-
-            if ([...tbl.querySelectorAll('input[type=hidden]')].some(h => h.value === id)) {
-              inp.value = '';
-              return;
-            }
-
-            const parts = text.split('–',2).map(s => s.trim());
-            const idx   = tbl.rows.length;
-            const tr    = document.createElement('tr');
-            tr.innerHTML = `
-              <input name="ItensERPSelecionados[${idx}]" type="hidden" value="${id}" />
-              <td>${parts[0]}</td>
-              <td>${parts.length>1?parts[1]:""}</td>
-              <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove">✕</button></td>`;
-            tbl.appendChild(tr);
-            inp.value = '';
-          }
-
-          // REMOVER
-          if (e.target.classList.contains('btn-remove')) {
-            e.target.closest('tr').remove();
-          }
+                $tipo.on('change', () => $select.select2('open'));
+                $status.on('change', () => $select.select2('open'));
+                $tag.on('input', () => $select.select2('open'));
+            });
         });
     </script>
 }
