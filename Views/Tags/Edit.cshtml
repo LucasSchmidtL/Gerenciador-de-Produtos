@@ -1,35 +1,142 @@
-﻿@model Gerenciador_de_Produtos.Controllers.TagEditViewModel
+﻿@model Gerenciador_de_Produtos.Models.ViewModels.TagEditViewModel
+@using Gerenciador_de_Produtos.Models.ViewModels
 
 @{
     ViewData["Title"] = "Editar Tag";
 }
 
-<h1>Editar Tag</h1>
+<h1 class="display-6 fw-bold text-primary mb-4"><i class="bi bi-pencil-square me-2"></i>@ViewData["Title"]</h1>
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
-    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <div class="form-group mb-3">
-        <label asp-for="Nome" class="form-label"></label>
-        <input asp-for="Nome" class="form-control" />
-        <span asp-validation-for="Nome" class="text-danger"></span>
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Nome" class="form-label">Nome</label>
+                    <input asp-for="Nome" class="form-control" placeholder="Nome da Tag" />
+                    <span asp-validation-for="Nome" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-header bg-light border-bottom fw-semibold">
+                    <i class="bi bi-link-45deg text-success me-1"></i> Relacionar Itens ERP
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Filtrar por Tipo</label>
+                            <select id="filtroTipo" class="form-select">
+                                <option value="">-- Todos --</option>
+                                <option value="Perfil">Perfil</option>
+                                <option value="Componente">Componente</option>
+                                <option value="Galvanizado">Galvanizado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Filtrar por Status</label>
+                            <select id="filtroStatus" class="form-select">
+                                <option value="">-- Todos --</option>
+                                <option value="Ativo">Ativo</option>
+                                <option value="NaoAtivo">Não Ativo</option>
+                                <option value="Obsoleto">Obsoleto</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Itens ERP Relacionados</label>
+                        <ul class="list-group mb-3">
+                            @foreach (var item in ViewBag.ItensSelecionados as List<SelectListItem>)
+                            {
+                                var parts = item.Text.Split('|');
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>@parts[0]</strong> - @parts[1]
+                                        <small class="text-muted">(@parts[2])</small>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+
+                        <select id="erpSelect" name="SelectedItemERPIds" multiple class="form-select w-100"></select>
+                        <span asp-validation-for="SelectedItemERPIds" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="bi bi-arrow-left me-1"></i>Voltar
+                </a>
+                <button type="submit" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-save me-1"></i>Salvar
+                </button>
+            </div>
+        </form>
     </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="SelectedItemERPIds" class="form-label">Itens ERP</label>
-        <select asp-for="SelectedItemERPIds"
-                asp-items="Model.AllItemERPs"
-                multiple class="form-select">
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Salvar</button>
-    <a asp-action="Index" class="btn btn-link">Cancelar</a>
-</form>
+</div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        function formatItem(item) {
+            if (!item.id) return item.text;
+            const parts = item.text.split('|');
+            return $('<span><strong>' + parts[0] + '</strong> - ' + parts[1] + ' <small class="text-muted">(' + parts[2] + ')</small></span>');
+        }
+
+        const itensPreSelecionados = [
+        @foreach (var item in (List<SelectListItem>)ViewBag.ItensSelecionados)
+        {
+            <text>{ id: '@item.Value', text: '@item.Text' },</text>
+        }
+        ];
+
+        const $erpSelect = $('#erpSelect');
+
+        $erpSelect.select2({
+            placeholder: "Buscar Itens ERP...",
+            ajax: {
+                url: '/ItensERP/BuscarItensERP',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        term: params.term,
+                        tipo: $('#filtroTipo').val(),
+                        status: $('#filtroStatus').val()
+                    };
+                },
+                processResults: function (data) {
+                    return { results: data };
+                },
+                cache: true
+            },
+            templateResult: formatItem,
+            templateSelection: function (item) {
+                if (!item.id) return item.text;
+                return item.text.split('|')[0];
+            },
+            width: '100%',
+            allowClear: true
+        });
+
+        // Adiciona os itens já vinculados
+        itensPreSelecionados.forEach(i => {
+            const option = new Option(i.text, i.id, true, true);
+            $erpSelect.append(option).trigger('change');
+        });
+
+        $('#filtroTipo, #filtroStatus').on('change', function () {
+            $erpSelect.select2('open');
+        });
+    </script>
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

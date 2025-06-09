@@ -51,6 +51,26 @@
                 </div>
             </div>
 
+
+            <div class="mb-3">
+                <label class="form-label">Itens ERP Relacionados</label>
+                <ul class="list-group mb-3">
+                    @foreach (var item in ViewBag.ItensSelecionados as List<SelectListItem>)
+                    {
+                        var parts = item.Text.Split('|');
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>@parts[0]</strong> - @parts[1]
+                                <small class="text-muted">(@parts[2])</small>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <select id="erpSelect" name="SelectedItemERPIds" multiple class="form-select w-100"></select>
+                <span asp-validation-for="SelectedItemERPIds" class="text-danger"></span>
+            </div>
+
+
             <!-- CARD: RELACIONAR ITENS ERP -->
             <div class="card shadow-sm border-0 mt-4">
                 <div class="card-header bg-light border-bottom fw-semibold">

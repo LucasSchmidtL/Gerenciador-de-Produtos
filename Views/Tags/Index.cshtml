@@ -4,7 +4,6 @@
     ViewData["Title"] = "Tags";
 }
 
-<!-- Estilos de rotação do ícone (mova para site.css) -->
 <style>
     .toggle-icon {
         transition: transform 0.3s ease;
@@ -17,83 +16,71 @@
 
 <div class="mb-4">
     <h3 class="fw-bold mb-3">@ViewData["Title"]</h3>
-    <div class="row g-2">
+
+    <div class="row g-2 mb-2">
         <div class="col-auto">
-            <a asp-action="Create" class="btn btn-primary rounded-pill py-0 px-3">
+            <a asp-action="Create" class="btn btn-primary">
                 <i class="bi bi-plus-lg me-1"></i>Criar Nova Tag
             </a>
         </div>
         <div class="col">
-            <input id="searchInput"
-                   class="form-control"
-                   placeholder="Buscar por nome ou ERP..." />
+            <input id="searchInput" class="form-control" placeholder="Buscar por nome ou ERP..." />
         </div>
     </div>
 </div>
 
 @foreach (var tag in Model)
 {
-    var erps = tag.ItemERPs?.Select(i => i.ERP).DefaultIfEmpty();
-    <div class="card mb-4" data-search="@($"{tag.Nome} {string.Join(" ", erps)}")">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <button class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-2 toggle-btn"
+    var searchText = $"{tag.Nome} {string.Join(" ", tag.ItemERPs.Select(i => i.ERP))}";
+    <div class="card mb-4 shadow-sm"
+         data-search="@searchText.ToLowerInvariant()">
+        <div class="card-header d-flex align-items-center justify-content-between bg-light">
+            <div class="d-flex align-items-center flex-grow-1">
+                <button class="btn btn-sm btn-outline-secondary me-3 toggle-btn"
                         data-bs-toggle="collapse"
                         data-bs-target="#details_@tag.Id"
-                        aria-expanded="false"
-                        aria-controls="details_@tag.Id">
+                        aria-expanded="false">
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
-                <div class="flex-grow-1">
-                    <strong>@tag.Nome</strong>
-                    <small class="text-muted ms-2">(@tag.ItemERPs?.Count() ?? 0 itens)</small>
-                </div>
                 <div>
-                    <a asp-action="Details" asp-route-id="@tag.Id"
-                       class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1">
-                        <i class="bi bi-eye me-1"></i>Detalhes
-                    </a>
-                    <a asp-action="Edit" asp-route-id="@tag.Id"
-                       class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1">
-                        <i class="bi bi-pencil me-1"></i>Editar
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@tag.Id"
-                       class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2">
-                        <i class="bi bi-trash me-1"></i>Excluir
-                    </a>
+                    <strong>@tag.Nome</strong> <span class="text-muted">(ID: @tag.Id)</span><br />
+                    <small class="text-muted">@tag.ItemERPs?.Count() ERP(s)</small>
                 </div>
+            </div>
+            <div>
+                <a asp-action="Edit" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-secondary">Editar</a>
+                <a asp-action="Delete" asp-route-id="@tag.Id" class="btn btn-sm btn-outline-danger">Excluir</a>
             </div>
         </div>
 
         <div class="collapse" id="details_@tag.Id">
-            <div class="card-body bg-light p-4">
-                @if (tag.ItemERPs?.Any() == true)
+            <div class="card-body">
+                @if (tag.ItemERPs != null && tag.ItemERPs.Any())
                 {
-                    <ul class="list-group mb-3">
-                        @foreach (var item in tag.ItemERPs)
-                        {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>
-                                    <i class="bi bi-box me-1"></i>
-                                    @item.ERP <small class="text-muted">(@item.Id)</small>
-                                </span>
-                                <div>
-                                    <a asp-controller="ItensERP" asp-action="Details" asp-route-id="@item.Id"
-                                       class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 me-1" title="Ver Detalhes">
-                                        <i class="bi bi-eye me-1"></i>Detalhes
-                                    </a>
-                                    <a asp-controller="ItensERP" asp-action="Edit" asp-route-id="@item.Id"
-                                       class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2" title="Editar Item">
-                                        <i class="bi bi-pencil me-1"></i>Editar
-                                    </a>
-                                </div>
-                            </li>
-                        }
-                    </ul>
+                    <h6 class="mb-2">Itens ERP Vinculados</h6>
+                    <table class="table table-sm table-hover table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ERP</th>
+                                <th>Descrição</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in tag.ItemERPs)
+                            {
+                                <tr>
+                                    <td>@item.ERP</td>
+                                    <td>@item.Descricao</td>
+                                    <td>@item.TipoItem</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 }
                 else
                 {
-                    <p class="text-muted mb-3">Nenhum Item ERP vinculado.</p>
+                    <div class="text-muted">Nenhum Item ERP vinculado.</div>
                 }
             </div>
         </div>
@@ -102,21 +89,19 @@
 
 @section Scripts {
     <script>
-        // filtro em tempo real
-        document.getElementById('searchInput').addEventListener('input', function() {
-          var filtro = this.value.toLowerCase();
-          document.querySelectorAll('[data-search]').forEach(function(card) {
-            var texto = card.getAttribute('data-search').toLowerCase();
-            card.style.display = texto.includes(filtro) ? '' : 'none';
-          });
+        const inputBusca = document.getElementById('searchInput');
+
+        inputBusca.addEventListener('input', function () {
+            const termoBusca = inputBusca.value.toLowerCase();
+            document.querySelectorAll('[data-search]').forEach(card => {
+                const search = card.getAttribute('data-search');
+                card.style.display = search.includes(termoBusca) ? '' : 'none';
+            });
         });
 
-        // inicializa toggles fechados e anima ícones
-        document.querySelectorAll('.toggle-btn').forEach(function(btn) {
-          btn.classList.add('toggle-collapsed');
-          btn.addEventListener('click', function() {
-            btn.classList.toggle('toggle-collapsed');
-          });
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.classList.add('toggle-collapsed');
+            btn.addEventListener('click', () => btn.classList.toggle('toggle-collapsed'));
         });
     </script>
 }

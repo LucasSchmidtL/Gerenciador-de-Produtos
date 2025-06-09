@@ -180,31 +180,32 @@ namespace Gerenciador_de_Produtos.Controllers
 
             var desenho = await _context.Desenhos
                 .Include(d => d.DesenhoItemERPs)
-                .ThenInclude(di => di.ItemERP)
+                    .ThenInclude(di => di.ItemERP)
                 .FirstOrDefaultAsync(d => d.DesenhoId == id);
 
             if (desenho == null) return NotFound();
 
-            return View(desenho);
+            var vm = new DesenhoViewModel
+            {
+                DesenhoId = desenho.DesenhoId,
+                Nome = desenho.Nome,
+                Descricao = desenho.Descricao,
+                Revisao = desenho.Revisao,
+                Status = desenho.Status,
+                Classificacao = desenho.Classificacao,
+                SolicitacaoAlteracaoId = desenho.SolicitacaoAlteracaoId,
+                SelectedItemERPIds = desenho.DesenhoItemERPs.Select(di => di.ItemERPId).ToList()
+            };
+
+            ViewBag.ItensSelecionados = desenho.DesenhoItemERPs
+                .Select(di => new SelectListItem
+                {
+                    Value = di.ItemERPId.ToString(),
+                    Text = $"{di.ItemERP.ERP}|{di.ItemERP.Descricao}|{di.ItemERP.TipoItem}"
+                }).ToList();
+
+            return View(vm);
         }
 
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
-        {
-            var desenho = await _context.Desenhos
-                .FirstOrDefaultAsync(d => d.DesenhoId == id);
-
-            if (desenho == null) return NotFound();
-
-            var relacionamentos = _context.ItemERPRelacionados
-                .Where(r => r.DesenhoId == id);
-            _context.ItemERPRelacionados.RemoveRange(relacionamentos);
-
-            _context.Desenhos.Remove(desenho);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
-        }
     }
 }

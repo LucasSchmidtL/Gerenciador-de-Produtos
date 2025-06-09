@@ -1,41 +1,61 @@
 ﻿@model Gerenciador_de_Produtos.Models.Tag
+@using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
     ViewData["Title"] = "Excluir Tag";
 }
 
-<h1>Excluir Tag</h1>
+<h1 class="display-6 fw-bold text-danger mb-4">
+    <i class="bi bi-trash3-fill me-2"></i>@ViewData["Title"]
+</h1>
 
-<h4>Tem certeza que deseja excluir esta tag?</h4>
-<hr />
-<div class="card mb-4">
+<div class="alert alert-warning border-0 mb-4">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    Tem certeza que deseja excluir esta tag? Esta ação <strong>não poderá ser desfeita</strong>.
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-light fw-semibold">
+        <i class="bi bi-tag-fill me-1 text-secondary"></i> Dados da Tag
+    </div>
     <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-2">Nome</dt>
-            <dd class="col-sm-10">@Model.Nome</dd>
-
-            <dt class="col-sm-2">Itens ERP</dt>
-            <dd class="col-sm-10">
-                @if (Model.ItemERPs != null && Model.ItemERPs.Any())
-                {
-                    <ul>
-                        @foreach (var item in Model.ItemERPs)
-                        {
-                            <li>@item.ERP (@item.Id)</li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <em class="text-muted">Nenhum Item ERP vinculado</em>
-                }
-            </dd>
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Nome</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Nome)</dd>
         </dl>
+    </div>
 
-        <form asp-action="Delete" method="post">
-            <input type="hidden" asp-for="Id" />
-            <button type="submit" class="btn btn-danger">Excluir</button>
-            <a asp-action="Index" class="btn btn-link">Cancelar</a>
-        </form>
+    <div class="mb-3">
+        <label class="form-label">Itens ERP Relacionados</label>
+        @if (Model.ItemERPs != null && Model.ItemERPs.Any())
+        {
+            <ul class="list-group mb-3">
+                @foreach (var item in Model.ItemERPs)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>@item.ERP</strong> - @item.Descricao
+                            <small class="text-muted">(@item.TipoItem)</small>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div class="text-muted">Nenhum Item ERP vinculado.</div>
+        }
     </div>
 </div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <div class="d-flex justify-content-between">
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-1"></i> Voltar
+        </a>
+        <button type="submit" class="btn btn-danger rounded-pill px-4">
+            <i class="bi bi-trash me-1"></i> Excluir
+        </button>
+    </div>
+</form>
