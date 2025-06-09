@@ -31,6 +31,9 @@ namespace Gerenciador_de_Produtos.Data
         public DbSet<Perfil> Perfis { get; set; }
         public DbSet<ItemERP> ItensERP { get; set; }
         public DbSet<Secao> Secao { get; set; }
+
+        public DbSet<Secao> Secoes { get; set; }
+
         public DbSet<Equacao> Equacao { get; set; }
         public DbSet<Norma> Norma { get; set; }
 

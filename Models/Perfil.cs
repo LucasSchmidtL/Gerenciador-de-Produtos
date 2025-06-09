@@ -21,7 +21,8 @@ namespace Gerenciador_de_Produtos.Models
         public string? Descricao { get; set; }
 
         [Display(Name = "Tipo de Seção")]
-        public string? TipoSecao { get; set; }
+        public int? SecaoId { get; set; }
+        public Secao? Secao { get; set; }
 
         #endregion
 

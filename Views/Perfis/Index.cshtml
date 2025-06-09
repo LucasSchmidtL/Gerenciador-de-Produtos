@@ -39,7 +39,7 @@
 
 @foreach (var vm in Model)
 {
-    var searchText = $"{vm.ERP} {vm.Descricao} {vm.TipoSecao} {vm.DesenhoNome}";
+    var searchText = $"{vm.ERP} {vm.Descricao} {vm.SecaoId} {vm.DesenhoNome}";
     <div class="card mb-4 shadow-sm"
          data-search="@searchText.ToLowerInvariant()">
         <div class="card-header d-flex align-items-center justify-content-between bg-light">
@@ -71,7 +71,15 @@
         <div class="collapse" id="details_@vm.Id">
             <div class="card-body">
                 <div class="row mb-3">
-                    <div class="col-md-4"><strong>Tipo de Seção:</strong> @vm.TipoSecao</div>
+                    @{
+                        var todasSecoes = ViewBag.TodasSecoes as Dictionary<int, string>;
+                        string nomeSecao = todasSecoes != null && vm.SecaoId.HasValue && todasSecoes.ContainsKey(vm.SecaoId.Value)
+                        ? todasSecoes[vm.SecaoId.Value]
+                        : "N/A";
+
+                    }
+                    <div class="col-md-4"><strong>Tipo de Seção:</strong> @nomeSecao</div>
+
                     <div class="col-md-4"><strong>ID:</strong> @vm.Id</div>
                 </div>
 

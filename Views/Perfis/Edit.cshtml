@@ -25,11 +25,12 @@
                     <input asp-for="Descricao" class="form-control" />
                     <span asp-validation-for="Descricao" class="text-danger"></span>
                 </div>
-                <div class="col-md-6">
-                    <label asp-for="TipoSecao" class="form-label">Tipo de Seção</label>
-                    <input asp-for="TipoSecao" class="form-control" />
-                    <span asp-validation-for="TipoSecao" class="text-danger"></span>
-                </div>
+                <label asp-for="SecaoId" class="form-label">Seção</label>
+                <select asp-for="SecaoId" class="form-select" asp-items="Model.TodasSecoes">
+                    <option value="">-- Selecione --</option>
+                </select>
+                <span asp-validation-for="SecaoId" class="text-danger"></span>
+
             </div>
 
             <!-- CARD: DADOS TÉCNICOS -->

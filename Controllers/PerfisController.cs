@@ -47,12 +47,16 @@ namespace Gerenciador_de_Produtos.Controllers
             {
                 Id = p.Id,
                 Descricao = p.Descricao,
-                TipoSecao = p.TipoSecao,
+                SecaoId = p.SecaoId,
                 TodosItensERP = allErps,
                 TodosDesenhos = allDesenhos,
                 ItensERPSelecionados = p.PerfilItemERPs.Select(pi => pi.ItemERPId).ToList(),
                 DesenhosSelecionados = p.DesenhosPerfil.Select(pd => pd.DesenhoId).ToList()
             }).ToList();
+
+            ViewBag.TodasSecoes = await _context.Secoes
+               .ToDictionaryAsync(s => s.Id, s => s.Tipo);
+
 
             return View(vm);
         }
@@ -186,7 +190,7 @@ namespace Gerenciador_de_Produtos.Controllers
             var perfil = new Perfil
             {
                 Descricao = vm.Descricao,
-                TipoSecao = vm.TipoSecao,
+                SecaoId = vm.SecaoId,
                 Peso = vm.Peso,
                 AreaBruta = vm.AreaBruta,
                 AreaLiq = vm.AreaLiq,
@@ -226,6 +230,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 PerfilItemERPs = vm.ItensERPSelecionados?.Select(id => new PerfilItemERP { ItemERPId = id }).ToList() ?? new List<PerfilItemERP>(),
                 DesenhosPerfil = vm.DesenhosSelecionados?.Select(did => new DesenhoPerfil { DesenhoId = did }).ToList() ?? new List<DesenhoPerfil>()
             };
+
 
             _context.Perfis.Add(perfil);
             await _context.SaveChangesAsync();
@@ -311,7 +316,7 @@ namespace Gerenciador_de_Produtos.Controllers
             {
                 Id = perfil.Id,
                 Descricao = perfil.Descricao,
-                TipoSecao = perfil.TipoSecao,
+                SecaoId = perfil.SecaoId,
                 Peso = perfil.Peso,
                 AreaBruta = perfil.AreaBruta,
                 AreaLiq = perfil.AreaLiq,
@@ -362,6 +367,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 }).ToListAsync()
             };
 
+
             ViewBag.ItensSelecionados = await _context.ItensERP
                 .Where(i => vm.ItensERPSelecionados.Contains(i.Id))
                 .Select(i => new SelectListItem
@@ -411,6 +417,14 @@ namespace Gerenciador_de_Produtos.Controllers
                     Text = t.Nome
                 }).ToListAsync();
 
+            vm.TodasSecoes = await _context.Secoes
+            .Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = s.Tipo
+            }).ToListAsync();
+
+
 
             return View(vm);
         }
@@ -443,7 +457,7 @@ namespace Gerenciador_de_Produtos.Controllers
             if (perfil == null) return NotFound();
 
             perfil.Descricao = vm.Descricao;
-            perfil.TipoSecao = vm.TipoSecao;
+            perfil.SecaoId = vm.SecaoId;
             perfil.Peso = vm.Peso;
             perfil.AreaBruta = vm.AreaBruta;
             perfil.AreaLiq = vm.AreaLiq;
@@ -548,7 +562,7 @@ namespace Gerenciador_de_Produtos.Controllers
         {
             var header = string.Join(",", new[] {
                 "ItensERP", "Desenhos", // novos campos
-                "Descricao", "TipoSecao", "Peso", "AreaBruta", "AreaLiq", "AreaEq", "Ix", "Sxt", "Sxb", "Zx", "Rx", "yt", "yb",
+                "Descricao", "Secao", "Peso", "AreaBruta", "AreaLiq", "AreaEq", "Ix", "Sxt", "Sxb", "Zx", "Rx", "yt", "yb",
                 "Ixy", "Iy", "Syl", "Syr", "Zy", "ry", "xl", "xr", "xo", "yo", "jx", "jy", "Cw", "J", "Ixe",
                 "Sxet", "Sxeb", "lye", "Syel", "Syer", "p1", "p2", "p3", "SimetricoX", "SimetricoY"
             });
@@ -605,11 +619,15 @@ namespace Gerenciador_de_Produtos.Controllers
                 var dict = row as IDictionary<string, object>;
                 if (dict == null) continue; // pular linha inválida
 
+                var nomeSecao = dict["Secao"]?.ToString().Trim();
+                var secao = await _context.Secoes.FirstOrDefaultAsync(s => s.Tipo == nomeSecao);
+                var secaoId = secao?.Id;
 
                 var perfil = new Perfil
                 {
                     Descricao = dict["Descricao"]?.ToString(),
-                    TipoSecao = dict["TipoSecao"]?.ToString(),
+                    SecaoId = secaoId,
+
                     Peso = ParseFloat(dict["Peso"]?.ToString()),
                     AreaBruta = ParseFloat(dict["AreaBruta"]?.ToString()),
                     AreaLiq = ParseFloat(dict["AreaLiq"]?.ToString()),
@@ -685,8 +703,17 @@ namespace Gerenciador_de_Produtos.Controllers
                     }
                 }
 
+                var nomePerfil = dict["Descricao"]?.ToString()?.Trim();
+                if (string.IsNullOrEmpty(nomePerfil)) continue; // pula se não tiver nome
+
+                // Verifica se já existe um perfil com esse nome
+                bool jaExiste = await _context.Perfis.AnyAsync(p => p.Descricao == nomePerfil);
+                if (jaExiste) continue; // pula se já existe
+
+                perfil.Descricao = nomePerfil;
                 _context.Perfis.Add(perfil);
                 importados++;
+
             }
 
             await _context.SaveChangesAsync();
