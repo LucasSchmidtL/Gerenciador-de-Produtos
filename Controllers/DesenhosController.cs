@@ -131,6 +131,14 @@ namespace Gerenciador_de_Produtos.Controllers
                 })
                 .ToListAsync();
 
+            ViewBag.AllTags = await _context.Tags
+                .Select(t => new SelectListItem
+                {
+                    Value = t.Nome,
+                    Text = t.Nome
+                }).ToListAsync();
+
+
             return View(vm);
         }
 
@@ -206,6 +214,37 @@ namespace Gerenciador_de_Produtos.Controllers
 
             return View(vm);
         }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(long id)
+        {
+            var desenho = await _context.Desenhos
+                .Include(d => d.DesenhoItemERPs)
+                .FirstOrDefaultAsync(d => d.DesenhoId == id);
+
+            if (desenho == null)
+                return NotFound();
+
+            // Remove os relacionamentos em ItemERPRelacionados que apontam para esse Desenho
+            var relacionados = _context.ItemERPRelacionados
+                .Where(r => r.DesenhoId == id);
+
+            _context.ItemERPRelacionados.RemoveRange(relacionados);
+
+            // Remove os vínculos com ItemERP
+            _context.DesenhoItemERPs.RemoveRange(desenho.DesenhoItemERPs);
+
+            // Remove o desenho em si
+            _context.Desenhos.Remove(desenho);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
 
     }
 }

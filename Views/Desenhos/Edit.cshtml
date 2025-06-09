@@ -66,8 +66,7 @@
                         </li>
                     }
                 </ul>
-                <select id="erpSelect" name="SelectedItemERPIds" multiple class="form-select w-100"></select>
-                <span asp-validation-for="SelectedItemERPIds" class="text-danger"></span>
+               
             </div>
 
 
@@ -100,8 +99,15 @@
 
                         <div class="col-md-3">
                             <label class="form-label">Tag</label>
-                            <input id="filtroTag" class="form-control" placeholder="Digite uma tag" />
+                            <select id="filtroTag" class="form-select">
+                                <option value="">-- Todas --</option>
+                                @foreach (var tag in ViewBag.AllTags as List<SelectListItem>)
+                                {
+                                    <option value="@tag.Value">@tag.Text</option>
+                                }
+                            </select>
                         </div>
+
 
                         <div class="col-md-3 d-flex align-items-end">
                             <button type="button" id="limparFiltros" class="btn btn-outline-secondary w-100">
@@ -110,11 +116,8 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Itens ERP Relacionados</label>
-                        <select id="erpSelect" name="SelectedItemERPIds" multiple class="form-select w-100"></select>
-                        <span asp-validation-for="SelectedItemERPIds" class="text-danger"></span>
-                    </div>
+                    <select id="erpSelect" name="SelectedItemERPIds" multiple class="form-select w-100"></select>
+                    <span asp-validation-for="SelectedItemERPIds" class="text-danger"></span>
                 </div>
             </div>
 
