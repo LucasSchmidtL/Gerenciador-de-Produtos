@@ -11,7 +11,11 @@ namespace Gerenciador_de_Produtos.Models
         #region Informações Básicas
 
         [Display(Name = "Desenho")]
-        public string? Desenho { get; set; }
+        public long? DesenhoId { get; set; }
+
+        [ForeignKey("DesenhoId")]
+        public Desenho? Desenho { get; set; }
+
 
         [Display(Name = "Descrição")]
         public string? Descricao { get; set; }
@@ -111,6 +115,12 @@ namespace Gerenciador_de_Produtos.Models
         public ItemERP? ItemERP { get; set; } = null!;
 
         public ICollection<PerfilItemERP> PerfilItemERPs { get; set; } = new List<PerfilItemERP>();
+
+        public ICollection<Desenho> Desenhos { get; set; } = new List<Desenho>();
+
+        public ICollection<DesenhoPerfil> DesenhosPerfil { get; set; } = new List<DesenhoPerfil>();
+
+
         #endregion 
     }
 }

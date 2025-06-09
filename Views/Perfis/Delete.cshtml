@@ -1,255 +1,159 @@
 ﻿@model Gerenciador_de_Produtos.Models.Perfil
+@using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Excluir Perfil";
 }
 
-<h1>Delete</h1>
+<h1 class="display-6 fw-bold text-danger mb-4">
+    <i class="bi bi-trash me-2"></i>@ViewData["Title"]
+</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Perfil</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Desenho)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Desenho)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descricao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descricao)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TipoSecao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TipoSecao)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Peso)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Peso)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AreaBruta)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AreaBruta)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AreaLiq)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AreaLiq)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AreaEq)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AreaEq)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ix)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ix)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sxt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sxt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sxb)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sxb)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Zx)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Zx)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Rx)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Rx)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.yt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.yt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.yb)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.yb)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ixy)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ixy)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Iy)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Iy)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Syl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Syl)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Syr)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Syr)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Zy)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Zy)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ry)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ry)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.xl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.xl)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.xr)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.xr)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.xo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.xo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.yo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.yo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.jx)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.jx)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.jy)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.jy)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cw)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cw)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.J)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.J)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ixe)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ixe)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sxet)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sxet)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sxeb)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sxeb)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.lye)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.lye)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Syel)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Syel)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Syer)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Syer)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.p1)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.p1)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.p2)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.p2)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.p3)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.p3)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SimetricoX)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SimetricoX)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SimetricoY)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SimetricoY)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+<div class="alert alert-warning shadow-sm d-flex align-items-center mb-4" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+    Tem certeza que deseja excluir o perfil <strong class="ms-1">@Model.Descricao</strong>? Esta ação não poderá ser desfeita.
 </div>
+
+
+
+<!-- CARD: INFORMAÇÕES DO PERFIL -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-light border-bottom fw-semibold">
+        <i class="bi bi-info-circle me-1 text-primary"></i> Informações do Perfil
+    </div>
+    <div class="card-body p-4">
+        <div class="row g-4 mb-3">
+            <div class="col-md-6"><strong>Desenho:</strong> @Model.Desenho</div>
+            <div class="col-md-6"><strong>Descrição:</strong> @Model.Descricao</div>
+            <div class="col-md-6"><strong>Tipo de Seção:</strong> @Model.TipoSecao</div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-light fw-semibold">
+                        <i class="bi bi-sliders me-1"></i> Geometria e Propriedades X/Y
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            @* Coluna X *@
+                            <div class="col-md-6">Peso: @Model.Peso</div>
+                            <div class="col-md-6">Area Bruta: @Model.AreaBruta</div>
+                            <div class="col-md-6">Area Líquida: @Model.AreaLiq</div>
+                            <div class="col-md-6">Area Eq: @Model.AreaEq</div>
+                            <div class="col-md-6">Ix: @Model.Ix</div>
+                            <div class="col-md-6">Iy: @Model.Iy</div>
+                            <div class="col-md-6">Zx: @Model.Zx</div>
+                            <div class="col-md-6">Zy: @Model.Zy</div>
+                            <div class="col-md-6">Sxt: @Model.Sxt</div>
+                            <div class="col-md-6">Sxb: @Model.Sxb</div>
+                            <div class="col-md-6">Syl: @Model.Syl</div>
+                            <div class="col-md-6">Syr: @Model.Syr</div>
+                            <div class="col-md-6">Rx: @Model.Rx</div>
+                            <div class="col-md-6">ry: @Model.ry</div>
+                            <div class="col-md-6">yt: @Model.yt</div>
+                            <div class="col-md-6">yb: @Model.yb</div>
+                            <div class="col-md-6">Ixy: @Model.Ixy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-light fw-semibold">
+                        <i class="bi bi-rulers me-1"></i> Coordenadas, Torção e Extras
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">xl: @Model.xl</div>
+                            <div class="col-md-6">xr: @Model.xr</div>
+                            <div class="col-md-6">xo: @Model.xo</div>
+                            <div class="col-md-6">yo: @Model.yo</div>
+                            <div class="col-md-6">jx: @Model.jx</div>
+                            <div class="col-md-6">jy: @Model.jy</div>
+                            <div class="col-md-6">Cw: @Model.Cw</div>
+                            <div class="col-md-6">J: @Model.J</div>
+                            <div class="col-md-6">Ixe: @Model.Ixe</div>
+                            <div class="col-md-6">Sxet: @Model.Sxet</div>
+                            <div class="col-md-6">Sxeb: @Model.Sxeb</div>
+                            <div class="col-md-6">lye: @Model.lye</div>
+                            <div class="col-md-6">Syel: @Model.Syel</div>
+                            <div class="col-md-6">Syer: @Model.Syer</div>
+                            <div class="col-md-4">p1: @Model.p1</div>
+                            <div class="col-md-4">p2: @Model.p2</div>
+                            <div class="col-md-4">p3: @Model.p3</div>
+                            <div class="col-md-6">Simétrico X: @(Model.SimetricoX == true ? "Sim" : "Não")</div>
+                            <div class="col-md-6">Simétrico Y: @(Model.SimetricoY == true ? "Sim" : "Não")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD: ITENS ERP RELACIONADOS -->
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-header bg-light border-bottom fw-semibold">
+                <i class="bi bi-boxes text-success me-1"></i> Itens ERP Relacionados
+            </div>
+            <div class="card-body">
+                @if (Model.PerfilItemERPs != null && Model.PerfilItemERPs.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var item in Model.PerfilItemERPs)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><strong>@item.ItemERP?.ERP</strong> - @item.ItemERP?.Descricao</span>
+                                <span class="text-muted">@item.ItemERP?.TipoItem</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="text-muted">Nenhum item relacionado.</div>
+                }
+            </div>
+        </div>
+
+
+        <!-- CARD: DESENHOS VINCULADOS -->
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-header bg-light border-bottom fw-semibold">
+                <i class="bi bi-vector-pen text-primary me-1"></i> Desenhos Vinculados
+            </div>
+            <div class="card-body">
+                @if (Model.DesenhosPerfil != null && Model.DesenhosPerfil.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var dp in Model.DesenhosPerfil)
+                        {
+                            var desenho = dp.Desenho;
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <strong>@desenho?.Nome</strong>
+                                    <small class="text-muted ms-2">Rev. @desenho?.Revisao</small>
+                                </span>
+                                <span class="text-muted">@desenho?.Descricao</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="text-muted">Nenhum desenho vinculado.</div>
+                }
+            </div>
+        </div>
+
+        <form asp-action="Delete" method="post" class="mt-4">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="bi bi-arrow-left me-1"></i>Cancelar
+                </a>
+                <button type="submit" class="btn btn-danger rounded-pill px-4">
+                    <i class="bi bi-trash me-1"></i>Confirmar Exclusão
+                </button>
+            </div>
+        </form>

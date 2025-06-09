@@ -145,6 +145,23 @@ namespace Gerenciador_de_Produtos.Data
                 .WithMany()
                 .HasForeignKey(r => r.DesenhoId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Perfil ⇄ Desenho (muitos-para-muitos via DesenhoPerfil)
+            modelBuilder.Entity<DesenhoPerfil>()
+                .HasKey(dp => new { dp.PerfilId, dp.DesenhoId });
+
+            modelBuilder.Entity<DesenhoPerfil>()
+                .HasOne(dp => dp.Perfil)
+                .WithMany(p => p.DesenhosPerfil)
+                .HasForeignKey(dp => dp.PerfilId);
+
+            modelBuilder.Entity<DesenhoPerfil>()
+                .HasOne(dp => dp.Desenho)
+                .WithMany()
+                .HasForeignKey(dp => dp.DesenhoId);
+
+
+
         }
     }
 }

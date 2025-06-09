@@ -4,9 +4,6 @@
     ViewData["Title"] = "Perfis";
 }
 
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 <style>
     .toggle-icon {
         transition: transform 0.3s ease;
@@ -18,8 +15,9 @@
 </style>
 
 <div class="mb-4">
-    <h3 class="fw-bold mb-3"><i class="bi bi-diagram-3 me-2"></i>@ViewData["Title"]</h3>
-    <div class="row g-2 mb-3">
+    <h3 class="fw-bold mb-3">@ViewData["Title"]</h3>
+
+    <div class="row g-2 mb-2">
         <div class="col-auto">
             <a asp-action="Import" class="btn btn-outline-dark rounded-pill px-3">
                 <i class="bi bi-upload me-1"></i> Importar CSV
@@ -41,25 +39,30 @@
 
 @foreach (var vm in Model)
 {
-    <div class="card mb-4 shadow-sm" data-search="@vm.ERP @vm.Descricao">
-        <div class="card-header d-flex justify-content-between align-items-center bg-light">
-            <div class="d-flex align-items-center">
-                <button class="btn btn-sm btn-outline-secondary toggle-btn me-2"
+    var searchText = $"{vm.ERP} {vm.Descricao} {vm.TipoSecao} {vm.DesenhoNome}";
+    <div class="card mb-4 shadow-sm"
+         data-search="@searchText.ToLowerInvariant()">
+        <div class="card-header d-flex align-items-center justify-content-between bg-light">
+            <div class="d-flex align-items-center flex-grow-1">
+                <button class="btn btn-sm btn-outline-secondary me-3 toggle-btn"
                         data-bs-toggle="collapse"
                         data-bs-target="#details_@vm.Id"
                         aria-expanded="false">
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
-                <strong>@vm.Descricao</strong>
+                <div>
+                    <strong>@vm.Descricao</strong><br />
+                    <small class="text-muted">@vm.ERP</small>
+                </div>
             </div>
-            <div class="d-flex gap-2 ms-auto">
-                <a asp-action="Details" asp-route-id="@vm.Id" class="btn btn-outline-info rounded-pill px-3 py-1">
+            <div>
+                <a asp-action="Details" asp-route-id="@vm.Id" class="btn btn-sm btn-outline-info rounded-pill px-3 py-1">
                     <i class="bi bi-eye me-1"></i> Detalhes
                 </a>
-                <a asp-action="Edit" asp-route-id="@vm.Id" class="btn btn-outline-secondary rounded-pill px-3 py-1">
+                <a asp-action="Edit" asp-route-id="@vm.Id" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1">
                     <i class="bi bi-pencil me-1"></i> Editar
                 </a>
-                <a asp-action="Delete" asp-route-id="@vm.Id" class="btn btn-outline-danger rounded-pill px-3 py-1">
+                <a asp-action="Delete" asp-route-id="@vm.Id" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1">
                     <i class="bi bi-trash me-1"></i> Excluir
                 </a>
             </div>
@@ -67,60 +70,63 @@
 
         <div class="collapse" id="details_@vm.Id">
             <div class="card-body">
-                <!-- BLOCO DESTACADO: DADOS TÉCNICOS DO PERFIL -->
-                <div class="mb-4">
-                    <h6 class="text-primary fw-bold mb-3"><i class="bi bi-gear me-1"></i> Dados Técnicos</h6>
-                    <dl class="row">
-                        <dt class="col-sm-3">ERP</dt>
-                        <dd class="col-sm-9">@vm.ERP</dd>
-                        <dt class="col-sm-3">Desenho</dt>
-                        <dd class="col-sm-9">@vm.Desenho</dd>
-                        <dt class="col-sm-3">Tipo de Seção</dt>
-                        <dd class="col-sm-9">@vm.TipoSecao</dd>
-                    </dl>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>Tipo de Seção:</strong> @vm.TipoSecao</div>
+                    <div class="col-md-4"><strong>ID:</strong> @vm.Id</div>
                 </div>
 
-                <!-- FORM DE ITENS ERP -->
-                <form asp-action="AtualizaItens" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="Id" value="@vm.Id" />
+                <hr class="my-3" />
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Tipo</label>
-                            <select id="filtroTipo_@vm.Id" class="form-select filtro-tipo">
-                                <option value="">-- Todos --</option>
-                                <option value="Perfil">Perfil</option>
-                                <option value="Componente">Componente</option>
-                                <option value="Galvanizado">Galvanizado</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Status</label>
-                            <select id="filtroStatus_@vm.Id" class="form-select filtro-status">
-                                <option value="">-- Todos --</option>
-                                <option value="Ativo">Ativo</option>
-                                <option value="Não Ativo">Não Ativo</option>
-                                <option value="Obsoleto">Obsoleto</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Tag</label>
-                            <input id="filtroTag_@vm.Id" class="form-control filtro-tag" placeholder="Digite uma tag" />
-                        </div>
-                    </div>
+                @if (vm.TodosItensERP != null && vm.ItensERPSelecionados.Any())
+                {
+                    <h6 class="mb-2">Itens ERP Vinculados</h6>
+                    <table class="table table-sm table-hover table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ERP</th>
+                                <th>Descrição</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var erp in vm.TodosItensERP.Where(x => vm.ItensERPSelecionados.Contains(int.Parse(x.Value))))
+                            {
+                                var parts = erp.Text.Split('|');
+                                if (parts.Length == 3)
+                                {
+                                    <tr>
+                                        <td>@parts[0]</td>
+                                        <td>@parts[1]</td>
+                                        <td>@parts[2]</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="text-muted">Nenhum Item ERP vinculado.</div>
+                }
 
-                    <div class="mb-3">
-                        <label class="form-label">Itens ERP Relacionados</label>
-                        <select id="erpSelect_@vm.Id" name="ItensERPSelecionados" multiple class="form-select w-100 erp-select"></select>
-                    </div>
+                <hr class="my-3" />
 
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-success rounded-pill px-4">
-                            <i class="bi bi-save me-1"></i> Salvar Itens
-                        </button>
-                    </div>
-                </form>
+                <h6 class="mb-2">Desenhos Vinculados</h6>
+                @if (vm.TodosDesenhos != null && vm.DesenhosSelecionados.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var desenho in vm.TodosDesenhos.Where(d => vm.DesenhosSelecionados.Contains(int.Parse(d.Value))))
+                        {
+                            <li class="list-group-item">
+                                @desenho.Text
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="text-muted">Nenhum desenho vinculado.</div>
+                }
             </div>
         </div>
     </div>
@@ -128,74 +134,16 @@
 
 @section Scripts {
     <script>
-        const perfis = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Select(p => new
-            {
-                id = p.Id,
-                selecionados = p.TodosItensERP.Where(x => p.ItensERPSelecionados.Contains(int.Parse(x.Value))).Select(x => new { id = x.Value, text = x.Text })
-            })));
-
-        function formatItem(item) {
-            if (!item.id) return item.text;
-            const parts = item.text.split('|');
-            return $('<span><strong>' + parts[0] + '</strong> - ' + parts[1] + ' <small class="text-muted">(' + parts[2] + ')</small></span>');
-        }
-
-        $(document).ready(function () {
-            document.querySelectorAll('.toggle-btn').forEach(btn => {
-                btn.classList.add('toggle-collapsed');
-                btn.addEventListener('click', () => btn.classList.toggle('toggle-collapsed'));
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const term = this.value.toLowerCase();
+            document.querySelectorAll('[data-search]').forEach(card => {
+                card.style.display = card.getAttribute('data-search').includes(term) ? '' : 'none';
             });
+        });
 
-            document.getElementById('searchInput').addEventListener('input', function () {
-                const term = this.value.toLowerCase();
-                document.querySelectorAll('[data-search]').forEach(card => {
-                    card.style.display = card.getAttribute('data-search').toLowerCase().includes(term) ? '' : 'none';
-                });
-            });
-
-            perfis.forEach(p => {
-                const $select = $('#erpSelect_' + p.id);
-                const $tipo = $('#filtroTipo_' + p.id);
-                const $status = $('#filtroStatus_' + p.id);
-                const $tag = $('#filtroTag_' + p.id);
-
-                $select.select2({
-                    placeholder: 'Buscar Itens ERP...',
-                    ajax: {
-                        url: '/ItensERP/BuscarItensERP',
-                        dataType: 'json',
-                        delay: 250,
-                        data: function (params) {
-                            return {
-                                term: params.term,
-                                tipoItem: $tipo.val(),
-                                status: $status.val(),
-                                tag: $tag.val()
-                            };
-                        },
-                        processResults: function (data) {
-                            return { results: data };
-                        },
-                        cache: true
-                    },
-                    templateResult: formatItem,
-                    templateSelection: function (item) {
-                        if (!item.id) return item.text;
-                        return item.text.split('|')[0];
-                    },
-                    width: '100%',
-                    allowClear: true
-                });
-
-                p.selecionados.forEach(i => {
-                    const option = new Option(i.text, i.id, true, true);
-                    $select.append(option).trigger('change');
-                });
-
-                $tipo.on('change', () => $select.select2('open'));
-                $status.on('change', () => $select.select2('open'));
-                $tag.on('input', () => $select.select2('open'));
-            });
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.classList.add('toggle-collapsed');
+            btn.addEventListener('click', () => btn.classList.toggle('toggle-collapsed'));
         });
     </script>
 }

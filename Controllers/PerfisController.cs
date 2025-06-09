@@ -22,72 +22,41 @@ namespace Gerenciador_de_Produtos.Controllers
         public PerfisController(ApplicationDbContext context)
             => _context = context;
 
-        // GET: Perfis
         public async Task<IActionResult> Index()
         {
             var perfis = await _context.Perfis
-                .Include(p => p.PerfilItemERPs)
+                .Include(p => p.PerfilItemERPs).ThenInclude(pi => pi.ItemERP)
+                .Include(p => p.DesenhosPerfil).ThenInclude(pd => pd.Desenho)
                 .ToListAsync();
 
             var allErps = await _context.ItensERP
                 .Select(i => new SelectListItem
                 {
                     Value = i.Id.ToString(),
-                    Text = $"{i.ERP} – {i.Descricao}"
-                })
-                .ToListAsync();
+                    Text = $"{i.ERP}|{i.Descricao}|{i.TipoItem}"
+                }).ToListAsync();
+
+            var allDesenhos = await _context.Desenhos
+                .Select(d => new SelectListItem
+                {
+                    Value = d.DesenhoId.ToString(),
+                    Text = $"{d.Nome} | Rev. {d.Revisao} | {d.Descricao}"
+                }).ToListAsync();
 
             var vm = perfis.Select(p => new PerfilItemERPViewModel
             {
                 Id = p.Id,
-                Desenho = p.Desenho,
                 Descricao = p.Descricao,
                 TipoSecao = p.TipoSecao,
-                Peso = p.Peso,
-                AreaBruta = p.AreaBruta,
-                AreaLiq = p.AreaLiq,
-                AreaEq = p.AreaEq,
-                Ix = p.Ix,
-                Sxt = p.Sxt,
-                Sxb = p.Sxb,
-                Zx = p.Zx,
-                Rx = p.Rx,
-                yt = p.yt,
-                yb = p.yb,
-                Ixy = p.Ixy,
-                Iy = p.Iy,
-                Syl = p.Syl,
-                Syr = p.Syr,
-                Zy = p.Zy,
-                ry = p.ry,
-                xl = p.xl,
-                xr = p.xr,
-                xo = p.xo,
-                yo = p.yo,
-                jx = p.jx,
-                jy = p.jy,
-                Cw = p.Cw,
-                J = p.J,
-                Ixe = p.Ixe,
-                Sxet = p.Sxet,
-                Sxeb = p.Sxeb,
-                lye = p.lye,
-                Syel = p.Syel,
-                Syer = p.Syer,
-                p1 = p.p1,
-                p2 = p.p2,
-                p3 = p.p3,
-                SimetricoX = p.SimetricoX.GetValueOrDefault(),
-                SimetricoY = p.SimetricoY.GetValueOrDefault(),
                 TodosItensERP = allErps,
-                ItensERPSelecionados = p.PerfilItemERPs.Select(pi => pi.ItemERPId).ToList()
-            })
-            .ToList();
+                TodosDesenhos = allDesenhos,
+                ItensERPSelecionados = p.PerfilItemERPs.Select(pi => pi.ItemERPId).ToList(),
+                DesenhosSelecionados = p.DesenhosPerfil.Select(pd => pd.DesenhoId).ToList()
+            }).ToList();
 
             return View(vm);
         }
 
-        // POST: Perfis/AtualizaItens
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AtualizaItens(PerfilItemERPViewModel vm)
@@ -96,72 +65,126 @@ namespace Gerenciador_de_Produtos.Controllers
 
             var perfil = await _context.Perfis
                 .Include(p => p.PerfilItemERPs)
+                .Include(p => p.DesenhosPerfil)
                 .FirstOrDefaultAsync(p => p.Id == vm.Id.Value);
+
             if (perfil == null) return NotFound();
 
-            // limpa vínculos antigos
             _context.PerfilItemERPs.RemoveRange(perfil.PerfilItemERPs);
+            _context.Entry(perfil).Collection(p => p.DesenhosPerfil).CurrentValue = new List<DesenhoPerfil>();
 
-            // adiciona novos
-            foreach (var itemId in vm.ItensERPSelecionados.Distinct())
+            perfil.PerfilItemERPs = vm.ItensERPSelecionados.Distinct()
+                .Select(id => new PerfilItemERP { PerfilId = perfil.Id, ItemERPId = id }).ToList();
+
+            if (vm.DesenhosSelecionados != null)
             {
-                perfil.PerfilItemERPs.Add(new PerfilItemERP
-                {
-                    PerfilId = perfil.Id,
-                    ItemERPId = itemId
-                });
+                perfil.DesenhosPerfil = vm.DesenhosSelecionados.Distinct()
+                    .Select(did => new DesenhoPerfil { PerfilId = perfil.Id, DesenhoId = did }).ToList();
             }
 
             await _context.SaveChangesAsync();
-            TempData["Success"] = "Itens ERP atualizados!";
+            TempData["Success"] = "Itens ERP e Desenhos atualizados!";
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Perfis/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
             var perfil = await _context.Perfis
                 .Include(p => p.PerfilItemERPs).ThenInclude(pi => pi.ItemERP)
+                .Include(p => p.DesenhosPerfil).ThenInclude(pd => pd.Desenho)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (perfil == null) return NotFound();
             return View(perfil);
         }
 
-        // GET: Perfis/Create
         public async Task<IActionResult> Create()
         {
             var vm = new PerfilItemERPViewModel
             {
-                TodosItensERP = await _context.ItensERP
+                TodosItensERP = await _context.ItensERP.Select(i => new SelectListItem
+                {
+                    Value = i.Id.ToString(),
+                    Text = $"{i.ERP} – {i.Descricao}"
+                }).ToListAsync(),
+
+                TodosDesenhos = await _context.Desenhos.Select(d => new SelectListItem
+                {
+                    Value = d.DesenhoId.ToString(),
+                    Text = $"{d.Nome} | Rev. {d.Revisao} | {d.Descricao}"
+                }).ToListAsync()
+            };
+
+            ViewBag.AllTags = await _context.Tags.Select(t => new SelectListItem
+            {
+                Value = t.Nome,
+                Text = t.Nome
+            }).ToListAsync();
+
+            ViewBag.ItensSelecionados = vm.ItensERPSelecionados != null
+                ? await _context.ItensERP
+                    .Where(i => vm.ItensERPSelecionados.Contains(i.Id))
                     .Select(i => new SelectListItem
                     {
                         Value = i.Id.ToString(),
-                        Text = $"{i.ERP} – {i.Descricao}"
+                        Text = $"{i.ERP} | {i.Descricao} | {i.TipoItem}"
                     }).ToListAsync()
-            };
+                : new List<SelectListItem>();
+
+
+            ViewBag.DesenhosSelecionados = vm.DesenhosSelecionados != null
+                ? await _context.Desenhos
+                    .Where(d => vm.DesenhosSelecionados.Contains(d.DesenhoId))
+                    .Select(d => new SelectListItem
+                    {
+                        Value = d.DesenhoId.ToString(),
+                        Text = $"{d.Nome} | Rev. {d.Revisao} | {d.Descricao}"
+                    }).ToListAsync()
+                : new List<SelectListItem>();
+
+
+            ViewBag.ClassificacoesDesenho = await _context.Desenhos
+                .Where(d => d.Classificacao != null)
+                .Select(d => d.Classificacao)
+                .Distinct()
+                .OrderBy(c => c)
+                .Select(c => new SelectListItem { Value = c, Text = c })
+                .ToListAsync();
+
+            var revisoes = await _context.Desenhos
+                .Where(d => d.Revisao != null)
+                .Select(d => d.Revisao)
+                .Distinct()
+                .OrderBy(r => r)
+                .ToListAsync();
+
+            ViewBag.RevisoesDesenho = revisoes.Select(r => new SelectListItem
+            {
+                Value = r.ToString(),
+                Text = r.ToString()
+            }).ToList();
+
+            ViewBag.AllTags = await _context.Tags.Select(t => new SelectListItem
+            {
+                Value = t.Nome,
+                Text = t.Nome
+            }).ToListAsync();
+
             return View(vm);
         }
 
-        // POST: Perfis/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PerfilItemERPViewModel vm)
         {
             if (!ModelState.IsValid)
             {
-                vm.TodosItensERP = await _context.ItensERP
-                    .Select(i => new SelectListItem
-                    {
-                        Value = i.Id.ToString(),
-                        Text = $"{i.ERP} – {i.Descricao}"
-                    }).ToListAsync();
+                await PreencherViewBagsAsync(vm);
                 return View(vm);
             }
 
             var perfil = new Perfil
             {
-                Desenho = vm.Desenho,
                 Descricao = vm.Descricao,
                 TipoSecao = vm.TipoSecao,
                 Peso = vm.Peso,
@@ -200,9 +223,8 @@ namespace Gerenciador_de_Produtos.Controllers
                 p3 = vm.p3,
                 SimetricoX = vm.SimetricoX,
                 SimetricoY = vm.SimetricoY,
-                PerfilItemERPs = vm.ItensERPSelecionados
-                    .Select(id => new PerfilItemERP { ItemERPId = id })
-                    .ToList()
+                PerfilItemERPs = vm.ItensERPSelecionados?.Select(id => new PerfilItemERP { ItemERPId = id }).ToList() ?? new List<PerfilItemERP>(),
+                DesenhosPerfil = vm.DesenhosSelecionados?.Select(did => new DesenhoPerfil { DesenhoId = did }).ToList() ?? new List<DesenhoPerfil>()
             };
 
             _context.Perfis.Add(perfil);
@@ -210,19 +232,84 @@ namespace Gerenciador_de_Produtos.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Perfis/Edit/5
+        private async Task PreencherViewBagsAsync(PerfilItemERPViewModel vm)
+        {
+            vm.TodosItensERP = await _context.ItensERP.Select(i => new SelectListItem
+            {
+                Value = i.Id.ToString(),
+                Text = $"{i.ERP} – {i.Descricao}"
+            }).ToListAsync();
+
+            vm.TodosDesenhos = await _context.Desenhos.Select(d => new SelectListItem
+            {
+                Value = d.DesenhoId.ToString(),
+                Text = $"{d.Nome} | Rev. {d.Revisao} | {d.Descricao}"
+            }).ToListAsync();
+
+            ViewBag.ItensSelecionados = vm.ItensERPSelecionados != null
+                ? await _context.ItensERP
+                    .Where(i => vm.ItensERPSelecionados.Contains(i.Id))
+                    .Select(i => new SelectListItem
+                    {
+                        Value = i.Id.ToString(),
+                        Text = $"{i.ERP} | {i.Descricao} | {i.TipoItem}"
+                    }).ToListAsync()
+                : new List<SelectListItem>();
+
+
+            ViewBag.DesenhosSelecionados = vm.DesenhosSelecionados != null
+                ? await _context.Desenhos
+                    .Where(d => vm.DesenhosSelecionados.Contains(d.DesenhoId))
+                    .Select(d => new SelectListItem
+                    {
+                        Value = d.DesenhoId.ToString(),
+                        Text = $"{d.Nome} | Rev. {d.Revisao} | {d.Descricao}"
+                    }).ToListAsync()
+                : new List<SelectListItem>();
+
+
+            ViewBag.ClassificacoesDesenho = await _context.Desenhos
+                .Where(d => d.Classificacao != null)
+                .Select(d => d.Classificacao)
+                .Distinct()
+                .OrderBy(c => c)
+                .Select(c => new SelectListItem { Value = c, Text = c })
+                .ToListAsync();
+
+            var revisoes = await _context.Desenhos
+                .Where(d => d.Revisao != null)
+                .Select(d => d.Revisao)
+                .Distinct()
+                .OrderBy(r => r)
+                .ToListAsync();
+
+            ViewBag.RevisoesDesenho = revisoes.Select(r => new SelectListItem
+            {
+                Value = r.ToString(),
+                Text = r.ToString()
+            }).ToList();
+
+            ViewBag.AllTags = await _context.Tags.Select(t => new SelectListItem
+            {
+                Value = t.Nome,
+                Text = t.Nome
+            }).ToListAsync();
+        }
+
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
             var perfil = await _context.Perfis
                 .Include(p => p.PerfilItemERPs)
+                .Include(p => p.DesenhosPerfil).ThenInclude(pd => pd.Desenho)
+
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (perfil == null) return NotFound();
 
             var vm = new PerfilItemERPViewModel
             {
                 Id = perfil.Id,
-                Desenho = perfil.Desenho,
                 Descricao = perfil.Descricao,
                 TipoSecao = perfil.TipoSecao,
                 Peso = perfil.Peso,
@@ -262,18 +349,72 @@ namespace Gerenciador_de_Produtos.Controllers
                 SimetricoX = perfil.SimetricoX.GetValueOrDefault(),
                 SimetricoY = perfil.SimetricoY.GetValueOrDefault(),
                 ItensERPSelecionados = perfil.PerfilItemERPs.Select(pi => pi.ItemERPId).ToList(),
-                TodosItensERP = await _context.ItensERP
-                                          .Select(i => new SelectListItem
-                                          {
-                                              Value = i.Id.ToString(),
-                                              Text = $"{i.ERP} – {i.Descricao}"
-                                          }).ToListAsync()
+                DesenhosSelecionados = perfil.DesenhosPerfil.Select(pd => pd.DesenhoId).ToList(),
+                TodosItensERP = await _context.ItensERP.Select(i => new SelectListItem
+                {
+                    Value = i.Id.ToString(),
+                    Text = $"{i.ERP} – {i.Descricao}"
+                }).ToListAsync(),
+                TodosDesenhos = await _context.Desenhos.Select(d => new SelectListItem
+                {
+                    Value = d.DesenhoId.ToString(),
+                    Text = $"{d.Nome} | Rev. {d.Revisao} | {d.Descricao}"
+                }).ToListAsync()
             };
+
+            ViewBag.ItensSelecionados = await _context.ItensERP
+                .Where(i => vm.ItensERPSelecionados.Contains(i.Id))
+                .Select(i => new SelectListItem
+                {
+                    Value = i.Id.ToString(),
+                    Text = $"{i.ERP} | {i.Descricao} | {i.TipoItem}"
+                }).ToListAsync();
+
+            ViewBag.DesenhosSelecionados = await _context.Desenhos
+                .Where(d => vm.DesenhosSelecionados.Contains(d.DesenhoId))
+                .Select(d => new SelectListItem
+                {
+                    Value = d.DesenhoId.ToString(),
+                    Text = $"{d.Nome} | Rev. {d.Revisao} | {d.Descricao}"
+                }).ToListAsync();
+
+            ViewBag.ClassificacoesDesenho = await _context.Desenhos
+                .Select(d => d.Classificacao)
+                .Where(c => c != null)
+                .Distinct()
+                .OrderBy(c => c)
+                .Select(c => new SelectListItem { Value = c, Text = c })
+                .ToListAsync();
+           
+            
+            var revisoes = await _context.Desenhos
+                .Select(d => d.Revisao)
+                .Where(r => r != null)
+                .Distinct()
+                .OrderBy(r => r)
+                .ToListAsync();
+
+            ViewBag.RevisoesDesenho = revisoes
+                .Select(r => new SelectListItem
+                {
+                    Value = r.ToString(),
+                    Text = r.ToString()
+                })
+                .ToList();
+
+
+
+            ViewBag.AllTags = await _context.Tags
+                .Select(t => new SelectListItem
+                {
+                    Value = t.Nome,
+                    Text = t.Nome
+                }).ToListAsync();
+
 
             return View(vm);
         }
 
-        // POST: Perfis/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, PerfilItemERPViewModel vm)
@@ -281,21 +422,26 @@ namespace Gerenciador_de_Produtos.Controllers
             if (!vm.Id.HasValue) return BadRequest();
             if (!ModelState.IsValid)
             {
-                vm.TodosItensERP = await _context.ItensERP
-                    .Select(i => new SelectListItem
-                    {
-                        Value = i.Id.ToString(),
-                        Text = $"{i.ERP} – {i.Descricao}"
-                    }).ToListAsync();
+                vm.TodosItensERP = await _context.ItensERP.Select(i => new SelectListItem
+                {
+                    Value = i.Id.ToString(),
+                    Text = $"{i.ERP} – {i.Descricao}"
+                }).ToListAsync();
+                vm.TodosDesenhos = await _context.Desenhos.Select(d => new SelectListItem
+                {
+                    Value = d.DesenhoId.ToString(),
+                    Text = $"{d.Nome} | Rev. {d.Revisao} | {d.Descricao}"
+                }).ToListAsync();
                 return View(vm);
             }
 
             var perfil = await _context.Perfis
                 .Include(p => p.PerfilItemERPs)
+                .Include(p => p.DesenhosPerfil).ThenInclude(pd => pd.Desenho)
+
                 .FirstOrDefaultAsync(p => p.Id == vm.Id.Value);
             if (perfil == null) return NotFound();
 
-            perfil.Desenho = vm.Desenho;
             perfil.Descricao = vm.Descricao;
             perfil.TipoSecao = vm.TipoSecao;
             perfil.Peso = vm.Peso;
@@ -336,24 +482,33 @@ namespace Gerenciador_de_Produtos.Controllers
             perfil.SimetricoY = vm.SimetricoY;
 
             _context.PerfilItemERPs.RemoveRange(perfil.PerfilItemERPs);
-            foreach (var itemId in vm.ItensERPSelecionados.Distinct())
-                perfil.PerfilItemERPs.Add(new PerfilItemERP
-                {
-                    PerfilId = perfil.Id,
-                    ItemERPId = itemId
-                });
+            perfil.PerfilItemERPs = vm.ItensERPSelecionados.Select(id => new PerfilItemERP
+            {
+                PerfilId = perfil.Id,
+                ItemERPId = id
+            }).ToList();
+
+            if (vm.DesenhosSelecionados != null)
+            {
+                var desenhos = await _context.Desenhos
+                    .Where(d => vm.DesenhosSelecionados.Contains(d.DesenhoId)).ToListAsync();
+                perfil.DesenhosPerfil = desenhos
+                    .Select(d => new DesenhoPerfil { PerfilId = perfil.Id, DesenhoId = d.DesenhoId })
+                    .ToList();
+
+            }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
-
 
         // GET: Perfis/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
             var perfil = await _context.Perfis
+                .Include(p => p.PerfilItemERPs).ThenInclude(pi => pi.ItemERP)
+                .Include(p => p.DesenhosPerfil).ThenInclude(pd => pd.Desenho)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (perfil == null) return NotFound();
             return View(perfil);
@@ -364,14 +519,26 @@ namespace Gerenciador_de_Produtos.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var perfil = await _context.Perfis.FindAsync(id);
-            if (perfil != null)
-            {
-                _context.Perfis.Remove(perfil);
-                await _context.SaveChangesAsync();
-            }
+            var perfil = await _context.Perfis
+                .Include(p => p.PerfilItemERPs)
+                .Include(p => p.DesenhosPerfil)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (perfil == null) return NotFound();
+
+            // Remove os vínculos primeiro
+            _context.PerfilItemERPs.RemoveRange(perfil.PerfilItemERPs);
+            _context.RemoveRange(perfil.DesenhosPerfil);
+
+
+            // Depois remove o perfil
+            _context.Perfis.Remove(perfil);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
+
+
 
         // GET: Perfis/Import
         public IActionResult Import() => View();
@@ -379,15 +546,26 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: Perfis/DownloadTemplate
         public FileResult DownloadTemplate()
         {
-            var csvLines = new List<string> {
-                "ERP,Desenho,Descricao,TipoSecao,Peso,AreaBruta,AreaLiq,AreaEq,Ix,Sxt,Sxb,Zx,Rx,yt,yb,Ixy,Iy,Syl,Syr,Zy,ry,xl,xr,xo,yo,jx,jy,Cw,J,Ixe,Sxet,Sxeb,lye,Syel,Syer,p1,p2,p3,SimetricoX,SimetricoY",
-                "ERP123,DES001,Exemplo,SecaoA,12.5,100,95,90,200,30,25,50,5,10,8,2,150,20,15,75,8.7,3.2,1.5,0.5,0.5,0.8,0.9,0.2,0.1,180,25,20,5,3,1,0.5,0.3,0.2,TRUE,FALSE"
-            };
+            var header = string.Join(",", new[] {
+                "ItensERP", "Desenhos", // novos campos
+                "Descricao", "TipoSecao", "Peso", "AreaBruta", "AreaLiq", "AreaEq", "Ix", "Sxt", "Sxb", "Zx", "Rx", "yt", "yb",
+                "Ixy", "Iy", "Syl", "Syr", "Zy", "ry", "xl", "xr", "xo", "yo", "jx", "jy", "Cw", "J", "Ixe",
+                "Sxet", "Sxeb", "lye", "Syel", "Syer", "p1", "p2", "p3", "SimetricoX", "SimetricoY"
+            });
+
+            var exemplo = string.Join(",", new[] {
+                "\"ERP123;ERP456\"",  // exemplo de múltiplos ERPs
+                "\"DES001;DES002\"",  // exemplo de múltiplos desenhos
+                "Perfil Exemplo", "SecaoA", "12.5", "100", "95", "90", "200", "30", "25", "50", "5", "10", "8", "2", "150", "20", "15",
+                "75", "8.7", "3.2", "1.5", "0.5", "0.5", "0.8", "0.9", "0.2", "0.1", "180", "25", "20", "5", "3", "1", "0.5", "0.3", "0.2", "TRUE", "FALSE"
+             });
+
+            var csvLines = new List<string> { header, exemplo };
             var bytes = System.Text.Encoding.UTF8.GetBytes(string.Join("\r\n", csvLines));
             return File(bytes, "text/csv", "template_perfis.csv");
         }
 
-        // POST: Perfis/Import
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Import(IFormFile file)
@@ -405,12 +583,114 @@ namespace Gerenciador_de_Produtos.Controllers
                 MissingFieldFound = null,
                 HeaderValidated = null
             };
-            using var csv = new CsvReader(reader, cfg);
-            var records = csv.GetRecords<Perfil>().ToList();
 
-            await _context.Perfis.AddRangeAsync(records);
+            using var csv = new CsvReader(reader, cfg);
+            var rows = new List<dynamic>();
+            csv.Read();
+            csv.ReadHeader();
+
+            while (csv.Read())
+            {
+                var row = csv.GetRecord<dynamic>();
+                rows.Add(row);
+            }
+
+            int importados = 0;
+
+
+            float? ParseFloat(string value) => double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var result) ? (float?)result : null;
+
+            foreach (var row in rows)
+            {
+                var dict = row as IDictionary<string, object>;
+                if (dict == null) continue; // pular linha inválida
+
+
+                var perfil = new Perfil
+                {
+                    Descricao = dict["Descricao"]?.ToString(),
+                    TipoSecao = dict["TipoSecao"]?.ToString(),
+                    Peso = ParseFloat(dict["Peso"]?.ToString()),
+                    AreaBruta = ParseFloat(dict["AreaBruta"]?.ToString()),
+                    AreaLiq = ParseFloat(dict["AreaLiq"]?.ToString()),
+                    AreaEq = ParseFloat(dict["AreaEq"]?.ToString()),
+                    Ix = ParseFloat(dict["Ix"]?.ToString()),
+                    Sxt = ParseFloat(dict["Sxt"]?.ToString()),
+                    Sxb = ParseFloat(dict["Sxb"]?.ToString()),
+                    Zx = ParseFloat(dict["Zx"]?.ToString()),
+                    Rx = ParseFloat(dict["Rx"]?.ToString()),
+                    yt = ParseFloat(dict["yt"]?.ToString()),
+                    yb = ParseFloat(dict["yb"]?.ToString()),
+                    Ixy = ParseFloat(dict["Ixy"]?.ToString()),
+                    Iy = ParseFloat(dict["Iy"]?.ToString()),
+                    Syl = ParseFloat(dict["Syl"]?.ToString()),
+                    Syr = ParseFloat(dict["Syr"]?.ToString()),
+                    Zy = ParseFloat(dict["Zy"]?.ToString()),
+                    ry = ParseFloat(dict["ry"]?.ToString()),
+                    xl = ParseFloat(dict["xl"]?.ToString()),
+                    xr = ParseFloat(dict["xr"]?.ToString()),
+                    xo = ParseFloat(dict["xo"]?.ToString()),
+                    yo = ParseFloat(dict["yo"]?.ToString()),
+                    jx = ParseFloat(dict["jx"]?.ToString()),
+                    jy = ParseFloat(dict["jy"]?.ToString()),
+                    Cw = ParseFloat(dict["Cw"]?.ToString()),
+                    J = ParseFloat(dict["J"]?.ToString()),
+                    Ixe = ParseFloat(dict["Ixe"]?.ToString()),
+                    Sxet = ParseFloat(dict["Sxet"]?.ToString()),
+                    Sxeb = ParseFloat(dict["Sxeb"]?.ToString()),
+                    lye = ParseFloat(dict["lye"]?.ToString()),
+                    Syel = ParseFloat(dict["Syel"]?.ToString()),
+                    Syer = ParseFloat(dict["Syer"]?.ToString()),
+                    p1 = ParseFloat(dict["p1"]?.ToString()),
+                    p2 = ParseFloat(dict["p2"]?.ToString()),
+                    p3 = ParseFloat(dict["p3"]?.ToString()),
+                    SimetricoX = bool.TryParse(dict["SimetricoX"]?.ToString(), out var simx) ? simx : (bool?)null,
+                    SimetricoY = bool.TryParse(dict["SimetricoY"]?.ToString(), out var simy) ? simy : (bool?)null
+                };
+
+                // ✅ ISSO TEM QUE ESTAR AQUI DENTRO
+                var itensRaw = dict["ItensERP"]?.ToString();
+                if (!string.IsNullOrWhiteSpace(itensRaw))
+                {
+                    var erps = itensRaw.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var erp in erps)
+                    {
+                        var item = await _context.ItensERP.FirstOrDefaultAsync(i => i.ERP == erp.Trim());
+                        if (item != null)
+                        {
+                            if (!perfil.PerfilItemERPs.Any(pi => pi.ItemERPId == item.Id))
+                            {
+                                perfil.PerfilItemERPs.Add(new PerfilItemERP { ItemERPId = item.Id });
+                            }
+
+                        }
+                    }
+                }
+
+                var desenhosRaw = dict["Desenhos"]?.ToString();
+                if (!string.IsNullOrWhiteSpace(desenhosRaw))
+                {
+                    var nomes = desenhosRaw.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var nome in nomes)
+                    {
+                        var desenho = await _context.Desenhos.FirstOrDefaultAsync(d => d.Nome == nome.Trim());
+                        if (desenho != null)
+                        {
+                            if (!perfil.DesenhosPerfil.Any(dp => dp.DesenhoId == desenho.DesenhoId))
+                            {
+                                perfil.DesenhosPerfil.Add(new DesenhoPerfil { DesenhoId = desenho.DesenhoId });
+                            }
+
+                        }
+                    }
+                }
+
+                _context.Perfis.Add(perfil);
+                importados++;
+            }
+
             await _context.SaveChangesAsync();
-            TempData["Success"] = $"{records.Count} perfis importados com sucesso!";
+            TempData["Success"] = $"{importados} perfis importados com sucesso!";
             return RedirectToAction(nameof(Index));
         }
 

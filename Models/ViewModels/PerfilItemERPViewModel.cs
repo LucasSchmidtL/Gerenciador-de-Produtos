@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using Gerenciador_de_Produtos.Models.ViewModels;
+
 
 namespace Gerenciador_de_Produtos.Models.ViewModels
 {
@@ -11,7 +13,6 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public int? Id { get; set; }
 
         // Informações Básicas
-        public string? Desenho { get; set; }
         public string? Descricao { get; set; }
         public string? TipoSecao { get; set; }
         public string? ERP { get; set; } = "";
@@ -70,5 +71,14 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         // Vínculo com Itens ERP
         public List<int> ItensERPSelecionados { get; set; } = new();
         public List<SelectListItem> TodosItensERP { get; set; } = new();
+        public List<int> SelectedItemERPIds { get; set; } = new();
+
+
+        public int? DesenhoId { get; set; }
+        public string? DesenhoNome { get; set; } 
+        public List<SelectListItem> TodosDesenhos { get; set; } = new();
+        public List<long> DesenhosSelecionados { get; set; } = new();
+
+
     }
 }

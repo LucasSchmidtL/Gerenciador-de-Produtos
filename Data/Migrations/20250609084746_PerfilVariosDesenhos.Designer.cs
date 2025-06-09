@@ -4,6 +4,7 @@ using Gerenciador_de_Produtos.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gerenciador_de_Produtos.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250609084746_PerfilVariosDesenhos")]
+    partial class PerfilVariosDesenhos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,9 +251,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("PerfilId")
-                        .HasColumnType("int");
-
                     b.Property<long?>("Revisao")
                         .HasColumnType("bigint");
 
@@ -264,8 +264,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.HasKey("DesenhoId");
 
                     b.HasIndex("Nome");
-
-                    b.HasIndex("PerfilId");
 
                     b.ToTable("Desenhos");
                 });
@@ -283,21 +281,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.HasIndex("ItemERPId");
 
                     b.ToTable("DesenhoItemERPs");
-                });
-
-            modelBuilder.Entity("Gerenciador_de_Produtos.Models.DesenhoPerfil", b =>
-                {
-                    b.Property<int>("PerfilId")
-                        .HasColumnType("int");
-
-                    b.Property<long>("DesenhoId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("PerfilId", "DesenhoId");
-
-                    b.HasIndex("DesenhoId");
-
-                    b.ToTable("DesenhoPerfil");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Equacao", b =>
@@ -959,13 +942,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.Navigation("ItemERP");
                 });
 
-            modelBuilder.Entity("Gerenciador_de_Produtos.Models.Desenho", b =>
-                {
-                    b.HasOne("Gerenciador_de_Produtos.Models.Perfil", null)
-                        .WithMany("Desenhos")
-                        .HasForeignKey("PerfilId");
-                });
-
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.DesenhoItemERP", b =>
                 {
                     b.HasOne("Gerenciador_de_Produtos.Models.Desenho", "Desenho")
@@ -983,25 +959,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                     b.Navigation("Desenho");
 
                     b.Navigation("ItemERP");
-                });
-
-            modelBuilder.Entity("Gerenciador_de_Produtos.Models.DesenhoPerfil", b =>
-                {
-                    b.HasOne("Gerenciador_de_Produtos.Models.Desenho", "Desenho")
-                        .WithMany()
-                        .HasForeignKey("DesenhoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Gerenciador_de_Produtos.Models.Perfil", "Perfil")
-                        .WithMany("DesenhosPerfil")
-                        .HasForeignKey("PerfilId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Desenho");
-
-                    b.Navigation("Perfil");
                 });
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.ItemERPRelacionado", b =>
@@ -1035,7 +992,8 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                 {
                     b.HasOne("Gerenciador_de_Produtos.Models.Desenho", "Desenho")
                         .WithMany()
-                        .HasForeignKey("DesenhoId");
+                        .HasForeignKey("DesenhoId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Gerenciador_de_Produtos.Models.ItemERP", "ItemERP")
                         .WithMany("Perfis")
@@ -1179,10 +1137,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
             modelBuilder.Entity("Gerenciador_de_Produtos.Models.Perfil", b =>
                 {
-                    b.Navigation("Desenhos");
-
-                    b.Navigation("DesenhosPerfil");
-
                     b.Navigation("PerfilItemERPs");
                 });
 

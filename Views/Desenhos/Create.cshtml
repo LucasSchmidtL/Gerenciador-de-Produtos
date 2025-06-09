@@ -120,61 +120,61 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-   <script>
-    const itensPreSelecionados = [
-    @foreach (var item in ViewBag.ItensSelecionados ?? new List<SelectListItem>())
-    {
-        <text>{ id: '@item.Value', text: '@item.Text' },</text>
-    }
-    ];
+    <script>
+        const itensPreSelecionados = [
+        @foreach (var item in ViewBag.ItensSelecionados ?? new List<SelectListItem>())
+        {
+            <text>{ id: '@item.Value', text: '@item.Text' },</text>
+        }
+        ];
 
-    const $erpSelect = $('#erpSelect');
+        const $erpSelect = $('#erpSelect');
 
-    $erpSelect.select2({
-        placeholder: '🔍 Buscar Itens ERP...',
-        language: {
-            noResults: () => "Nenhum item encontrado.",
-            searching: () => "Buscando..."
-        },
-        minimumInputLength: 0,
-        ajax: {
-            url: '/ItensERP/BuscarItensERP',
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    term: params.term,
-                    tipoItem: $('#filtroTipoItem').val(),
-                    status: $('#filtroStatus').val()
-                };
+        $erpSelect.select2({
+            placeholder: '🔍 Buscar Itens ERP...',
+            language: {
+                noResults: () => "Nenhum item encontrado.",
+                searching: () => "Buscando..."
             },
-            processResults: function (data) {
-                return { results: data };
+            minimumInputLength: 0,
+            ajax: {
+                url: '/ItensERP/BuscarItensERP',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        term: params.term,
+                        tipoItem: $('#filtroTipoItem').val(),
+                        status: $('#filtroStatus').val()
+                    };
+                },
+                processResults: function (data) {
+                    return { results: data };
+                },
+                cache: true
             },
-            cache: true
-        },
-        templateResult: function (item) {
-            if (!item.id) return item.text;
-            const parts = item.text.split('|');
-            return $('<span><strong>' + parts[0] + '</strong> - ' + parts[1] + ' <small class="text-muted">(' + parts[2] + ')</small></span>');
-        },
-        templateSelection: function (item) {
-            if (!item.id) return item.text;
-            return item.text.split('|')[0];
-        },
-        width: '100%',
-        allowClear: true
-    });
+            templateResult: function (item) {
+                if (!item.id) return item.text;
+                const parts = item.text.split('|');
+                return $('<span><strong>' + parts[0] + '</strong> - ' + parts[1] + ' <small class="text-muted">(' + parts[2] + ')</small></span>');
+            },
+            templateSelection: function (item) {
+                if (!item.id) return item.text;
+                return item.text.split('|')[0];
+            },
+            width: '100%',
+            allowClear: true
+        });
 
-    $('#filtroTipoItem, #filtroStatus').on('change', function () {
-        $erpSelect.select2('close');  // fecha pra evitar conflitos visuais
-        $erpSelect.select2('open');   // força reabrir (e chamar nova consulta AJAX)
-    });
+        $('#filtroTipoItem, #filtroStatus').on('change', function () {
+            $erpSelect.select2('close');  // fecha pra evitar conflitos visuais
+            $erpSelect.select2('open');   // força reabrir (e chamar nova consulta AJAX)
+        });
 
-    itensPreSelecionados.forEach(i => {
-        const option = new Option(i.text, i.id, true, true);
-        $erpSelect.append(option).trigger('change');
-    });
-</script>
+        itensPreSelecionados.forEach(i => {
+            const option = new Option(i.text, i.id, true, true);
+            $erpSelect.append(option).trigger('change');
+        });
+    </script>
 
 }

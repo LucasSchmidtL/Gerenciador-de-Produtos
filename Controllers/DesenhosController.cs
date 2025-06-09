@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Gerenciador_de_Produtos.Data;
 using Gerenciador_de_Produtos.Models;
 using Gerenciador_de_Produtos.Models.ViewModels;
+using Gerenciador_de_Produtos.Models.Enums;
 
 namespace Gerenciador_de_Produtos.Controllers
 {
@@ -243,6 +244,44 @@ namespace Gerenciador_de_Produtos.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> BuscarDesenhos(string term,
+    string status = null,
+    string classificacao = null,
+    string revisao = null)
+        {
+            var query = _context.Desenhos
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(term))
+                query = query.Where(d => d.Nome.Contains(term));
+
+            if (!string.IsNullOrEmpty(status))
+                if (Enum.TryParse<StatusDesenho>(status, out var statusEnum))
+                    query = query.Where(d => d.Status == statusEnum);
+            ;
+
+            if (!string.IsNullOrEmpty(classificacao))
+                query = query.Where(d => d.Classificacao == classificacao);
+
+            if (long.TryParse(revisao, out var revisaoLong))
+                query = query.Where(d => d.Revisao == revisaoLong);
+
+
+
+
+            var resultados = await query
+                .Select(d => new
+                {
+                    id = d.DesenhoId,
+                    text = $"{d.Nome} | Rev. {d.Revisao} | {d.Descricao}"
+                })
+                .Take(50)
+                .ToListAsync();
+
+            return Json(resultados);
+        }
 
 
 
