@@ -20,15 +20,16 @@
 |  Em andamento  |     Alta     |    Próxima    |  Desenvolvimento  |    https://www.figma.com/board/m4G1YRQWrc5qydMhgQxa6f/Gerenciador-Produtos---V0.0.2?node-id=0-1&p=f&t=3vB4TKR5FMNoMc95-0
 |                |              |               |                   |   
 |                |              |               |                   |   
+|                |              |               |                   |   
 |                |              |               |                   |                           Necessica correção (3)       - Tags   
-|                |              |               |                   |                           Necessita correção (1)(2)    - Desenhos
-|                |              |               |                   |                           Necessita correção           - perfis
+|                |              |               |                   |                           Concluído          (1)(2)    - Desenhos
+|                |              |               |                   |                           Concluído          (1)(2)    - Perfis
 |                |              |               |                   |                           Em andamento   - Item ERP
+|                |              |               |                   |   
 |                |              |               |                   |   
 |                |              |               |                   |   (1) Incluir a data de criação na tela de detalhes e de novo (deixar na da de editar qualquer coisa comenta ela)
 |                |              |               |                   |   (2) No editar permite informar mais de um registro com o mesmo nome 
 |                |              |               |                   |   (3) Adicionar filtros por Produto, Agrupador ou Componente
-|                |              |               |                   |   
 |                |              |               |                   |   
 |                |              |               |                   |   
 |________________|______________|_______________|___________________|________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
