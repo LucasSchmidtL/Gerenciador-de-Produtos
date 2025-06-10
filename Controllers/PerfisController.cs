@@ -47,6 +47,7 @@ namespace Gerenciador_de_Produtos.Controllers
             {
                 Id = p.Id,
                 Descricao = p.Descricao,
+                DataCriacao = p.DataCriacao,
                 SecaoId = p.SecaoId,
                 TodosItensERP = allErps,
                 TodosDesenhos = allDesenhos,
@@ -190,6 +191,7 @@ namespace Gerenciador_de_Produtos.Controllers
             var perfil = new Perfil
             {
                 Descricao = vm.Descricao,
+                DataCriacao = vm.DataCriacao,
                 SecaoId = vm.SecaoId,
                 Peso = vm.Peso,
                 AreaBruta = vm.AreaBruta,
@@ -316,6 +318,7 @@ namespace Gerenciador_de_Produtos.Controllers
             {
                 Id = perfil.Id,
                 Descricao = perfil.Descricao,
+                DataCriacao = perfil.DataCriacao,
                 SecaoId = perfil.SecaoId,
                 Peso = perfil.Peso,
                 AreaBruta = perfil.AreaBruta,
@@ -457,6 +460,7 @@ namespace Gerenciador_de_Produtos.Controllers
             if (perfil == null) return NotFound();
 
             perfil.Descricao = vm.Descricao;
+            perfil.DataCriacao = vm.DataCriacao;
             perfil.SecaoId = vm.SecaoId;
             perfil.Peso = vm.Peso;
             perfil.AreaBruta = vm.AreaBruta;
@@ -562,15 +566,15 @@ namespace Gerenciador_de_Produtos.Controllers
         {
             var header = string.Join(",", new[] {
                 "ItensERP", "Desenhos", // novos campos
-                "Descricao", "Secao", "Peso", "AreaBruta", "AreaLiq", "AreaEq", "Ix", "Sxt", "Sxb", "Zx", "Rx", "yt", "yb",
+                "Descricao", "DataCriacao", "Secao", "Peso", "AreaBruta", "AreaLiq", "AreaEq", "Ix", "Sxt", "Sxb", "Zx", "Rx", "yt", "yb",
                 "Ixy", "Iy", "Syl", "Syr", "Zy", "ry", "xl", "xr", "xo", "yo", "jx", "jy", "Cw", "J", "Ixe",
                 "Sxet", "Sxeb", "lye", "Syel", "Syer", "p1", "p2", "p3", "SimetricoX", "SimetricoY"
             });
 
             var exemplo = string.Join(",", new[] {
-                "\"ERP123;ERP456\"",  // exemplo de múltiplos ERPs
-                "\"DES001;DES002\"",  // exemplo de múltiplos desenhos
-                "Perfil Exemplo", "SecaoA", "12.5", "100", "95", "90", "200", "30", "25", "50", "5", "10", "8", "2", "150", "20", "15",
+                "\"8888888 ;162361236 \"",  // exemplo de múltiplos ERPs
+                "\"DES-001;DES-002\"",  // exemplo de múltiplos desenhos
+                "Perfil de Exemplo","12/08/1998", "SecaoA", "12.5", "100", "95", "90", "200", "30", "25", "50", "5", "10", "8", "2", "150", "20", "15",
                 "75", "8.7", "3.2", "1.5", "0.5", "0.5", "0.8", "0.9", "0.2", "0.1", "180", "25", "20", "5", "3", "1", "0.5", "0.3", "0.2", "TRUE", "FALSE"
              });
 

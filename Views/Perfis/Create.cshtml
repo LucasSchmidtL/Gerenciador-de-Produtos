@@ -27,7 +27,10 @@
                     <option value="">-- Selecione --</option>
                 </select>
                 <span asp-validation-for="SecaoId" class="text-danger"></span>
-
+                <div class="col-md-3">
+                    <label asp-for="DataCriacao" class="form-label">Data de Criação</label>
+                    <input asp-for="DataCriacao" class="form-control" type="date" />
+                </div>
             </div>
 
             <!-- CARD: DADOS TÉCNICOS -->

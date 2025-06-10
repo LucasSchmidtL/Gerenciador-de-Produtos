@@ -56,9 +56,6 @@
                 </div>
             </div>
             <div>
-                <a asp-action="Details" asp-route-id="@vm.Id" class="btn btn-sm btn-outline-info rounded-pill px-3 py-1">
-                    <i class="bi bi-eye me-1"></i> Detalhes
-                </a>
                 <a asp-action="Edit" asp-route-id="@vm.Id" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1">
                     <i class="bi bi-pencil me-1"></i> Editar
                 </a>
@@ -79,7 +76,7 @@
 
                     }
                     <div class="col-md-4"><strong>Tipo de Seção:</strong> @nomeSecao</div>
-
+                    <div class="col-md-4"><strong>Data de Criação:</strong> @(vm.DataCriacao?.ToString("dd/MM/yyyy") ?? "N/D")</div>
                     <div class="col-md-4"><strong>ID:</strong> @vm.Id</div>
                 </div>
 

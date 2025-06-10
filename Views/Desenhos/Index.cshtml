@@ -43,8 +43,9 @@
             <input id="filtroClassificacao" class="form-control" placeholder="Filtrar por Classificação..." />
         </div>
         <div class="col-md-3">
-            <input id="filtroSolicitacao" class="form-control" placeholder="Filtrar por Solicitação de Alteração..." />
+            <input id="filtroProduto" class="form-control" placeholder="Filtrar por Produto..." />
         </div>
+
     </div>
 </div>
 
@@ -136,7 +137,15 @@
             const termoBusca = document.getElementById('searchInput').value.toLowerCase();
             const filtroStatus = document.getElementById('filtroStatus').value;
             const filtroClassificacao = document.getElementById('filtroClassificacao').value.toLowerCase();
-            const filtroSolicitacao = document.getElementById('filtroSolicitacao').value.toLowerCase();
+            const filtroProduto = document.getElementById('filtroProduto').value.toLowerCase();
+            const produto = card.getAttribute('data-produto');
+            const correspondeProduto = !filtroProduto || produto.includes(filtroProduto);
+            card.style.display = (
+                correspondeTexto &&
+                correspondeStatus &&
+                correspondeClassificacao &&
+                correspondeProduto
+             ) ? '' : 'none';
 
             document.querySelectorAll('[data-search]').forEach(card => {
                 const search = card.getAttribute('data-search');

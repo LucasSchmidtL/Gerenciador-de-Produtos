@@ -14,6 +14,7 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
 
         // Informações Básicas
         public string? Descricao { get; set; }
+        public DateOnly? DataCriacao { get; set; }
         public int? SecaoId { get; set; }
         public List<SelectListItem> TodasSecoes { get; set; } = new();
 

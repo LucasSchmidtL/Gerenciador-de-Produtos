@@ -16,6 +16,8 @@ namespace Gerenciador_de_Produtos.Models
         [ForeignKey("DesenhoId")]
         public Desenho? Desenho { get; set; }
 
+        public DateOnly? DataCriacao { get; set; }
+
 
         [Display(Name = "Descrição")]
         public string? Descricao { get; set; }
