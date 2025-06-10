@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.VisualBasic;
 
 namespace Gerenciador_de_Produtos.Models.ViewModels
 {
@@ -6,6 +7,7 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
     {
         public long? DesenhoId { get; set; }
         public string? Nome { get; set; }
+        public DateOnly? DataCriacao { get; set; }
         public string? Descricao { get; set; }
         public long? Revisao { get; set; }
         public StatusDesenho Status { get; set; }

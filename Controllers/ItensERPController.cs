@@ -283,8 +283,7 @@ namespace Gerenciador_de_Produtos.Controllers
                         Id = (int)d.DesenhoId,
                         Nome = d.Desenho!.Nome,
                         Descricao = d.Desenho!.Descricao,
-                        Revisao = d.Desenho!.Revisao,
-                        DataCriacao = d.Desenho!.DataCriacao
+                        Revisao = d.Desenho!.Revisao
                     }).ToList(),
 
 

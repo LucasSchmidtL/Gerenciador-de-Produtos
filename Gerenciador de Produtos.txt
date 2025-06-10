@@ -9,17 +9,27 @@
 |                |              |               |                   |
 |                |              |               |                   |                                           Lista 0.0.1 do gerenciador de produtos:
 |                |              |               |                   |
-|                |              |               |                   |	    To fazendo agora:
-|                |              |               |                   |	        - 3, e 11
-|                |              |               |                   |
-|  Em andamento  |  Altíssima   |    Próxima    |  Desenvolvimento  |	    Concluídos:
-|                |              |               |                   |	        - 1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14
+|   Concluído    |  Altíssima   |    Próxima    |  Desenvolvimento  |	    Concluídos:
+|                |              |               |                   |	        - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
 |                |              |               |                   |
 |                |              |               |                   |        Caminho para o arquivo de origem das tasks: C:\Desenvolvimento\Visual Studio\Gerenciador-de-Produtos\Relatório de Testes V0.0.1.pdf
 |________________|______________|_______________|___________________|________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 |                |              |               |                   |
-|                |              |               |                   |                                           Lista 0.0.2 do gerenciador de produtos:
+|                |              |               |                   |                                           Lista 0.0.2 do gerenciador de produtos: 
+|                |              |               |                   |                                           
 |  Em andamento  |     Alta     |    Próxima    |  Desenvolvimento  |    https://www.figma.com/board/m4G1YRQWrc5qydMhgQxa6f/Gerenciador-Produtos---V0.0.2?node-id=0-1&p=f&t=3vB4TKR5FMNoMc95-0
+|                |              |               |                   |   
+|                |              |               |                   |   
+|                |              |               |                   |                           Necessica correção (3)       - Tags   
+|                |              |               |                   |                           Necessita correção (1)(2)    - Desenhos
+|                |              |               |                   |                           Necessita correção           - perfis
+|                |              |               |                   |                           Em andamento   - Item ERP
+|                |              |               |                   |   
+|                |              |               |                   |   (1) Incluir a data de criação na tela de detalhes e de novo (deixar na da de editar qualquer coisa comenta ela)
+|                |              |               |                   |   (2) No editar permite informar mais de um registro com o mesmo nome 
+|                |              |               |                   |   (3) Adicionar filtros por Produto, Agrupador ou Componente
+|                |              |               |                   |   
+|                |              |               |                   |   
 |                |              |               |                   |   
 |________________|______________|_______________|___________________|________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 |                |              |               |                   |

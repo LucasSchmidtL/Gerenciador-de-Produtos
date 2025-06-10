@@ -41,6 +41,11 @@
                     <input asp-for="Descricao" class="form-control" />
                     <span asp-validation-for="Descricao" class="text-danger"></span>
                 </div>
+                <div class="col-md-4">
+                    <label asp-for="DataCriacao" class="form-label">Data de Criação</label>
+                    <input asp-for="DataCriacao" type="date" class="form-control" />
+                    <span asp-validation-for="DataCriacao" class="text-danger"></span>
+                </div>
 
                 <div class="col-md-3">
                     <label asp-for="Revisao" class="form-label">Revisão</label>

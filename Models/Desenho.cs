@@ -16,7 +16,7 @@ namespace Gerenciador_de_Produtos.Models
 
         public string? Descricao { get; set; }   // agora opcional
 
-        public DateTime? DataCriacao { get; set; }
+        public DateOnly? DataCriacao { get; set; }
         public long? Revisao { get; set; }
 
         [Required]

@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Gerenciador_de_Produtos.Models.Desenho>
+﻿@using System.ComponentModel.DataAnnotations
+@model IEnumerable<Gerenciador_de_Produtos.Models.Desenho>
 
 @{
     ViewData["Title"] = "Desenhos";
@@ -34,7 +35,7 @@
             <select id="filtroStatus" class="form-select">
                 <option value="">Filtrar por Status</option>
                 <option value="Ativo">Ativo</option>
-                <option value="Não Ativo">Não Ativo</option>
+                <option value="NaoAtivo">Não Ativo</option>
                 <option value="Obsoleto">Obsoleto</option>
             </select>
         </div>
@@ -55,6 +56,7 @@
          data-status="@item.Status"
          data-classificacao="@item.Classificacao?.ToLowerInvariant()"
          data-solicitacao="@item.SolicitacaoAlteracaoId?.ToString().ToLowerInvariant()">
+
         <div class="card-header d-flex align-items-center justify-content-between bg-light">
             <div class="d-flex align-items-center flex-grow-1">
                 <button class="btn btn-sm btn-outline-secondary me-3 toggle-btn"
@@ -64,7 +66,9 @@
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </button>
                 <div>
-                    <strong>@item.Nome</strong> <span class="text-muted">(ID: @item.DesenhoId)</span><br />
+                    <strong>@item.Nome</strong> 
+                    <span class="badge bg-@GetStatusColor(item.Status)"> @item.Status</span>
+                    <br />
                     <small class="text-muted">@item.Descricao</small>
                 </div>
             </div>
@@ -77,19 +81,20 @@
         <div class="collapse" id="details_@item.DesenhoId">
             <div class="card-body">
                 <div class="row mb-3">
-                    <div class="col-md-4"><strong>Revisão:</strong> @item.Revisao</div>
-                    <div class="col-md-4">
+                    <div class="col-md-3"><strong>Data de Criação:</strong> @(item.DataCriacao?.ToString("dd/MM/yyyy") ?? "N/D")</div>
+                    <div class="col-md-3"><strong>Revisão:</strong> @item.Revisao</div>
+                    @* <div class="col-md-3">
                         <strong>Status:</strong>
                         <span class="badge bg-@GetStatusColor(item.Status)">
-                            @item.Status
+                            @GetDisplayName(item.Status)
                         </span>
+                    </div> *@
+                    <div class="col-md-3"><strong>Classificação:</strong> @item.Classificacao</div>
+                    <div class="col-md-3">
+                        <strong>Solicitação de Alteração:</strong> @item.SolicitacaoAlteracaoId
                     </div>
-                    <div class="col-md-4"><strong>Classificação:</strong> @item.Classificacao</div>
                 </div>
 
-                <div class="mb-3">
-                    <strong>Solicitação de Alteração:</strong> @item.SolicitacaoAlteracaoId
-                </div>
 
                 <hr class="my-3" />
 
@@ -171,4 +176,13 @@
             _ => "dark"
         };
     }
+
+    private string GetDisplayName(Enum value)
+    {
+        var field = value.GetType().GetField(value.ToString());
+        var attribute = field?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                             .FirstOrDefault() as DisplayAttribute;
+        return attribute?.Name ?? value.ToString();
+    }
+
 }

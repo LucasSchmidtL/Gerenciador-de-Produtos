@@ -73,6 +73,7 @@ namespace Gerenciador_de_Produtos.Controllers
             {
                 Nome = viewModel.Nome,
                 Descricao = viewModel.Descricao,
+                DataCriacao = viewModel.DataCriacao,
                 Revisao = viewModel.Revisao,
                 Status = viewModel.Status,
                 Classificacao = viewModel.Classificacao,
@@ -112,6 +113,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 DesenhoId = desenho.DesenhoId,
                 Nome = desenho.Nome,
                 Descricao = desenho.Descricao,
+                DataCriacao = desenho.DataCriacao,
                 Revisao = desenho.Revisao,
                 Status = desenho.Status,
                 Classificacao = desenho.Classificacao,
@@ -149,11 +151,39 @@ namespace Gerenciador_de_Produtos.Controllers
         {
             if (id != vm.DesenhoId) return NotFound();
 
+            bool nomeDuplicado = await _context.Desenhos
+                .AnyAsync(d => d.Nome == vm.Nome && d.DesenhoId != vm.DesenhoId);
+
+            if (nomeDuplicado)
+            {
+                ModelState.AddModelError("Nome", "Já existe outro desenho com este nome.");
+            }
+
             if (!ModelState.IsValid)
             {
-                vm.AllItemERPs = await _context.ItensERP.Select(i => new SelectListItem(i.ERP, i.Id.ToString())).ToListAsync();
+                vm.AllItemERPs = await _context.ItensERP
+                    .Select(i => new SelectListItem(i.ERP, i.Id.ToString()))
+                    .ToListAsync();
+
+                ViewBag.ItensSelecionados = await _context.ItensERP
+                    .Where(i => vm.SelectedItemERPIds.Contains(i.Id))
+                    .Select(i => new SelectListItem
+                    {
+                        Value = i.Id.ToString(),
+                        Text = $"{i.ERP} | {i.Descricao} | {i.TipoItem}"
+                    })
+                    .ToListAsync();
+
+                ViewBag.AllTags = await _context.Tags
+                    .Select(t => new SelectListItem
+                    {
+                        Value = t.Nome,
+                        Text = t.Nome
+                    }).ToListAsync();
+
                 return View(vm);
             }
+
 
             var desenho = await _context.Desenhos
                 .Include(d => d.DesenhoItemERPs)
@@ -163,6 +193,7 @@ namespace Gerenciador_de_Produtos.Controllers
 
             desenho.Nome = vm.Nome;
             desenho.Descricao = vm.Descricao;
+            desenho.DataCriacao = vm.DataCriacao;
             desenho.Revisao = vm.Revisao;
             desenho.Status = vm.Status;
             desenho.Classificacao = vm.Classificacao;
@@ -199,6 +230,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 DesenhoId = desenho.DesenhoId,
                 Nome = desenho.Nome,
                 Descricao = desenho.Descricao,
+                DataCriacao = desenho.DataCriacao,
                 Revisao = desenho.Revisao,
                 Status = desenho.Status,
                 Classificacao = desenho.Classificacao,
@@ -246,11 +278,7 @@ namespace Gerenciador_de_Produtos.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> BuscarDesenhos(string term,
-    string status = null,
-    string classificacao = null,
-    string revisao = null)
-        {
+        public async Task<IActionResult> BuscarDesenhos(string term, string status = null, string classificacao = null, string revisao = null){
             var query = _context.Desenhos
                 .AsQueryable();
 
@@ -267,9 +295,6 @@ namespace Gerenciador_de_Produtos.Controllers
 
             if (long.TryParse(revisao, out var revisaoLong))
                 query = query.Where(d => d.Revisao == revisaoLong);
-
-
-
 
             var resultados = await query
                 .Select(d => new
