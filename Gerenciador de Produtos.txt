@@ -27,11 +27,25 @@
 |                |              |               |                   |                           Em andamento   - Item ERP
 |                |              |               |                   |   
 |                |              |               |                   |   
-|                |              |               |                   |   (1) Incluir a data de criação na tela de detalhes e de novo (deixar na da de editar qualquer coisa comenta ela)
-|                |              |               |                   |   (2) No editar permite informar mais de um registro com o mesmo nome 
-|                |              |               |                   |   (3) Adicionar filtros por Produto, Agrupador ou Componente
+|                |              |               |                   |    (1) Incluir a data de criação na tela de detalhes e de novo (deixar na da de editar qualquer coisa comenta ela)
+|                |              |               |                   |    (2) No editar permite informar mais de um registro com o mesmo nome 
+|                |              |               |                   |    (3) Adicionar filtros por Produto, Agrupador ou Componente
+|                |              |               |                   |    (4) Voltar o botão de detalhes da tela
+|                |              |               |                   |    (5) Ocultar o botão do delete do Item ERP
+|                |              |               |                   |    (6) Adicionar tag na tela do configurador, passar pelo editar, index e details e centralizar no configurador 
+|                |              |               |                   |    (7) Na tela do configurador do item erp, usar o modelo da tabela de detalhes, para usar no configurador desses registros
+|                |              |               |                   |    (8) Ver se tem como melhorar o esquema de acabaemtno e de classificação, aqueles esquemas de se tiver marcado, não disponibilizar campo na tela, essas coisas
+|                |              |               |                   |    (9) No configurador, fazer com que ao selecionar um desenho, os outros valores sejam preenchidos
+|                |              |               |                   |   (10) Pegar o desenho com o maior número de revisão do desenho, e quando escolher o desenho, sempre puxar o numero da maior revisão 
+|                |              |               |                   |   (11) Prioridade baixa - Colocar o controle de revisões (que está no configurador do itemERP) na parte de perfis
+|                |              |               |                   |   (12) Na parte dos itens compostos, melhorar esse esquema de mostrar os dados do item ERP composto
+|                |              |               |                   |   (13) Ver como colocar caracteres especiais nas variaveis pra colocar no banco (da tabela variaveis)
+|                |              |               |                   |   (14) Transformar o acabamento do item de bool para a lista da tabelinha que tá no figma
+|                |              |               |                   |   (15) Não permitir informar um item por exemp "sem acabamento" no campo de pintado de outro registro
 |                |              |               |                   |   
 |                |              |               |                   |   
+|                |              |               |                   |   
+|                |              |               |                   |                     
 |________________|______________|_______________|___________________|________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 |                |              |               |                   |
 |  Não iniciado  |     Alta     |    Próxima    |  Desenvolvimento  | Ajeitar o GitHub de todo o projeto do gerenciador de produtos
@@ -41,6 +55,12 @@
 |________________|______________|_______________|___________________|________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 |                |              |               |                   |
 |  Não iniciado  |     Alta     |    Próxima    |    API Interna    | Adicionar as APIs das calculadoras da Jully
+|________________|______________|_______________|___________________|________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+|                |              |               |                   |   
+|                |              |               |                   |
+|  Não iniciado  |     Alta     |    Próxima    |    Gerenciador    | Adicionar as APIs das calculadoras da Jully
+|                |              |               |    de Projetos    |   
+|                |              |               |                   |   
 |________________|______________|_______________|___________________|________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 
