@@ -23,6 +23,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<LSTParserService>();
 
+builder.Services.AddScoped<GraphService>();
+
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.Limits.MaxRequestBodySize = 104857600; // 100 MB

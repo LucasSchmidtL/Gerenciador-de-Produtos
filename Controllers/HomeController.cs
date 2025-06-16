@@ -1,11 +1,10 @@
-using System.Linq;
-using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Linq;
 using Gerenciador_de_Produtos.Data;
 using Gerenciador_de_Produtos.Models;
+using Gerenciador_de_Produtos.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Gerenciador_de_Produtos.Controllers
 {
@@ -13,171 +12,220 @@ namespace Gerenciador_de_Produtos.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
+        private readonly GraphService _graphService;
 
-        public HomeController(ApplicationDbContext context, ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext context, ILogger<HomeController> logger, GraphService graphService)
         {
             _context = context;
             _logger = logger;
+            _graphService = graphService;
         }
 
-        // GET: /
-        public async Task<IActionResult> Index()
-        {
-            return View();
-        }
+        public IActionResult Index() => View();
 
+        // -----------------------------
+        //       GRAFO COMPLETO
+        // -----------------------------
         [HttpGet]
         public async Task<JsonResult> GetGraph()
         {
-            // 1) Carrega as entidades
-            var itensERP = await _context.ItensERP.ToListAsync();
-            var componentes = await _context.Componentes.ToListAsync();
-            var agrupadores = await _context.Agrupadores.ToListAsync();
-            var produtos = await _context.Produtos.ToListAsync();
-            var perfis = await _context.Perfis.ToListAsync();
-            var desenhos = await _context.Desenhos.ToListAsync();
-            var relacoes = await _context.ItemERPRelacionados
-                .Include(r => r.Desenho)
-                .Include(r => r.Relacionado)
-                .Include(r => r.ItemERP)
+            var (nodes, edges) = await _graphService.GetGraphDataAsync();
+            return Json(new { nodes, edges });
+        }
+
+        // -----------------------------
+        //         PROGRESSIVO
+        // -----------------------------
+
+
+
+        [HttpGet]
+        public async Task<JsonResult> GetGraphProduto(int id)
+        {
+            var produto = await _context.Produtos.FindAsync(id);
+            if (produto == null) return Json(new { nodes = new object[0], edges = new object[0] });
+
+            var node = new { id = $"prd-{produto.Id}", label = produto.NomeComercial, group = "produto" };
+
+            var edges = await _context.ProdutoAgrupadores
+                .Where(x => x.ProdutoId == id)
+                .Select(x => new { from = $"agr-{x.AgrupadorId}", to = $"prd-{id}" })
                 .ToListAsync();
 
-
-            var nodes = new List<object>();
-            var edges = new List<object>();
-
-            // 2) Monta os nós
-            nodes.AddRange(itensERP.Select(i => new {
-                id = $"item-{i.Id}",
-                label = i.ERP,
-                group = "item"
-            }));
-            nodes.AddRange(componentes.Select(c => new {
-                id = $"cmp-{c.Id}",
-                label = c.Nome,
-                group = "componente"
-            }));
-            nodes.AddRange(agrupadores.Select(a => new {
-                id = $"agr-{a.Id}",
-                label = a.Nome,
-                group = "agrupador"
-            }));
-            nodes.AddRange(produtos.Select(p => new {
-                id = $"prd-{p.Id}",
-                label = p.NomeComercial,
-                group = "produto"
-            }));
-            nodes.AddRange(perfis.Select(pf => new {
-                id = $"pf-{pf.Id}",
-                label = pf.Desenho,
-                group = "perfil"
-            }));
-            nodes.AddRange(desenhos.Select(d => new {
-                id = $"des-{d.DesenhoId}",
-                label = d.Nome,
-                group = "desenho"
-            }));
-
-            // 3) Monta as arestas existentes
-
-            // 3.1) ItemERP - Componente
-            var ciers = await _context.ComponenteItemERPs
-                                      .Include(ci => ci.ItemERP)
-                                      .Include(ci => ci.Componente)
-                                      .ToListAsync();
-            foreach (var ci in ciers)
-            {
-                edges.Add(new
-                {
-                    from = $"item-{ci.ItemERP.Id}",
-                    to = $"cmp-{ci.Componente.Id}"
-                });
-            }
-
-            // 3.2) ItemERP - Agrupador
-            var aiers = await _context.AgrupadorItemERPs
-                                      .Include(ai => ai.ItemERP)
-                                      .Include(ai => ai.Agrupador)
-                                      .ToListAsync();
-            foreach (var ai in aiers)
-            {
-                edges.Add(new
-                {
-                    from = $"item-{ai.ItemERP.Id}",
-                    to = $"agr-{ai.Agrupador.Id}"
-                });
-            }
-
-            // 3.3) Agrupador - Produto
-            var aprs = await _context.ProdutoAgrupadores
-                                    .Include(pa => pa.Agrupador)
-                                    .Include(pa => pa.Produto)
-                                    .ToListAsync();
-            foreach (var ap in aprs)
-            {
-                edges.Add(new
-                {
-                    from = $"agr-{ap.Agrupador.Id}",
-                    to = $"prd-{ap.Produto.Id}"
-                });
-            }
-
-            // 3.4) ItemERPRelacionado (pai - relacionado)
-            foreach (var rel in relacoes)
-            {
-                edges.Add(new
-                {
-                    from = $"item-{rel.ItemERPId}",
-                    to = $"item-{rel.RelacionadoId}",
-                    label = "relacionado"
-                });
-            }
-
-            // 3.5) ItemERP - Perfil
-            var piers = await _context.PerfilItemERPs
-                                      .Include(pi => pi.ItemERP)
-                                      .Include(pi => pi.Perfil)
-                                      .ToListAsync();
-            foreach (var pi in piers)
-            {
-                edges.Add(new
-                {
-                    from = $"item-{pi.ItemERP.Id}",
-                    to = $"pf-{pi.Perfil.Id}"
-                });
-            }
-
-            // 3.6) ItemERP - Desenho
-            var desenhoItemERPs = await _context.DesenhoItemERPs
-                .Include(die => die.Desenho)
-                .Include(die => die.ItemERP)
+            var agrupadores = await _context.ProdutoAgrupadores
+                .Where(x => x.ProdutoId == id)
+                .Include(x => x.Agrupador)
+                .Select(x => new { id = $"agr-{x.Agrupador.Id}", label = x.Agrupador.Nome, group = "agrupador" })
                 .ToListAsync();
 
-            foreach (var die in desenhoItemERPs)
-            {
-                edges.Add(new
-                {
-                    from = $"item-{die.ItemERP.Id}",
-                    to = $"des-{die.Desenho.DesenhoId}"
-                });
-            }
-        
+            return Json(new { nodes = new[] { node }.Concat(agrupadores), edges });
+        }
 
-        // 3.7) Agrupador - Componente
-        var agrComps = await _context.AgrupadorComponentes
-                                         .Include(ac => ac.Componente)
-                                         .Include(ac => ac.Agrupador)
-                                         .ToListAsync();
-            foreach (var ac in agrComps)
-            {
-                edges.Add(new
-                {
-                    from = $"cmp-{ac.Componente.Id}",
-                    to = $"agr-{ac.Agrupador.Id}"
-                });
-            }
+        [HttpGet]
+        public async Task<JsonResult> GetGraphAgrupador(int id)
+        {
+            var comps = await _context.AgrupadorComponentes
+                .Where(x => x.AgrupadorId == id)
+                .Include(x => x.Componente)
+                .ToListAsync();
+
+            var nodes = comps.Select(c => new { id = $"cmp-{c.Componente.Id}", label = c.Componente.Nome, group = "componente" }).ToList();
+            var edges = comps.Select(c => new { from = $"cmp-{c.Componente.Id}", to = $"agr-{id}" }).ToList();
 
             return Json(new { nodes, edges });
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetGraphComponente(int id)
+        {
+            var items = await _context.ComponenteItemERPs
+                .Where(x => x.ComponenteId == id)
+                .Include(x => x.ItemERP)
+                .ToListAsync();
+
+            var nodes = items.Select(i => new { id = $"item-{i.ItemERP.Id}", label = i.ItemERP.ERP, group = "item" }).ToList();
+            var edges = items.Select(i => new { from = $"item-{i.ItemERP.Id}", to = $"cmp-{id}" }).ToList();
+
+            return Json(new { nodes, edges });
+        }
+
+
+        public class NodeEdgeTemp
+        {
+            public string Id { get; set; }
+            public string Label { get; set; }
+            public string Group { get; set; }
+            public string EdgeFrom { get; set; }
+            public string EdgeTo { get; set; }
+        }
+
+
+        [HttpGet]
+        public async Task<JsonResult> GetGraphItem(int id)
+        {
+            var item = await _context.ItensERP
+                .Where(i => i.Id == id)
+                .Select(i => new
+                {
+                    Perfis = i.PerfilItemERPs.Select(p => new NodeEdgeTemp
+                    {
+                        Id = $"pf-{p.Perfil.Id}",
+                        Label = p.Perfil.Descricao,
+                        Group = "perfil",
+                        EdgeFrom = $"item-{id}",
+                        EdgeTo = $"pf-{p.Perfil.Id}"
+                    }).ToList(),
+
+                    Desenhos = i.DesenhoItemERPs.Select(d => new NodeEdgeTemp
+                    {
+                        Id = $"des-{d.Desenho.DesenhoId}",
+                        Label = d.Desenho.Nome,
+                        Group = "desenho",
+                        EdgeFrom = $"item-{id}",
+                        EdgeTo = $"des-{d.Desenho.DesenhoId}"
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+
+            var elementos = item?.Perfis.Concat(item.Desenhos) ?? Enumerable.Empty<NodeEdgeTemp>();
+
+            var nodes = elementos
+                .Select(x => new { id = x.Id, label = x.Label, group = x.Group })
+                .Distinct()
+                .ToList();
+
+            var edges = elementos
+                .Select(x => new { from = x.EdgeFrom, to = x.EdgeTo })
+                .ToList();
+
+            return Json(new { nodes, edges });
+        }
+
+
+
+
+        [HttpGet]
+        public async Task<JsonResult> GetProdutos()
+        {
+            var produtos = await _context.Produtos
+                .Select(p => new { id = p.Id, nome = p.NomeComercial })
+                .ToListAsync();
+            return Json(produtos);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetGraphProdutosIniciais()
+        {
+            var produtos = await _context.Produtos
+                .AsNoTracking()
+                .Select(p => new {
+                    id = $"prd-{p.Id}",
+                    label = p.NomeComercial,
+                    group = "produto"
+                })
+                .ToListAsync();
+
+            return Json(new { nodes = produtos, edges = new object[0] });
+        }
+
+
+
+        [HttpGet]
+        public async Task<JsonResult> GetAgrupadoresPorProduto(int produtoId)
+        {
+            var agrupadores = await _context.ProdutoAgrupadores
+                .Where(pa => pa.ProdutoId == produtoId)
+                .Include(pa => pa.Agrupador)
+                .Select(pa => new { id = pa.Agrupador.Id, nome = pa.Agrupador.Nome })
+                .Distinct()
+                .ToListAsync();
+            return Json(agrupadores);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetComponentesPorAgrupador(int agrupadorId)
+        {
+            var componentes = await _context.AgrupadorComponentes
+                .Where(ac => ac.AgrupadorId == agrupadorId)
+                .Include(ac => ac.Componente)
+                .Select(ac => new { id = ac.Componente.Id, nome = ac.Componente.Nome })
+                .Distinct()
+                .ToListAsync();
+            return Json(componentes);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetItensPorComponente(int componenteId)
+        {
+            var itens = await _context.ComponenteItemERPs
+                .Where(ci => ci.ComponenteId == componenteId)
+                .Include(ci => ci.ItemERP)
+                .Select(ci => new {
+                    id = ci.ItemERP.Id,
+                    erp = ci.ItemERP.ERP,
+                    descricao = ci.ItemERP.Descricao
+                })
+                .Distinct()
+                .ToListAsync();
+            return Json(itens);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetDetalhesItemERP(int itemId)
+        {
+            var detalhes = await _context.ItensERP
+                .Where(i => i.Id == itemId)
+                .Select(i => new {
+                    i.Id,
+                    i.ERP,
+                    i.Descricao,
+                    perfis = i.PerfilItemERPs.Select(p => p.Perfil.Desenho),
+                    desenhos = i.DesenhoItemERPs.Select(d => d.Desenho.Nome),
+                    relacionados = i.ItensRelacionados.Select(r => r.Relacionado.ERP)
+                })
+                .FirstOrDefaultAsync();
+
+            return Json(detalhes);
         }
 
         public IActionResult Privacy() => View();
