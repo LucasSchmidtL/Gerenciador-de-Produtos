@@ -1,32 +1,30 @@
 ﻿@model List<Gerenciador_de_Produtos.Models.DTOs.ItemERPImportDto>
-
 @{
     ViewData["Title"] = "Pré-visualizar Importação";
     var cultura = new System.Globalization.CultureInfo("pt-BR");
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1 class="display-6 fw-bold text-primary mb-4">
-    <i class="bi bi-eye-fill me-2"></i> @ViewData["Title"]
-</h1>
+<div class="container py-4">
+    <h1 class="display-6 fw-bold text-primary mb-4">
+        <i class="bi bi-upload me-2"></i> Pré-visualizar Importação
+    </h1>
 
-@if (Model == null || !Model.Any())
-{
-    <div class="alert alert-warning shadow-sm">
-        <i class="bi bi-exclamation-triangle me-2"></i> Nenhum item novo foi identificado para importação.
-    </div>
-}
-else
-{
-    <form asp-action="ConfirmarImportacao" method="post">
-        <input type="hidden" name="confirmacao" value="true" />
-
-        <div class="card shadow border-0 mb-4">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning shadow-sm">
+            <i class="bi bi-exclamation-triangle me-2"></i> Nenhum item novo foi identificado para importação.
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 mb-4">
             <div class="card-header bg-light fw-semibold text-primary d-flex align-items-center">
                 <i class="bi bi-box-seam me-2"></i> Itens ERP que serão importados
             </div>
             <div class="card-body p-4">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle table-bordered table-striped">
+                <div class="table-responsive mb-4">
+                    <table class="table table-hover table-bordered align-middle">
                         <thead class="table-primary text-center">
                             <tr>
                                 <th>ERP</th>
@@ -37,47 +35,108 @@ else
                             </tr>
                         </thead>
                         <tbody>
-                            @for (int i = 0; i < Model.Count; i++)
+                            @foreach (var item in Model)
                             {
-                                var item = Model[i];
-                                var dataValida = item.DataCriacao != null && item.DataCriacao?.Year >= 2000;
-                                var dataTexto = dataValida
-                                ? item.DataCriacao?.ToString("dd/MM/yyyy")
+                                var dataTexto = item.DataCriacao != null && item.DataCriacao.Value.Year >= 2000
+                                ? item.DataCriacao.Value.ToString("dd/MM/yyyy")
                                 : "<i class='bi bi-exclamation-circle text-warning' title='Data ausente ou inválida'></i> <span class='text-muted'>Indefinida</span>";
 
                                 <tr>
-                                    <td>
-                                        <input type="hidden" name="itens[@i].ERP" value="@item.ERP" />
-                                        <span class="fw-bold text-dark">@item.ERP</span>
-                                    </td>
-                                    <td>
-                                        <input type="hidden" name="itens[@i].Descricao" value="@item.Descricao" />
-                                        <span>@item.Descricao</span>
-                                    </td>
-                                    <td class="text-end">
-                                        <input type="hidden" name="itens[@i].PesoLiquidoMetro" value="@item.PesoLiquidoMetro" />
-                                        <span class="badge bg-success-subtle text-success">@item.PesoLiquidoMetro.ToString("F2", cultura)</span>
-                                    </td>
-                                    <td class="text-end">
-                                        <input type="hidden" name="itens[@i].PesoBrutoMetro" value="@item.PesoBrutoMetro" />
-                                        <span class="badge bg-secondary-subtle text-secondary">@item.PesoBrutoMetro.ToString("F2", cultura)</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <input type="hidden" name="itens[@i].DataCriacao" value="@item.DataCriacao?.ToString("s")" />
-                                        @Html.Raw(dataTexto)
-                                    </td>
+                                    <td><span class="fw-bold text-dark">@item.ERP</span></td>
+                                    <td>@item.Descricao</td>
+                                    <td class="text-end"><span class="badge bg-success-subtle text-success">@item.PesoLiquidoMetro.ToString("F2", cultura)</span></td>
+                                    <td class="text-end"><span class="badge bg-secondary-subtle text-secondary">@item.PesoBrutoMetro.ToString("F2", cultura)</span></td>
+                                    <td class="text-center">@Html.Raw(dataTexto)</td>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </div>
+
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="progress flex-grow-1" style="height: 30px;">
+                        <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-success fw-semibold" style="width: 0%;">
+                            0%
+                        </div>
+                    </div>
+                    <span id="progress-info" class="text-muted small">Aguardando início...</span>
+                </div>
+
+                <div class="text-end">
+                    <button type="button" id="btnImportar" class="btn btn-lg btn-success px-5 shadow-sm rounded-pill" onclick="iniciarImportacao()">
+                        <i class="bi bi-check2-circle me-2"></i> Iniciar Importação
+                    </button>
+                </div>
             </div>
         </div>
+    }
+</div>
 
-        <div class="text-end">
-            <button type="submit" class="btn btn-lg btn-success rounded-pill px-4 shadow-sm">
-                <i class="bi bi-check2-circle me-2"></i> Confirmar Importação
-            </button>
-        </div>
-    </form>
+@section Scripts {
+    <script>
+        const allItems = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        const loteSize = 50;
+        const total = allItems.length;
+        let current = 0;
+        let errosTotais = [];
+
+        async function enviarLote(lote) {
+            const response = await fetch("/ItensERP/ConfirmarImportacaoLote", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(lote)
+            });
+
+            if (!response.ok) throw new Error("Erro no envio do lote");
+            return await response.json();
+        }
+
+        async function importarTudo() {
+            const btn = document.getElementById("btnImportar");
+            const progressBar = document.getElementById("progress-bar");
+            const progressInfo = document.getElementById("progress-info");
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Importando...`;
+
+            while (current < total) {
+                const lote = allItems.slice(current, current + loteSize);
+                try {
+                    const resultado = await enviarLote(lote);
+                    current += lote.length;
+
+                    if (resultado.erros && resultado.erros.length > 0) {
+                        errosTotais.push(...resultado.erros);
+                    }
+
+                    const progresso = Math.round((current / total) * 100);
+                    progressBar.style.width = `${progresso}%`;
+                    progressBar.textContent = `${progresso}%`;
+                    progressInfo.textContent = `Importados ${current} de ${total} itens`;
+                } catch (e) {
+                    console.error("Erro ao importar lote:", e);
+                    progressInfo.textContent = "Erro durante a importação.";
+                    alert("Erro durante a importação. Veja o console.");
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="bi bi-check2-circle me-2"></i> Tentar Novamente`;
+                    return;
+                }
+            }
+
+            if (errosTotais.length > 0) {
+                alert(`Importação concluída com erros em ${errosTotais.length} itens. Veja o console.`);
+                console.warn("Erros:", errosTotais);
+            } else {
+                alert("Importação concluída com sucesso!");
+            }
+
+            window.location.href = "/ItensERP/Index";
+        }
+
+        function iniciarImportacao() {
+            importarTudo();
+        }
+    </script>
 }

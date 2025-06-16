@@ -612,6 +612,59 @@ namespace Gerenciador_de_Produtos.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ConfirmarImportacaoLote([FromBody] List<ItemERPImportDto> itens)
+        {
+            _logger.LogInformation("Recebido lote com {Qtd} itens para importação", itens?.Count ?? -1);
+
+            if (itens == null || !itens.Any())
+            {
+                return BadRequest(new { sucesso = false, mensagem = "Nenhum item recebido no lote." });
+            }
+
+            var adicionados = new List<string>();
+            var erros = new List<string>();
+
+            foreach (var dto in itens)
+            {
+                try
+                {
+                    if (await _context.ItensERP.AnyAsync(i => i.ERP == dto.ERP))
+                    {
+                        erros.Add($"ERP {dto.ERP} já existe.");
+                        continue;
+                    }
+
+                    var novoItem = new ItemERP
+                    {
+                        ERP = dto.ERP?.Trim(),
+                        Descricao = dto.Descricao?.Trim(),
+                        PesoLiquidoMetro = dto.PesoLiquidoMetro,
+                        PesoBrutoMetro = dto.PesoBrutoMetro,
+                        DataCriacao = dto.DataCriacao,
+                        Status = StatusItemERP.Ativo,
+                        TipoItem = TipoItem.Componente
+                    };
+
+                    await _context.ItensERP.AddAsync(novoItem);
+                    adicionados.Add(novoItem.ERP);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Erro ao importar item ERP: {ERP}", dto.ERP);
+                    erros.Add($"Erro no ERP {dto.ERP}: {ex.Message}");
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                sucesso = true,
+                salvos = adicionados.Count,
+                erros = erros
+            });
+        }
 
 
         // ---------------------------
