@@ -1,0 +1,99 @@
+<div class="container">
+  <div class="box">
+    <h3>Calcular Longarina</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Símbolo</th>
+          <th>Valor</th>
+          <th>Descrição</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for variavel in variaveis %}
+        <tr>
+          <td>{{ variavel.simbolo }}</td>
+          <td>
+            <input
+              type="number"
+              value="{{ variavel.valor }}"
+              name="variavel_{{ variavel.nome }}"
+              id="variavel_{{ variavel.nome }}"
+            >
+          </td>
+          <td>{{ variavel.descricao }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <button id="btnCalcular">Calcular</button>
+  </div>
+
+  <div class="box">
+    <h3>Resultado</h3>
+    <label for="resultado">Código da Longarina</label>
+    <input type="text" id="resultado" readonly value="{{ melhor_codigo or '' }}">    
+
+    <h4>Perfis Disponíveis</h4>
+    <table id="tabelaResultados">
+      <thead>
+        <tr>
+          <th>Perfil</th>
+          <th>Peso Linear (kg/m)</th>
+          <th>FLT</th>
+          <th>Flecha</th>
+          <th>Situação</th>
+          <th>MDRLFLT</th>
+          <th>MDRDelta</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for linha in tabela %}
+          <tr>
+            {% for coluna in colunas %}
+              <td>
+                {% set valor = linha[coluna] %}
+                {% if valor is mapping %}
+                  {{ valor.valor }} ({{ 'ok' if valor.status == 'ok' else 'erro' }})
+                {% else %}
+                  {{ valor }}
+                {% endif %}
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="box" style="max-width: 1200px; margin: 20px auto;">
+  <h3>Parâmetros</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Símbolo</th>
+        <th>Valor</th>
+        <th>Descrição</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for parametro in parametros %}
+      <tr>
+        <td>{{ parametro.simbolo }}</td>
+        <td>
+          <input
+            type="number"
+            value="{{ parametro.valor }}"
+            name="parametro_{{ parametro.nome }}"
+            id="parametro_{{ parametro.nome }}"
+          >
+        </td>
+        <td>{{ parametro.descricao }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

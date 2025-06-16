@@ -1,0 +1,30 @@
+<div class="box" style="max-width: 1200px; margin: auto;">
+    <h3>Funções Longarina</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Fórmula</th>
+          <th>Unidade</th>
+          <th>Abreviação</th>
+          <th>Norma</th>
+          <th>Seção</th>
+          <th>Considerações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for func in funcoes %}
+        <tr>
+          <td>{{ func.nome }}</td>
+          <td>{{ func.formula }}</td>
+          <td>{{ func.unidade }}</td>
+          <td>{{ func.abreviacao }}</td>
+          <td>{{ func.norma }}</td>
+          <td>{{ func.secao }}</td>
+          <td>{{ func.consideracoes }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  

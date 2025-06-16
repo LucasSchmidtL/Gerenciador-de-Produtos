@@ -1,0 +1,6 @@
+﻿NomeEquacao,Equacao,Unidade,Abreviacao,Norma,Componente,Secao,Consideracoes
+FLT,MomentoSolicitanteMajorado / MomentoFletorResistenteFlambagemLateral,n.a,vazio,vazio,vazio,vazio,vazio 
+Flecha,DeslocamentoMaximo / DeslocamentoELS,n.a,vazio,vazio,vazio,vazio,vazio 
+Situacao,'Verdadeiro' if (FLT > 0 and Flecha < 0) else 'Falso',n.a,vazio,vazio,vazio,vazio,vazio 
+MDRLFLT,MomentoFletorResistenteFlambagemLateral,vazio,vazio,vazio,vazio,vazio,vazio 
+MDRDelta,DeslocamentoMaximo,vazio,vazio,vazio,vazio,vazio,vazio 
