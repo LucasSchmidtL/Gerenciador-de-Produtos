@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Gerenciador_de_Produtos.Data;
 using Gerenciador_de_Produtos.Models;
 using Gerenciador_de_Produtos.Models.ViewModels;
+using Gerenciador_de_Produtos.Services;
+using Gerenciador_de_Produtos.Models.DTOs;
 
 namespace Gerenciador_de_Produtos.Controllers
 {
@@ -13,6 +15,7 @@ namespace Gerenciador_de_Produtos.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ItensERPController> _logger;
+        
 
         public ItensERPController(ApplicationDbContext context, ILogger<ItensERPController> logger)
         {
@@ -218,6 +221,8 @@ namespace Gerenciador_de_Produtos.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        //-------------------------------------------------------------------configurador-------------------------------------------------------------------
 
         // GET: ItensERP/ConfiguradorItemERP/5
         public async Task<IActionResult> ConfiguradorItemERP(int? id)
@@ -508,6 +513,105 @@ namespace Gerenciador_de_Produtos.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+
+        //-----------------------------------------------------------------------importar erp datasul----------------------------------------------------
+
+        // ---------------------------
+        //        Importar
+        // ---------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> ImportarLST(IFormFile arquivo, [FromServices] LSTParserService parser)
+        {
+            if (arquivo == null || arquivo.Length == 0)
+                return BadRequest("Nenhum arquivo enviado.");
+
+            List<ItemERPImportDto> itensImportados;
+            try
+            {
+                using var stream = arquivo.OpenReadStream();
+                itensImportados = parser.ParseLST(stream, _logger);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao processar o arquivo LST");
+                TempData["Erro"] = "Erro ao processar o arquivo. Verifique se está no formato correto.";
+                return RedirectToAction("ImportarLST");
+            }
+
+            // Verifica quais já existem no banco
+            var erpsExistentes = _context.ItensERP.Select(i => i.ERP).ToHashSet();
+            var novosItens = itensImportados
+                .Where(i => !string.IsNullOrWhiteSpace(i.ERP) && !erpsExistentes.Contains(i.ERP))
+                .ToList();
+
+            return View("ImportarPreview", novosItens);
+        }
+
+
+        // ---------------------------
+        //    Confirmar Importação
+        // ---------------------------
+        [HttpGet]
+        public IActionResult ImportarLST()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmarImportacao(List<ItemERPImportDto> itens)
+        {
+            _logger.LogInformation("Quantidade de itens recebidos: {Qtd}", itens?.Count ?? -1);
+
+            if (itens == null || !itens.Any())
+            {
+                TempData["Erro"] = "Nenhum item recebido para importação.";
+                return RedirectToAction("Index");
+            }
+
+            var novosItens = new List<ItemERP>();
+
+            foreach (var dto in itens)
+            {
+                // Verifica se o item já existe
+                bool jaExiste = await _context.ItensERP
+                    .AnyAsync(i => i.ERP == dto.ERP);
+
+                if (jaExiste)
+                    continue;
+
+                var novoItem = new ItemERP
+                {
+                    ERP = dto.ERP.Trim(),
+                    Descricao = dto.Descricao?.Trim(),
+                    PesoLiquidoMetro = dto.PesoLiquidoMetro,
+                    PesoBrutoMetro = dto.PesoBrutoMetro,
+                    DataCriacao = dto.DataCriacao,
+                    Status = StatusItemERP.Ativo, // ou o valor padrao 
+                    TipoItem = TipoItem.Componente, // definir um padrao 
+                    Acabamento = null,
+                    Classificacao = null
+                };
+
+                novosItens.Add(novoItem);
+            }
+
+            if (novosItens.Any())
+            {
+                await _context.ItensERP.AddRangeAsync(novosItens);
+                await _context.SaveChangesAsync();
+                TempData["Sucesso"] = $"{novosItens.Count} itens importados com sucesso.";
+            }
+            else
+            {
+                TempData["Aviso"] = "Todos os itens da lista já existem no banco.";
+            }
+
+            return RedirectToAction("Index");
+        }
+
 
 
         // ---------------------------

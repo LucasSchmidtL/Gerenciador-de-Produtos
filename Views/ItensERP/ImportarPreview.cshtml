@@ -1,0 +1,83 @@
+﻿@model List<Gerenciador_de_Produtos.Models.DTOs.ItemERPImportDto>
+
+@{
+    ViewData["Title"] = "Pré-visualizar Importação";
+    var cultura = new System.Globalization.CultureInfo("pt-BR");
+}
+
+<h1 class="display-6 fw-bold text-primary mb-4">
+    <i class="bi bi-eye-fill me-2"></i> @ViewData["Title"]
+</h1>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning shadow-sm">
+        <i class="bi bi-exclamation-triangle me-2"></i> Nenhum item novo foi identificado para importação.
+    </div>
+}
+else
+{
+    <form asp-action="ConfirmarImportacao" method="post">
+        <input type="hidden" name="confirmacao" value="true" />
+
+        <div class="card shadow border-0 mb-4">
+            <div class="card-header bg-light fw-semibold text-primary d-flex align-items-center">
+                <i class="bi bi-box-seam me-2"></i> Itens ERP que serão importados
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle table-bordered table-striped">
+                        <thead class="table-primary text-center">
+                            <tr>
+                                <th>ERP</th>
+                                <th>Descrição</th>
+                                <th>Peso Líquido (kg/m)</th>
+                                <th>Peso Bruto (kg/m)</th>
+                                <th>Data do Relatório</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                var item = Model[i];
+                                var dataValida = item.DataCriacao != null && item.DataCriacao?.Year >= 2000;
+                                var dataTexto = dataValida
+                                ? item.DataCriacao?.ToString("dd/MM/yyyy")
+                                : "<i class='bi bi-exclamation-circle text-warning' title='Data ausente ou inválida'></i> <span class='text-muted'>Indefinida</span>";
+
+                                <tr>
+                                    <td>
+                                        <input type="hidden" name="itens[@i].ERP" value="@item.ERP" />
+                                        <span class="fw-bold text-dark">@item.ERP</span>
+                                    </td>
+                                    <td>
+                                        <input type="hidden" name="itens[@i].Descricao" value="@item.Descricao" />
+                                        <span>@item.Descricao</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <input type="hidden" name="itens[@i].PesoLiquidoMetro" value="@item.PesoLiquidoMetro" />
+                                        <span class="badge bg-success-subtle text-success">@item.PesoLiquidoMetro.ToString("F2", cultura)</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <input type="hidden" name="itens[@i].PesoBrutoMetro" value="@item.PesoBrutoMetro" />
+                                        <span class="badge bg-secondary-subtle text-secondary">@item.PesoBrutoMetro.ToString("F2", cultura)</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="hidden" name="itens[@i].DataCriacao" value="@item.DataCriacao?.ToString("s")" />
+                                        @Html.Raw(dataTexto)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end">
+            <button type="submit" class="btn btn-lg btn-success rounded-pill px-4 shadow-sm">
+                <i class="bi bi-check2-circle me-2"></i> Confirmar Importação
+            </button>
+        </div>
+    </form>
+}
