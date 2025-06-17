@@ -272,29 +272,9 @@ namespace Gerenciador_de_Produtos.Controllers
                 .Include(i => i.DesenhoItemERPs)
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
-                .Include(i => i.ItensRelacionados)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (item == null) return NotFound();
-
-            var apareceComoIntegrante = await _context.ItemERPRelacionados
-                 .Include(r => r.ItemERP)  // <- ItemPai (quem tem o relacionamento)
-                 .Include(r => r.Desenho)
-                 .Where(r => r.RelacionadoId == id && r.Tipo == RelacionamentoTipo.Integrante)
-                 .ToListAsync();
-
-            var apareceComoPintado = await _context.ItemERPRelacionados
-                .Include(r => r.ItemERP)
-                .Include(r => r.Desenho)
-                .Where(r => r.RelacionadoId == id && r.Tipo == RelacionamentoTipo.Pintado)
-                .ToListAsync();
-
-            var apareceComoGalvanizado = await _context.ItemERPRelacionados
-                .Include(r => r.ItemERP)
-                .Include(r => r.Desenho)
-                .Where(r => r.RelacionadoId == id && r.Tipo == RelacionamentoTipo.Galvanizado)
-                .ToListAsync();
-
 
 
             // monta VM
@@ -352,63 +332,6 @@ namespace Gerenciador_de_Produtos.Controllers
                         DataRevisao = rr.Data
                     }).ToList()
                 }).ToList(),
-
-                // Seção 05 — relacionados
-                ItensPintados = item.ItensRelacionados
-                    .Where(r => r.Tipo == RelacionamentoTipo.Pintado)
-                    .Select(r => new RelatedItemViewModel
-                    {
-                        Id = r.Id,
-                        ItemERPId = r.RelacionadoId,
-                        DesenhoId = r.DesenhoId
-                    }).ToList(),
-
-                ItensGalvanizados = item.ItensRelacionados
-                    .Where(r => r.Tipo == RelacionamentoTipo.Galvanizado)
-                    .Select(r => new RelatedItemViewModel
-                    {
-                        Id = r.Id,
-                        ItemERPId = r.RelacionadoId,
-                        DesenhoId = r.DesenhoId
-                    }).ToList(),
-
-                ItensIntegrantes = item.ItensRelacionados
-                    .Where(r => r.Tipo == RelacionamentoTipo.Integrante)
-                    .Select(r => new RelatedItemViewModel
-                    {
-                        Id = r.Id,
-                        ItemERPId = r.RelacionadoId,
-                        DesenhoId = r.DesenhoId
-                    }).ToList(),
-
-                ApareceComoIntegrante = apareceComoIntegrante.Select(r => new RelatedItemViewModel
-                {
-                    ItemERPId = r.RelacionadoId,
-                    ItemPaiId = r.ItemERPId,
-                    ItemPaiERP = r.ItemERP?.ERP,
-                    DesenhoId = r.DesenhoId,
-                    DesenhoNome = r.Desenho?.Nome
-                }).ToList(),
-
-                ApareceComoPintado = apareceComoPintado.Select(r => new RelatedItemViewModel
-                {
-                    ItemERPId = r.RelacionadoId,
-                    ItemPaiId = r.ItemERPId,
-                    ItemPaiERP = r.ItemERP?.ERP,
-                    DesenhoId = r.DesenhoId,
-                    DesenhoNome = r.Desenho?.Nome
-                }).ToList(),
-
-                ApareceComoGalvanizado = apareceComoGalvanizado.Select(r => new RelatedItemViewModel
-                {
-                    ItemERPId = r.RelacionadoId,
-                    ItemPaiId = r.ItemERPId,
-                    ItemPaiERP = r.ItemERP?.ERP,
-                    DesenhoId = r.DesenhoId,
-                    DesenhoNome = r.Desenho?.Nome
-                }).ToList(),
-
-
 
                 // Seção 06 — famílias
                 ComponentesFamily = item.ComponenteItemERPs.Select(ci => new FamilyComponenteViewModel
@@ -485,7 +408,6 @@ namespace Gerenciador_de_Produtos.Controllers
                 .Include(i => i.DesenhoItemERPs).ThenInclude(d => d.Desenho)
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
-                .Include(i => i.ItensRelacionados)
                 .Include(i => i.ComponenteItemERPs)
                 .Include(i => i.AgrupadorItensERP)
                 .FirstOrDefaultAsync(i => i.Id == vm.Id);
@@ -561,21 +483,6 @@ namespace Gerenciador_de_Produtos.Controllers
             _context.AgrupadorItemERPs.RemoveRange(item.AgrupadorItensERP);
             foreach (var agrId in vm.SelectedAgrupadorIds)
                 item.AgrupadorItensERP.Add(new AgrupadorItemERP { ItemERPId = item.Id, AgrupadorId = agrId, Status = true });
-
-            // 5) Seção 05 — Itens relacionados
-            _context.ItemERPRelacionados.RemoveRange(item.ItensRelacionados);
-            foreach (var r in vm.ItensPintados)
-                item.ItensRelacionados.Add(new ItemERPRelacionado { ItemERPId = item.Id, RelacionadoId = r.ItemERPId, DesenhoId = r.DesenhoId, Tipo = RelacionamentoTipo.Pintado });
-            foreach (var r in vm.ItensGalvanizados)
-                item.ItensRelacionados.Add(new ItemERPRelacionado { ItemERPId = item.Id, RelacionadoId = r.ItemERPId, DesenhoId = r.DesenhoId, Tipo = RelacionamentoTipo.Galvanizado });
-            foreach (var r in vm.ItensIntegrantes)
-                item.ItensRelacionados.Add(new ItemERPRelacionado
-                {
-                    ItemERPId = item.Id,
-                    RelacionadoId = r.ItemERPId,
-                    DesenhoId = r.DesenhoId,
-                    Tipo = RelacionamentoTipo.Integrante
-                });
 
 
             // 6) Seção 06 — Famílias

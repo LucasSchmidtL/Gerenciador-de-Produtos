@@ -24,11 +24,6 @@ namespace Gerenciador_de_Produtos.Services
             var produtos = await _context.Produtos.AsNoTracking().ToListAsync().ConfigureAwait(false);
             var perfis = await _context.Perfis.AsNoTracking().ToListAsync().ConfigureAwait(false);
             var desenhos = await _context.Desenhos.AsNoTracking().ToListAsync().ConfigureAwait(false);
-            var relacoes = await _context.ItemERPRelacionados
-                .AsNoTracking()
-                .Include(r => r.Relacionado)
-                .Include(r => r.ItemERP)
-                .ToListAsync().ConfigureAwait(false);
 
             // Nós
             nodes.AddRange(itensERP.Select(i => new {
@@ -101,11 +96,6 @@ namespace Gerenciador_de_Produtos.Services
                 to = $"cmp-{ci.Componente.Id}"
             }));
 
-            edges.AddRange(relacoes.Select(rel => new {
-                from = $"item-{rel.ItemERPId}",
-                to = $"item-{rel.RelacionadoId}",
-                label = "relacionado"
-            }));
 
             var piers = await _context.PerfilItemERPs
                 .AsNoTracking()

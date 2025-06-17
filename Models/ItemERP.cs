@@ -62,7 +62,6 @@ namespace Gerenciador_de_Produtos.Models
         public ICollection<RevisaoItemERP> Revisoes { get; set; } = new List<RevisaoItemERP>();
         public ICollection<Perfil> Perfis { get; set; } = new List<Perfil>();
         public ICollection<PerfilItemERP> PerfilItemERPs { get; set; } = new List<PerfilItemERP>();
-        public List<ItemERPRelacionado> ItensRelacionados { get; set; } = new();
         public ICollection<DesenhoItemERP> DesenhoItemERPs { get; set; } = new List<DesenhoItemERP>();
 
         public ICollection<ItemERPComposto> ItensCompostos { get; set; } = new List<ItemERPComposto>();

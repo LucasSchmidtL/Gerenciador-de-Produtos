@@ -259,12 +259,6 @@ namespace Gerenciador_de_Produtos.Controllers
             if (desenho == null)
                 return NotFound();
 
-            // Remove os relacionamentos em ItemERPRelacionados que apontam para esse Desenho
-            var relacionados = _context.ItemERPRelacionados
-                .Where(r => r.DesenhoId == id);
-
-            _context.ItemERPRelacionados.RemoveRange(relacionados);
-
             // Remove os vínculos com ItemERP
             _context.DesenhoItemERPs.RemoveRange(desenho.DesenhoItemERPs);
 

@@ -220,8 +220,7 @@ namespace Gerenciador_de_Produtos.Controllers
                     i.ERP,
                     i.Descricao,
                     perfis = i.PerfilItemERPs.Select(p => p.Perfil.Desenho),
-                    desenhos = i.DesenhoItemERPs.Select(d => d.Desenho.Nome),
-                    relacionados = i.ItensRelacionados.Select(r => r.Relacionado.ERP)
+                    desenhos = i.DesenhoItemERPs.Select(d => d.Desenho.Nome)
                 })
                 .FirstOrDefaultAsync();
 

@@ -41,9 +41,6 @@ namespace Gerenciador_de_Produtos.Data
         public DbSet<Equacao> Equacao { get; set; }
         public DbSet<Norma> Norma { get; set; }
 
-        // Novo DbSet para itens relacionados
-        public DbSet<ItemERPRelacionado> ItemERPRelacionados { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -131,31 +128,6 @@ namespace Gerenciador_de_Produtos.Data
                 .WithMany(pi => pi.Revisoes)
                 .HasForeignKey(rp => rp.PerfilItemERPId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            // ItemERPRelacionado ⇄ ItemERP (pai)
-            modelBuilder.Entity<ItemERPRelacionado>()
-                .HasOne(r => r.ItemERP)
-                .WithMany(i => i.ItensRelacionados)
-                .HasForeignKey(r => r.ItemERPId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // ItemERPRelacionado ⇄ ItemERP (relacionado)
-            modelBuilder.Entity<ItemERPRelacionado>()
-                .HasOne(r => r.Relacionado)
-                .WithMany()  // sem navegação inversa
-                .HasForeignKey(r => r.RelacionadoId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // ItemERPRelacionado ⇄ Desenho
-            modelBuilder.Entity<ItemERPRelacionado>()
-                .HasOne(r => r.Desenho)
-                .WithMany()
-                .HasForeignKey(r => r.DesenhoId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-
-
-
 
             // ItemERPComposto ⇄ ItemERP 
             modelBuilder.Entity<ItemERPComposto>()

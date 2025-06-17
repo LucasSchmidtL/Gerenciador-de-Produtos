@@ -132,12 +132,14 @@
             <div class="card mb-4">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <strong>Itens da Composição (Filhos)</strong>
+                    <button class="btn btn-sm btn-outline-success ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#secaoAdicionarComposicao" aria-expanded="false">
+                        <i class="bi bi-plus-circle me-1"></i> Adicionar
+                    </button>
                 </div>
-                <div class="card-body">
 
-                    <!-- Filtros -->
+                <div class="collapse border-bottom px-3 pt-3" id="secaoAdicionarComposicao">
                     <div class="row g-3 mb-3">
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label class="form-label">Tipo</label>
                             <select id="filtroTipoComposicao" class="form-select">
                                 <option value="">-- Todos --</option>
@@ -146,8 +148,7 @@
                                 <option value="Produto">Produto</option>
                             </select>
                         </div>
-
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label class="form-label">Status</label>
                             <select id="filtroStatusComposicao" class="form-select">
                                 <option value="">-- Todos --</option>
@@ -156,8 +157,7 @@
                                 <option value="Obsoleto">Obsoleto</option>
                             </select>
                         </div>
-
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label class="form-label">Tag</label>
                             <select id="filtroTagComposicao" class="form-select">
                                 <option value="">-- Todas --</option>
@@ -167,19 +167,21 @@
                                 }
                             </select>
                         </div>
+                    </div>
 
-                        <div class="col-md-3 d-flex align-items-end">
-                            <button type="button" id="limparFiltrosComposicao" class="btn btn-outline-secondary w-100">
+                    <div class="row mb-3">
+                        <div class="col text-end">
+                            <button type="button" id="limparFiltrosComposicao" class="btn btn-outline-secondary btn-sm">
                                 <i class="bi bi-x-circle me-1"></i> Limpar Filtros
                             </button>
                         </div>
                     </div>
 
-                    <!-- Select2 -->
                     <label class="form-label">Buscar Itens ERP</label>
                     <select id="erpSelectComposicao" name="ItensComposicaoSelecionados" multiple class="form-select w-100"></select>
+                </div>
 
-                    <!-- Exibir selecionados -->
+                <div class="card-body">
                     <ul class="list-group mt-3" id="listaItensComposicao">
                         @foreach (var item in ViewBag.ItensComposicaoSelecionados as List<SelectListItem>)
                         {
@@ -195,35 +197,63 @@
             </div>
 
 
+
             <!-- Bloco: Itens Pintados -->
             <div class="card mb-4">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <strong>Itens Pintados</strong>
-                    <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosPintado">
-                        <i class="bi bi-funnel"></i> Filtros de busca
+                    <button class="btn btn-sm btn-outline-success ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#secaoAdicionarPintado" aria-expanded="false">
+                        <i class="bi bi-plus-circle me-1"></i> Adicionar
                     </button>
                 </div>
-                <div class="collapse border-bottom px-3 pt-3" id="filtrosPintado">
-                    <div class="row g-3">
+
+                <div class="collapse border-bottom px-3 pt-3" id="secaoAdicionarPintado">
+                    <!-- Filtros -->
+                    <div class="row g-3 mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">ERP</label>
-                            <input type="text" class="form-control" id="filtroErpPintado" placeholder="ERP123" />
+                            <label class="form-label">Tipo</label>
+                            <select id="filtroTipoPintado" class="form-select">
+                                <option value="">-- Todos --</option>
+                                <option value="Perfil">Perfil</option>
+                                <option value="Componente">Componente</option>
+                                <option value="Produto">Produto</option>
+                            </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Descrição</label>
-                            <input type="text" class="form-control" id="filtroDescricaoPintado" placeholder="Ex: Pintado" />
+                            <label class="form-label">Status</label>
+                            <select id="filtroStatusPintado" class="form-select">
+                                <option value="">-- Todos --</option>
+                                <option value="Ativo">Ativo</option>
+                                <option value="Não Ativo">Não Ativo</option>
+                                <option value="Obsoleto">Obsoleto</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tag</label>
+                            <select id="filtroTagPintado" class="form-select">
+                                <option value="">-- Todas --</option>
+                                @foreach (var tag in ViewBag.AllTags as List<SelectListItem>)
+                                {
+                                    <option value="@tag.Value">@tag.Text</option>
+                                }
+                            </select>
                         </div>
                     </div>
+
+                    <div class="row mb-3">
+                        <div class="col text-end">
+                            <button type="button" id="limparFiltrosPintado" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-x-circle me-1"></i> Limpar Filtros
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Select2 só aparece se filtros forem abertos -->
+                    <label class="form-label">Buscar Itens ERP</label>
+                    <select id="erpSelectPintado" name="ItensPintadosSelecionados" multiple class="form-select w-100"></select>
                 </div>
+
                 <div class="card-body">
-                    <select class="form-select" id="selectItemPintado">
-                        <option value="">-- selecione --</option>
-                        @foreach (var item in Model.AllItensERP)
-                        {
-                            <option value="@item.Value">@item.Text</option>
-                        }
-                    </select>
-                    <button type="button" class="btn btn-outline-success btn-sm mt-2" id="btnAddItemPintado">+ Adicionar</button>
                     <ul class="list-group mt-3" id="listaItensPintado">
                         @foreach (var item in ViewBag.ItensPintadosSelecionados as List<SelectListItem>)
                         {
@@ -238,36 +268,63 @@
                 </div>
             </div>
 
+
+
             <!-- Bloco: Itens Galvanizados -->
             <div class="card mb-4">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <strong>Itens Galvanizados</strong>
-                    <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosGalva">
-                        <i class="bi bi-funnel"></i> Filtros de busca
+                    <button class="btn btn-sm btn-outline-success ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#secaoAdicionarGalvanizado" aria-expanded="false">
+                        <i class="bi bi-plus-circle me-1"></i> Adicionar
                     </button>
                 </div>
-                <div class="collapse border-bottom px-3 pt-3" id="filtrosGalva">
-                    <div class="row g-3">
+
+                <div class="collapse border-bottom px-3 pt-3" id="secaoAdicionarGalvanizado">
+                    <div class="row g-3 mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">ERP</label>
-                            <input type="text" class="form-control" id="filtroErpGalva" placeholder="ERP123" />
+                            <label class="form-label">Tipo</label>
+                            <select id="filtroTipoGalvanizado" class="form-select">
+                                <option value="">-- Todos --</option>
+                                <option value="Perfil">Perfil</option>
+                                <option value="Componente">Componente</option>
+                                <option value="Produto">Produto</option>
+                            </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Descrição</label>
-                            <input type="text" class="form-control" id="filtroDescricaoGalva" placeholder="Ex: Galvanizado" />
+                            <label class="form-label">Status</label>
+                            <select id="filtroStatusGalvanizado" class="form-select">
+                                <option value="">-- Todos --</option>
+                                <option value="Ativo">Ativo</option>
+                                <option value="Não Ativo">Não Ativo</option>
+                                <option value="Obsoleto">Obsoleto</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tag</label>
+                            <select id="filtroTagGalvanizado" class="form-select">
+                                <option value="">-- Todas --</option>
+                                @foreach (var tag in ViewBag.AllTags as List<SelectListItem>)
+                                {
+                                    <option value="@tag.Value">@tag.Text</option>
+                                }
+                            </select>
                         </div>
                     </div>
+
+                    <div class="row mb-3">
+                        <div class="col text-end">
+                            <button type="button" id="limparFiltrosGalvanizado" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-x-circle me-1"></i> Limpar Filtros
+                            </button>
+                        </div>
+                    </div>
+
+                    <label class="form-label">Buscar Itens ERP</label>
+                    <select id="erpSelectGalvanizado" name="ItensGalvanizadosSelecionados" multiple class="form-select w-100"></select>
                 </div>
+
                 <div class="card-body">
-                    <select class="form-select" id="selectItemGalva">
-                        <option value="">-- selecione --</option>
-                        @foreach (var item in Model.AllItensERP)
-                        {
-                            <option value="@item.Value">@item.Text</option>
-                        }
-                    </select>
-                    <button type="button" class="btn btn-outline-success btn-sm mt-2" id="btnAddItemGalva">+ Adicionar</button>
-                    <ul class="list-group mt-3" id="listaItensGalva">
+                    <ul class="list-group mt-3" id="listaItensGalvanizado">
                         @foreach (var item in ViewBag.ItensGalvanizadosSelecionados as List<SelectListItem>)
                         {
                             var parts = item.Text.Split('|');
@@ -280,6 +337,10 @@
                     </ul>
                 </div>
             </div>
+
+
+
+
 
         </div>
     </div>
@@ -418,131 +479,6 @@
         <div class="card-header bg-secondary text-white"><strong>Seção 05: Itens relacionados</strong></div>
         <div class="card-body">
 
-            <!-- Subcard: Itens integrantes -->
-            <div class="card mb-3">
-                <div class="card-header bg-light">
-                    <strong>Itens integrantes</strong>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm mb-2" id="tblItensIntegrantes">
-                        <thead class="table-light"><tr><th>Item ERP</th><th>Desenho</th><th></th></tr></thead>
-                        <tbody>
-                            @for (int i = 0; i < Model.ItensIntegrantes.Count; i++)
-                            {
-                                <tr>
-                                    <input type="hidden" asp-for="ItensIntegrantes[@i].Id" />
-                                    <td>
-                                        <div class="input-group">
-                                            <select asp-for="ItensIntegrantes[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-select form-select-sm select2">
-                                                <option value="">-- selecione --</option>
-                                            </select>
-                                            <a class="btn btn-outline-secondary btn-sm" target="_blank"
-                                               href="@Url.Action("ConfiguradorItemERP", "ItensERP", new { id = Model.ItensIntegrantes[@i].ItemERPId })">
-                                                🔧
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <select asp-for="ItensIntegrantes[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-select form-select-sm select2">
-                                            <option value="">-- selecione --</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-danger btn-remove-integrante">✕</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                    <button type="button" id="btnAddIntegrante" class="btn btn-success btn-sm">
-                        <i class="bi bi-plus-lg me-1"></i>Adicionar Integrante
-                    </button>
-                </div>
-            </div>
-
-            <!-- Subcard: Itens pintados -->
-            <div class="card mb-3">
-                <div class="card-header bg-light">
-                    <strong>Itens pintados</strong>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm mb-2" id="tblItensPintados">
-                        <thead class="table-light"><tr><th>Item ERP</th><th>Desenho</th><th></th></tr></thead>
-                        <tbody>
-                            @for (int i = 0; i < Model.ItensPintados.Count; i++)
-                            {
-                                <tr>
-                                    <input type="hidden" asp-for="ItensPintados[@i].Id" />
-                                    <td>
-                                        <div class="input-group">
-                                            <select asp-for="ItensPintados[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-select form-select-sm select2">
-                                                <option value="">-- selecione --</option>
-                                            </select>
-                                            <a class="btn btn-outline-secondary btn-sm" target="_blank"
-                                               href="@Url.Action("ConfiguradorItemERP", "ItensERP", new { id = Model.ItensPintados[@i].ItemERPId })">
-                                                🔧
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <select asp-for="ItensPintados[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-select form-select-sm select2">
-                                            <option value="">-- selecione --</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-danger btn-remove-pintado">✕</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                    <button type="button" id="btnAddPintado" class="btn btn-success btn-sm">
-                        <i class="bi bi-plus-lg me-1"></i>Adicionar Pintado
-                    </button>
-                </div>
-            </div>
-
-            <!-- Subcard: Itens galvanizados -->
-            <div class="card mb-0">
-                <div class="card-header bg-light">
-                    <strong>Itens galvanizados</strong>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm mb-2" id="tblItensGalva">
-                        <thead class="table-light"><tr><th>Item ERP</th><th>Desenho</th><th></th></tr></thead>
-                        <tbody>
-                            @for (int i = 0; i < Model.ItensGalvanizados.Count; i++)
-                            {
-                                <tr>
-                                    <input type="hidden" asp-for="ItensGalvanizados[@i].Id" />
-                                    <td>
-                                        <div class="input-group">
-                                            <select asp-for="ItensGalvanizados[@i].ItemERPId" asp-items="Model.AllItensERP" class="form-select form-select-sm select2">
-                                                <option value="">-- selecione --</option>
-                                            </select>
-                                            <a class="btn btn-outline-secondary btn-sm" target="_blank"
-                                               href="@Url.Action("ConfiguradorItemERP", "ItensERP", new { id = Model.ItensGalvanizados[@i].ItemERPId })">
-                                                🔧
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <select asp-for="ItensGalvanizados[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-select form-select-sm select2">
-                                            <option value="">-- selecione --</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-danger btn-remove-galva">✕</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                    <button type="button" id="btnAddGalva" class="btn btn-success btn-sm">
-                        <i class="bi bi-plus-lg me-1"></i>Adicionar Galvanizado
-                    </button>
-                </div>
-            </div>
             <hr class="my-4" />
             <h5 class="mb-3 fw-semibold text-dark">
                 <i class="bi bi-diagram-2 me-1 text-muted"></i>Este item aparece em outros como parte de:
@@ -784,6 +720,115 @@
             $('#filtroTipoComposicao, #filtroStatusComposicao, #filtroTagComposicao').val('');
             $erpSelectComposicao.select2('open');
         });
+
+
+
+
+
+
+                function setupSelect2ComFiltrosERP({ selectId, filtroTipo, filtroStatus, filtroTag, botaoLimpar, ulId, hiddenInputName }) {
+            const $select = $('#' + selectId);
+
+            $select.select2({
+                placeholder: "Buscar Itens ERP...",
+                ajax: {
+                    url: '/ItensERP/BuscarItensERP',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            term: params.term,
+                            tipoItem: $('#' + filtroTipo).val(),
+                            status: $('#' + filtroStatus).val(),
+                            tag: $('#' + filtroTag).val()
+                        };
+                    },
+                    processResults: function (data) {
+                        return { results: data };
+                    },
+                    cache: true
+                },
+                templateResult: function (item) {
+                    if (!item.id) return item.text;
+                    const parts = item.text.split('|');
+                    return $('<span><strong>' + parts[0] + '</strong> — ' + parts[1] + ' <small class="text-muted">(' + parts[2] + ')</small></span>');
+                },
+                templateSelection: function (item) {
+                    if (!item.id) return item.text;
+                    return item.text.split('|')[0];
+                },
+                width: '100%',
+                allowClear: true
+            });
+
+            // Recarrega ao mudar filtro
+            $('#' + filtroTipo + ', #' + filtroStatus + ', #' + filtroTag).on('change', function () {
+                $select.select2('open');
+            });
+
+            // Limpa filtros
+            $('#' + botaoLimpar).on('click', function () {
+                $('#' + filtroTipo + ', #' + filtroStatus + ', #' + filtroTag).val('');
+                $select.select2('open');
+            });
+
+            // Adiciona item na lista ao selecionar
+            $select.on('select2:select', function (e) {
+                const item = e.params.data;
+                const parts = item.text.split('|');
+                const html = `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><strong>${parts[0]}</strong> — ${parts[1]} <small class="text-muted">${parts[2]}</small></span>
+                        <input type="hidden" name="${hiddenInputName}" value="${item.id}" />
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-item">✕</button>
+                    </li>`;
+                $('#' + ulId).append(html);
+                $select.find('option[value="' + item.id + '"]').remove();
+                $select.trigger('change');
+            });
+
+            // Remoção visual
+            $('#' + ulId).on('click', '.btn-remove-item', function () {
+                $(this).closest('li').remove();
+            });
+        }
+
+
+        // Composto
+        setupSelect2ComFiltrosERP({
+            selectId: 'erpSelectComposicao',
+            filtroTipo: 'filtroTipoComposicao',
+            filtroStatus: 'filtroStatusComposicao',
+            filtroTag: 'filtroTagComposicao',
+            botaoLimpar: 'limparFiltrosComposicao',
+            ulId: 'listaItensComposicao',
+            hiddenInputName: 'ItensComposicaoSelecionados'
+        });
+
+
+        // Pintado
+        setupSelect2ComFiltrosERP({
+            selectId: 'erpSelectPintado',
+            filtroTipo: 'filtroTipoPintado',
+            filtroStatus: 'filtroStatusPintado',
+            filtroTag: 'filtroTagPintado',
+            botaoLimpar: 'limparFiltrosPintado',
+            ulId: 'listaItensPintado',
+            hiddenInputName: 'ItensPintadosSelecionados'
+        });
+
+        // Galvanizado
+                setupSelect2ComFiltrosERP({
+            selectId: 'erpSelectGalvanizado',
+            filtroTipo: 'filtroTipoGalvanizado',
+            filtroStatus: 'filtroStatusGalvanizado',
+            filtroTag: 'filtroTagGalvanizado',
+            botaoLimpar: 'limparFiltrosGalvanizado',
+            ulId: 'listaItensGalvanizado',
+            hiddenInputName: 'ItensGalvanizadosSelecionados'
+        });
+
+
 
 
 
