@@ -26,6 +26,15 @@ namespace Gerenciador_de_Produtos.Controllers
         // GET: ItensERP
         public async Task<IActionResult> Index()
         {
+
+            ViewBag.AllTags = await _context.Tags
+                  .Select(t => new SelectListItem
+                  {
+                      Value = t.Id.ToString(),
+                      Text = t.Nome
+                  }).ToListAsync();
+
+
             var itens = await _context.ItensERP
                 .Include(i => i.Tags)
                 .Include(i => i.AgrupadorItensERP).ThenInclude(ai => ai.Agrupador)
@@ -34,6 +43,10 @@ namespace Gerenciador_de_Produtos.Controllers
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Perfil)
                 .ToListAsync();
+
+
+
+
             return View(itens);
         }
 
@@ -65,7 +78,31 @@ namespace Gerenciador_de_Produtos.Controllers
             return Json(resultados);
         }
 
+        // Novo método para carregar resultados filtrados via AJAX na index dinâmica
+        [HttpGet]
+        public async Task<IActionResult> Filtrar(string? tipo, string? status, string? tag, string? termo)
+        {
+            var query = _context.ItensERP
+                .Include(i => i.Tags)
+                .Include(i => i.Revisoes)
+                .AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(tipo) && Enum.TryParse<TipoItem>(tipo, out var tipoEnum))
+                query = query.Where(i => i.TipoItem == tipoEnum);
+
+            if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<StatusItemERP>(status, out var statusEnum))
+                query = query.Where(i => i.Status == statusEnum);
+
+            if (!string.IsNullOrWhiteSpace(tag))
+                query = query.Where(i => i.Tags.Any(t => t.Id.ToString() == tag));
+
+            if (!string.IsNullOrWhiteSpace(termo))
+                query = query.Where(i => i.ERP.Contains(termo) || i.Descricao.Contains(termo));
+
+            var itens = await query.OrderByDescending(i => i.DataCriacao).Take(50).ToListAsync();
+
+            return PartialView("_ListaItensERP", itens);
+        }
 
 
         // GET: ItensERP/Details/5
