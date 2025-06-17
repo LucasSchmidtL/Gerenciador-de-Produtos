@@ -429,6 +429,45 @@ namespace Gerenciador_de_Produtos.Controllers
                 .Select(c => new SelectListItem(c.Nome, c.Id.ToString()))
                 .ToList();
 
+            ViewBag.ItensComposicaoSelecionados = vm.ItensIntegrantes
+                ?.Select(r => new SelectListItem
+                {
+                    Value = r.ItemERPId.ToString(),
+                    Text = _context.ItensERP
+                        .Where(i => i.Id == r.ItemERPId)
+                        .Select(i => $"{i.ERP}|{i.Descricao}|{i.Status}")
+                        .FirstOrDefault() ?? "Desconhecido"
+                }).ToList();
+
+            ViewBag.ItensPintadosSelecionados = vm.ItensPintados?.Select(r => new SelectListItem
+            {
+                Value = r.ItemERPId.ToString(),
+                Text = _context.ItensERP
+                    .Where(i => i.Id == r.ItemERPId)
+                    .Select(i => $"{i.ERP}|{i.Descricao}|{i.Status}")
+                    .FirstOrDefault() ?? "Desconhecido"
+            }).ToList();
+
+            ViewBag.ItensGalvanizadosSelecionados = vm.ItensGalvanizados?.Select(r => new SelectListItem
+            {
+                Value = r.ItemERPId.ToString(),
+                Text = _context.ItensERP
+                    .Where(i => i.Id == r.ItemERPId)
+                    .Select(i => $"{i.ERP}|{i.Descricao}|{i.Status}")
+                    .FirstOrDefault() ?? "Desconhecido"
+            }).ToList();
+
+            ViewBag.AllTags = await _context.Tags
+    .Select(t => new SelectListItem
+    {
+        Value = t.Id.ToString(),
+        Text = t.Nome
+    })
+    .ToListAsync();
+
+
+
+
             return View(vm);
         }
 

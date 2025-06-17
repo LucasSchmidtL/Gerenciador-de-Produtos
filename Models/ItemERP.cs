@@ -65,6 +65,9 @@ namespace Gerenciador_de_Produtos.Models
         public List<ItemERPRelacionado> ItensRelacionados { get; set; } = new();
         public ICollection<DesenhoItemERP> DesenhoItemERPs { get; set; } = new List<DesenhoItemERP>();
 
+        public ICollection<ItemERPComposto> ItensCompostos { get; set; } = new List<ItemERPComposto>();
+        public ICollection<ItemERPVinculado> ItensVinculados { get; set; } = new List<ItemERPVinculado>();
+        public ICollection<VariaveisItemERPComposto> VariaveisComposicao { get; set; } = new List<VariaveisItemERPComposto>();
 
 
     }

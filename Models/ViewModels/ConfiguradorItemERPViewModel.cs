@@ -114,6 +114,12 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public List<RelatedItemViewModel> ApareceComoPintado { get; set; } = new();
         public List<RelatedItemViewModel> ApareceComoGalvanizado { get; set; } = new();
 
+        public List<long> ItensComposicaoSelecionados { get; set; } = new();
+        public List<long> ItensPintadosSelecionados { get; set; } = new();
+        public List<long> ItensGalvanizadosSelecionados { get; set; } = new();
+
+        public List<long> ItensVinculadosSelecionados { get; set; } = new();
+        public List<SelectListItem> ItensVinculadosPreSelecionados { get; set; } = new();
 
 
 

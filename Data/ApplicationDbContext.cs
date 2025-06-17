@@ -30,6 +30,10 @@ namespace Gerenciador_de_Produtos.Data
         public DbSet<DesenhoItemERP> DesenhoItemERPs { get; set; }
         public DbSet<Perfil> Perfis { get; set; }
         public DbSet<ItemERP> ItensERP { get; set; }
+        public DbSet<ItemERPComposto> ItensERPCompostos { get; set; }
+        public DbSet<ItemERPVinculado> ItensERPVinculados { get; set; }
+        public DbSet<VariaveisItemERPComposto> VariaveisItemERPCompostos { get; set; }
+
         public DbSet<Secao> Secao { get; set; }
 
         public DbSet<Secao> Secoes { get; set; }
@@ -148,6 +152,56 @@ namespace Gerenciador_de_Produtos.Data
                 .WithMany()
                 .HasForeignKey(r => r.DesenhoId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+
+
+
+            // ItemERPComposto ⇄ ItemERP 
+            modelBuilder.Entity<ItemERPComposto>()
+                .HasOne(ic => ic.ItemERP_Pai)
+                .WithMany(i => i.ItensCompostos)
+                .HasForeignKey(ic => ic.ItemERPId_Pai)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ItemERPComposto>()
+                .HasOne(ic => ic.ItemERP_Filho)
+                .WithMany()
+                .HasForeignKey(ic => ic.ItemERPId_Filho)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ItemERPVinculado ⇄ ItemERP (acabamentos)
+            modelBuilder.Entity<ItemERPVinculado>()
+                .HasOne(v => v.ItemERP_SemAcabamento)
+                .WithMany()
+                .HasForeignKey(v => v.ItemERP_SemAcabamentoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ItemERPVinculado>()
+                .HasOne(v => v.ItemERP_Pintado)
+                .WithMany()
+                .HasForeignKey(v => v.ItemERP_PintadoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ItemERPVinculado>()
+                .HasOne(v => v.ItemERP_Galvanizado)
+                .WithMany()
+                .HasForeignKey(v => v.ItemERP_GalvanizadoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ItemERPVinculado>()
+                .HasOne(v => v.ItemERP_Zincado)
+                .WithMany()
+                .HasForeignKey(v => v.ItemERP_ZincadoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
+
+
+
+
+
 
             // Perfil ⇄ Desenho (muitos-para-muitos via DesenhoPerfil)
             modelBuilder.Entity<DesenhoPerfil>()
