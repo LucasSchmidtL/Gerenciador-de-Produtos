@@ -1,22 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Gerenciador_de_Produtos.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace Gerenciador_de_Produtos.Models
+public class ItemERPVinculado
 {
-    public class ItemERPVinculado
-    {
-        [Key]
-        public int Id { get; set; }
+    [Key]
+    public int Id { get; set; }
 
-        public int? ItemERP_SemAcabamentoId { get; set; }
-        public ItemERP? ItemERP_SemAcabamento { get; set; }
+    public int ItemERPId { get; set; }
+    public ItemERP ItemERP { get; set; } = null!;
 
-        public int? ItemERP_PintadoId { get; set; }
-        public ItemERP? ItemERP_Pintado { get; set; }
+    public int VinculadoId { get; set; }
+    public ItemERP Vinculado { get; set; } = null!;
 
-        public int? ItemERP_GalvanizadoId { get; set; }
-        public ItemERP? ItemERP_Galvanizado { get; set; }
+    public string? ItemERPDescricao { get; set; }
+    public ItemERP Descricao { get; set; } = null!;
 
-        public int? ItemERP_ZincadoId { get; set; }
-        public ItemERP? ItemERP_Zincado { get; set; }
-    }
+    public TipoVinculoERP Tipo { get; set; }
 }

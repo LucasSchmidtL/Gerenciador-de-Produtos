@@ -71,6 +71,36 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public int AgrupadorId { get; set; }
     }
 
+    public class ItemERPCompostoViewModel
+    {
+        public int ItemERPId { get; set; }
+
+        [Required]
+        public decimal Quantidade { get; set; }
+
+        public string? Unidade { get; set; }
+
+        public string? ItemERPDescricao { get; set; }
+    }
+
+
+    public class ItemERPRelacionadoViewModel
+    {
+        public int ItemERPId { get; set; }
+    }
+
+    public class ItemERPVinculadoViewModel
+    {
+        public int Id { get; set; }             
+        public int ItemERPId { get; set; }      
+        public int? DesenhoId { get; set; }
+        public string? ItemERPDescricao { get; set; }
+
+        public TipoVinculoERP Tipo { get; set; }
+    }
+
+
+
 
     public class ConfiguradorItemERPViewModel
     {
@@ -106,20 +136,31 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public List<PerfilLinhaViewModel> PerfisSection { get; set; } = new();
         public List<SelectListItem> AllPerfisSection { get; set; } = new();
 
-        public List<RelatedItemViewModel> ItensPintados { get; set; } = new();
-        public List<RelatedItemViewModel> ItensGalvanizados { get; set; } = new();
-        public List<RelatedItemViewModel> ItensIntegrantes { get; set; } = new();
+        public List<ItemERPRelacionadoViewModel> ItensIntegrantes { get; set; } = new();
+
+        public List<ItemERPVinculadoViewModel> ItensVinculadosPintado { get; set; } = new();
+        public List<ItemERPVinculadoViewModel> ItensVinculadosGalvanizado { get; set; } = new();
+        public List<ItemERPVinculadoViewModel> ItensVinculadosIntegrante { get; set; } = new();
+
 
         public List<RelatedItemViewModel> ApareceComoIntegrante { get; set; } = new();
         public List<RelatedItemViewModel> ApareceComoPintado { get; set; } = new();
         public List<RelatedItemViewModel> ApareceComoGalvanizado { get; set; } = new();
 
         public List<long> ItensComposicaoSelecionados { get; set; } = new();
-        public List<long> ItensPintadosSelecionados { get; set; } = new();
-        public List<long> ItensGalvanizadosSelecionados { get; set; } = new();
+        public List<SelectListItem> ItensVinculadosPintadoSelecionados { get; set; } = new();
+
+        public List<SelectListItem> ItensVinculadosGalvanizadoSelecionados { get; set; } = new();
+
 
         public List<long> ItensVinculadosSelecionados { get; set; } = new();
         public List<SelectListItem> ItensVinculadosPreSelecionados { get; set; } = new();
+
+
+
+        public List<ItemERPCompostoViewModel> ItensCompostos { get; set; } = new();
+
+
 
 
 
@@ -128,6 +169,7 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
 
         public List<SelectListItem> AllComponentes { get; set; } = new();
 
+        public List<SelectListItem> AllTags { get; set; } = new();
 
         /// <summary>
         /// Dropdown de ItensERP (Seção 05)

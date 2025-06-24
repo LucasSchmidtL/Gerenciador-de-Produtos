@@ -131,13 +131,14 @@
             <!-- Bloco: Itens da Composição (Filhos) -->
             <div class="card mb-4">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <strong>Itens da Composição (Filhos)</strong>
-                    <button class="btn btn-sm btn-outline-success ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#secaoAdicionarComposicao" aria-expanded="false">
+                    <strong>Itens Compostos (com quantidade)</strong>
+                    <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#secaoAdicionarComposto" aria-expanded="false">
                         <i class="bi bi-plus-circle me-1"></i> Adicionar
                     </button>
                 </div>
 
-                <div class="collapse border-bottom px-3 pt-3" id="secaoAdicionarComposicao">
+                <!-- Filtros e Select2 -->
+                <div class="collapse border-bottom px-3 pt-3" id="secaoAdicionarComposto">
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
                             <label class="form-label">Tipo</label>
@@ -161,7 +162,7 @@
                             <label class="form-label">Tag</label>
                             <select id="filtroTagComposicao" class="form-select">
                                 <option value="">-- Todas --</option>
-                                @foreach (var tag in ViewBag.AllTags as List<SelectListItem>)
+                                @foreach (var tag in Model.AllTags)
                                 {
                                     <option value="@tag.Value">@tag.Text</option>
                                 }
@@ -177,24 +178,127 @@
                         </div>
                     </div>
 
-                    <label class="form-label">Buscar Itens ERP</label>
-                    <select id="erpSelectComposicao" name="ItensComposicaoSelecionados" multiple class="form-select w-100"></select>
+                    <label class="form-label">Buscar Item ERP</label>
+                    <select id="erpSelectComposicao" class="form-select w-100"></select>
+                    <ul class="list-group mt-3" id="listaItensComposicao"></ul>
                 </div>
 
+                <!-- Tabela dos itens compostos -->
                 <div class="card-body">
-                    <ul class="list-group mt-3" id="listaItensComposicao">
-                        @foreach (var item in ViewBag.ItensComposicaoSelecionados as List<SelectListItem>)
-                        {
-                            var parts = item.Text.Split('|');
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>@parts[0]</strong> — @parts[1] <small class="text-muted">@parts[2]</small></span>
-                                <input type="hidden" name="ItensComposicaoSelecionados" value="@item.Value" />
-                                <button type="button" class="btn btn-sm btn-outline-danger btn-remove-item">✕</button>
-                            </li>
-                        }
-                    </ul>
+                    <table class="table table-sm" id="tblItensCompostos">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Item ERP</th>
+                                <th>Quantidade</th>
+                                <th>Unidade</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.ItensCompostos.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="hidden" asp-for="ItensCompostos[@i].ItemERPId" />
+                                        <input type="text" class="form-control form-control-sm"
+                                               value="@Model.ItensCompostos[i].ItemERPDescricao" readonly />
+
+                                    </td>
+                                    <td>
+                                        <input asp-for="ItensCompostos[@i].Quantidade" class="form-control form-control-sm" />
+                                    </td>
+                                    <td>
+                                        <input asp-for="ItensCompostos[@i].Unidade" class="form-control form-control-sm" />
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-composto">✕</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-            </div>
+
+
+                <!-- Bloco: Itens Galvanizados -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <strong>Itens Galvanizados</strong>
+                        <button class="btn btn-sm btn-outline-success ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#secaoAdicionarGalvanizado" aria-expanded="false">
+                            <i class="bi bi-plus-circle me-1"></i> Adicionar
+                        </button>
+                    </div>
+
+                    <div class="collapse border-bottom px-3 pt-3" id="secaoAdicionarGalvanizado">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Tipo</label>
+                                <select id="filtroTipoGalvanizado" class="form-select">
+                                    <option value="">-- Todos --</option>
+                                    <option value="Perfil">Perfil</option>
+                                    <option value="Componente">Componente</option>
+                                    <option value="Produto">Produto</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Status</label>
+                                <select id="filtroStatusGalvanizado" class="form-select">
+                                    <option value="">-- Todos --</option>
+                                    <option value="Ativo">Ativo</option>
+                                    <option value="Não Ativo">Não Ativo</option>
+                                    <option value="Obsoleto">Obsoleto</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Tag</label>
+                                <select id="filtroTagGalvanizado" class="form-select">
+                                    <option value="">-- Todas --</option>
+                                    @foreach (var tag in Model.AllTags)
+                                    {
+                                        <option value="@tag.Value">@tag.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col text-end">
+                                <button type="button" id="limparFiltrosGalvanizado" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-x-circle me-1"></i> Limpar Filtros
+                                </button>
+                            </div>
+                        </div>
+
+                        <label class="form-label">Buscar Itens ERP</label>
+                        <select id="erpSelectGalvanizado" class="form-select w-100"></select>
+                    </div>
+
+                    <div class="card-body">
+                        <table class="table table-sm" id="tblItensGalva">
+                            <thead class="table-light">
+                                <tr><th>Item ERP</th><th>Desenho</th><th></th></tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.ItensVinculadosGalvanizado.Count; i++)
+                                {
+                                    <tr>
+                                        <input type="hidden" asp-for="ItensVinculadosGalvanizado[@i].Id" />
+                                        <td>
+                                            <input type="hidden" asp-for="ItensVinculadosGalvanizado[@i].ItemERPId" />
+                                            <input type="text" class="form-control form-control-sm" value="@Model.ItensVinculadosGalvanizado[i].ItemERPDescricao" readonly />
+                                        </td>
+                                        <td>
+                                            <select asp-for="ItensVinculadosGalvanizado[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-control form-control-sm">
+                                                <option value="">-- selecione --</option>
+                                            </select>
+                                        </td>
+                                        <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-galva">✕</button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
 
 
@@ -208,7 +312,6 @@
                 </div>
 
                 <div class="collapse border-bottom px-3 pt-3" id="secaoAdicionarPintado">
-                    <!-- Filtros -->
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
                             <label class="form-label">Tipo</label>
@@ -232,7 +335,7 @@
                             <label class="form-label">Tag</label>
                             <select id="filtroTagPintado" class="form-select">
                                 <option value="">-- Todas --</option>
-                                @foreach (var tag in ViewBag.AllTags as List<SelectListItem>)
+                                @foreach (var tag in Model.AllTags)
                                 {
                                     <option value="@tag.Value">@tag.Text</option>
                                 }
@@ -248,100 +351,36 @@
                         </div>
                     </div>
 
-                    <!-- Select2 só aparece se filtros forem abertos -->
                     <label class="form-label">Buscar Itens ERP</label>
-                    <select id="erpSelectPintado" name="ItensPintadosSelecionados" multiple class="form-select w-100"></select>
+                    <select id="erpSelectPintado" class="form-select w-100"></select>
                 </div>
 
                 <div class="card-body">
-                    <ul class="list-group mt-3" id="listaItensPintado">
-                        @foreach (var item in ViewBag.ItensPintadosSelecionados as List<SelectListItem>)
-                        {
-                            var parts = item.Text.Split('|');
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>@parts[0]</strong> — @parts[1] <small class="text-muted">@parts[2]</small></span>
-                                <input type="hidden" name="ItensPintadosSelecionados" value="@item.Value" />
-                                <button type="button" class="btn btn-sm btn-outline-danger btn-remove-item">✕</button>
-                            </li>
-                        }
-                    </ul>
+                    <table class="table table-sm" id="tblItensVinculadosPintado">
+                        <thead class="table-light">
+                            <tr><th>Item ERP</th><th>Desenho</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.ItensVinculadosPintado.Count; i++)
+                            {
+                                <tr>
+                                    <input type="hidden" asp-for="ItensVinculadosPintado[@i].Id" />
+                                    <td>
+                                        <input type="hidden" asp-for="ItensVinculadosPintado[@i].ItemERPId" />
+                                        <input type="text" class="form-control form-control-sm" value="@Model.ItensVinculadosPintado[i].ItemERPDescricao" readonly />
+                                    </td>
+                                    <td>
+                                        <select asp-for="ItensVinculadosPintado[@i].DesenhoId" asp-items="Model.AllDesenhos" class="form-control form-control-sm">
+                                            <option value="">-- selecione --</option>
+                                        </select>
+                                    </td>
+                                    <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-pintado">✕</button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-
-
-            <!-- Bloco: Itens Galvanizados -->
-            <div class="card mb-4">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <strong>Itens Galvanizados</strong>
-                    <button class="btn btn-sm btn-outline-success ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#secaoAdicionarGalvanizado" aria-expanded="false">
-                        <i class="bi bi-plus-circle me-1"></i> Adicionar
-                    </button>
-                </div>
-
-                <div class="collapse border-bottom px-3 pt-3" id="secaoAdicionarGalvanizado">
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Tipo</label>
-                            <select id="filtroTipoGalvanizado" class="form-select">
-                                <option value="">-- Todos --</option>
-                                <option value="Perfil">Perfil</option>
-                                <option value="Componente">Componente</option>
-                                <option value="Produto">Produto</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Status</label>
-                            <select id="filtroStatusGalvanizado" class="form-select">
-                                <option value="">-- Todos --</option>
-                                <option value="Ativo">Ativo</option>
-                                <option value="Não Ativo">Não Ativo</option>
-                                <option value="Obsoleto">Obsoleto</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Tag</label>
-                            <select id="filtroTagGalvanizado" class="form-select">
-                                <option value="">-- Todas --</option>
-                                @foreach (var tag in ViewBag.AllTags as List<SelectListItem>)
-                                {
-                                    <option value="@tag.Value">@tag.Text</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col text-end">
-                            <button type="button" id="limparFiltrosGalvanizado" class="btn btn-outline-secondary btn-sm">
-                                <i class="bi bi-x-circle me-1"></i> Limpar Filtros
-                            </button>
-                        </div>
-                    </div>
-
-                    <label class="form-label">Buscar Itens ERP</label>
-                    <select id="erpSelectGalvanizado" name="ItensGalvanizadosSelecionados" multiple class="form-select w-100"></select>
-                </div>
-
-                <div class="card-body">
-                    <ul class="list-group mt-3" id="listaItensGalvanizado">
-                        @foreach (var item in ViewBag.ItensGalvanizadosSelecionados as List<SelectListItem>)
-                        {
-                            var parts = item.Text.Split('|');
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><strong>@parts[0]</strong> — @parts[1] <small class="text-muted">@parts[2]</small></span>
-                                <input type="hidden" name="ItensGalvanizadosSelecionados" value="@item.Value" />
-                                <button type="button" class="btn btn-sm btn-outline-danger btn-remove-item">✕</button>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
-
-
-
-
-
         </div>
     </div>
 
@@ -646,87 +685,19 @@
 
 @section Scripts {
     <script>
-        // Pré-carrega opções
-        const itensOptions          = `@Html.Raw(itensOptions)`;
-        const desenhosOptions       = `@Html.Raw(desenhosOptions)`;
-        const perfisOptions         = `@Html.Raw(perfisOptions)`;
-        const componentesOptions    = `@Html.Raw(string.Join("",
-          Model.AllComponentes.Select(c =>
-            $"<option value='{c.Value}'>{c.Text}</option>"
-          )
-        ))`;
-            const agrupadoresOptions    = `@Html.Raw(string.Join("",
-          Model.AllAgrupadores.Select(a =>
-            $"<option value='{a.Value}'>{a.Text}</option>"
-          )
-        ))`;
+        const itensOptions       = `@Html.Raw(itensOptions)`;
+        const desenhosOptions    = `@Html.Raw(desenhosOptions)`;
+        const perfisOptions      = `@Html.Raw(perfisOptions)`;
+        const componentesOptions = `@Html.Raw(string.Join("", Model.AllComponentes.Select(c => $"<option value='{c.Value}'>{c.Text}</option>")))`;
+        const agrupadoresOptions = `@Html.Raw(string.Join("", Model.AllAgrupadores.Select(a => $"<option value='{a.Value}'>{a.Text}</option>")))`;
 
-                function formatItemComposicao(item) {
+        function formatItemComposicao(item) {
             if (!item.id) return item.text;
             const parts = item.text.split('|');
             return $('<span><strong>' + parts[0] + '</strong> — ' + parts[1] + ' <small class="text-muted">(' + parts[2] + ')</small></span>');
         }
 
-        const itensPreSelecionadosComposicao = [
-        @foreach (var item in (List<SelectListItem>)ViewBag.ItensComposicaoSelecionados ?? new())
-        {
-            <text>{ id: '@item.Value', text: '@item.Text' },</text>
-        }
-        ];
-
-        const $erpSelectComposicao = $('#erpSelectComposicao');
-
-        $erpSelectComposicao.select2({
-            placeholder: "Buscar Itens ERP...",
-            ajax: {
-                url: '/ItensERP/BuscarItensERP',
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        term: params.term,
-                        tipoItem: $('#filtroTipoComposicao').val(),
-                        status: $('#filtroStatusComposicao').val(),
-                        tag: $('#filtroTagComposicao').val()
-                    };
-                },
-                processResults: function (data) {
-                    return { results: data };
-                },
-                cache: true
-            },
-            templateResult: formatItemComposicao,
-            templateSelection: function (item) {
-                if (!item.id) return item.text;
-                return item.text.split('|')[0];
-            },
-            width: '100%',
-            allowClear: true
-        });
-
-        // Adiciona os itens pré-selecionados
-        itensPreSelecionadosComposicao.forEach(i => {
-            const option = new Option(i.text, i.id, true, true);
-            $erpSelectComposicao.append(option).trigger('change');
-        });
-
-        // Força recarregar resultados
-        $('#filtroTipoComposicao, #filtroStatusComposicao, #filtroTagComposicao').on('change', function () {
-            $erpSelectComposicao.select2('open');
-        });
-
-        // Limpa filtros
-        $('#limparFiltrosComposicao').on('click', function () {
-            $('#filtroTipoComposicao, #filtroStatusComposicao, #filtroTagComposicao').val('');
-            $erpSelectComposicao.select2('open');
-        });
-
-
-
-
-
-
-                function setupSelect2ComFiltrosERP({ selectId, filtroTipo, filtroStatus, filtroTag, botaoLimpar, ulId, hiddenInputName }) {
+        function setupSelect2ComFiltrosERP({ selectId, filtroTipo, filtroStatus, filtroTag, botaoLimpar }) {
             const $select = $('#' + selectId);
 
             $select.select2({
@@ -748,11 +719,7 @@
                     },
                     cache: true
                 },
-                templateResult: function (item) {
-                    if (!item.id) return item.text;
-                    const parts = item.text.split('|');
-                    return $('<span><strong>' + parts[0] + '</strong> — ' + parts[1] + ' <small class="text-muted">(' + parts[2] + ')</small></span>');
-                },
+                templateResult: formatItemComposicao,
                 templateSelection: function (item) {
                     if (!item.id) return item.text;
                     return item.text.split('|')[0];
@@ -761,236 +728,113 @@
                 allowClear: true
             });
 
-            // Recarrega ao mudar filtro
             $('#' + filtroTipo + ', #' + filtroStatus + ', #' + filtroTag).on('change', function () {
                 $select.select2('open');
             });
 
-            // Limpa filtros
             $('#' + botaoLimpar).on('click', function () {
                 $('#' + filtroTipo + ', #' + filtroStatus + ', #' + filtroTag).val('');
                 $select.select2('open');
             });
 
-            // Adiciona item na lista ao selecionar
             $select.on('select2:select', function (e) {
                 const item = e.params.data;
                 const parts = item.text.split('|');
-                const html = `
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span><strong>${parts[0]}</strong> — ${parts[1]} <small class="text-muted">${parts[2]}</small></span>
-                        <input type="hidden" name="${hiddenInputName}" value="${item.id}" />
-                        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-item">✕</button>
-                    </li>`;
-                $('#' + ulId).append(html);
-                $select.find('option[value="' + item.id + '"]').remove();
-                $select.trigger('change');
-            });
 
-            // Remoção visual
-            $('#' + ulId).on('click', '.btn-remove-item', function () {
-                $(this).closest('li').remove();
+                const indices = {
+                    erpSelectComposicao: document.querySelector('#tblItensCompostos tbody').rows.length,
+                    erpSelectPintado: document.querySelector('#tblItensVinculadosPintado tbody').rows.length,
+                    erpSelectGalvanizado: document.querySelector('#tblItensGalva tbody').rows.length
+                };
+                const index = indices[selectId];
+
+                let rowHtml = '';
+                let targetTableId = '';
+
+                if (selectId === 'erpSelectComposicao') {
+                    rowHtml = `
+                        <tr>
+                            <td>
+                                <input type="hidden" name="ItensCompostos[${index}].ItemERPId" value="${item.id}" />
+                                <input type="text" class="form-control form-control-sm" value="${parts[0]} — ${parts[1]}" readonly />
+                            </td>
+                            <td><input name="ItensCompostos[${index}].Quantidade" class="form-control form-control-sm" /></td>
+                            <td><input name="ItensCompostos[${index}].Unidade" class="form-control form-control-sm" /></td>
+                            <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-composto">✕</button></td>
+                        </tr>`;
+                    targetTableId = 'tblItensCompostos';
+                }
+
+                if (selectId === 'erpSelectPintado') {
+                    rowHtml = `
+                        <tr>
+                            <td>
+                                <input type="hidden" name="ItensVinculadosPintado[${index}].ItemERPId" value="${item.id}" />
+                                <input type="text" class="form-control form-control-sm" value="${parts[0]} — ${parts[1]}" readonly />
+                            </td>
+                            <td>
+                                <select name="ItensVinculadosPintado[${index}].DesenhoId" class="form-control form-control-sm">
+                                    <option value="">-- selecione --</option>
+                                    ${desenhosOptions}
+                                </select>
+                            </td>
+                            <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-pintado">✕</button></td>
+                        </tr>`;
+                    targetTableId = 'tblItensVinculadosPintado';
+                }
+
+                if (selectId === 'erpSelectGalvanizado') {
+                    rowHtml = `
+                        <tr>
+                            <td>
+                                <input type="hidden" name="ItensVinculadosGalvanizado[${index}].ItemERPId" value="${item.id}" />
+                                <input type="text" class="form-control form-control-sm" value="${parts[0]} — ${parts[1]}" readonly />
+                            </td>
+                            <td>
+                                <select name="ItensVinculadosGalvanizado[${index}].DesenhoId" class="form-control form-control-sm">
+                                    <option value="">-- selecione --</option>
+                                    ${desenhosOptions}
+                                </select>
+                            </td>
+                            <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-galva">✕</button></td>
+                        </tr>`;
+                    targetTableId = 'tblItensGalva';
+                }
+
+                document.querySelector(`#${targetTableId} tbody`).insertAdjacentHTML('beforeend', rowHtml);
+                $select.val(null).trigger('change');
             });
         }
 
-
-        // Composto
+        // Inicializações
         setupSelect2ComFiltrosERP({
             selectId: 'erpSelectComposicao',
             filtroTipo: 'filtroTipoComposicao',
             filtroStatus: 'filtroStatusComposicao',
             filtroTag: 'filtroTagComposicao',
-            botaoLimpar: 'limparFiltrosComposicao',
-            ulId: 'listaItensComposicao',
-            hiddenInputName: 'ItensComposicaoSelecionados'
+            botaoLimpar: 'limparFiltrosComposicao'
         });
 
-
-        // Pintado
         setupSelect2ComFiltrosERP({
             selectId: 'erpSelectPintado',
             filtroTipo: 'filtroTipoPintado',
             filtroStatus: 'filtroStatusPintado',
             filtroTag: 'filtroTagPintado',
-            botaoLimpar: 'limparFiltrosPintado',
-            ulId: 'listaItensPintado',
-            hiddenInputName: 'ItensPintadosSelecionados'
+            botaoLimpar: 'limparFiltrosPintado'
         });
 
-        // Galvanizado
-                setupSelect2ComFiltrosERP({
+        setupSelect2ComFiltrosERP({
             selectId: 'erpSelectGalvanizado',
             filtroTipo: 'filtroTipoGalvanizado',
             filtroStatus: 'filtroStatusGalvanizado',
             filtroTag: 'filtroTagGalvanizado',
-            botaoLimpar: 'limparFiltrosGalvanizado',
-            ulId: 'listaItensGalvanizado',
-            hiddenInputName: 'ItensGalvanizadosSelecionados'
+            botaoLimpar: 'limparFiltrosGalvanizado'
         });
 
-
-
-
-
-        // 1) Desenhos
-        document.getElementById('btnAddDesenho').addEventListener('click', () => {
-            const tbody = document.querySelector('#tblDesenhos tbody'), idx = tbody.rows.length, row = document.createElement('tr');
-            row.innerHTML = `
-                <input type="hidden" name="Desenhos[${idx}].Id" value="0" />
-                <td><input name="Desenhos[${idx}].Nome" class="form-control form-control-sm" list="desenhosList" /></td>
-                <td><input name="Desenhos[${idx}].Descricao" class="form-control form-control-sm" /></td>
-                <td><input name="Desenhos[${idx}].Revisao" class="form-control form-control-sm" /></td>
-                <td><input name="Desenhos[${idx}].DataCriacao" type="date" class="form-control form-control-sm" /></td>
-                <td><button type="button" class="btn btn-sm btn-danger btn-remove-desenho">✕</button></td>`;
-            tbody.appendChild(row);
+        document.addEventListener('click', e => {
+            if (e.target.classList.contains('btn-remove-composto')) e.target.closest('tr').remove();
+            if (e.target.classList.contains('btn-remove-pintado'))  e.target.closest('tr').remove();
+            if (e.target.classList.contains('btn-remove-galva'))    e.target.closest('tr').remove();
         });
-        document.querySelector('#tblDesenhos').addEventListener('click', e => {
-            if (e.target.classList.contains('btn-remove-desenho')) e.target.closest('tr').remove();
-        });
-
-        // 2) Revisões
-        document.getElementById('btnAddRevisaoItem').addEventListener('click', () => {
-            const tbody = document.querySelector('#tblRevisoesItem tbody'), idx = tbody.rows.length, row = document.createElement('tr');
-            row.innerHTML = `
-                <input type="hidden" name="Revisoes[${idx}].Id" value="0" />
-                <td><input name="Revisoes[${idx}].Numero" class="form-control form-control-sm" /></td>
-                <td><input name="Revisoes[${idx}].MotivoRevisao" class="form-control form-control-sm" /></td>
-                <td><input name="Revisoes[${idx}].DataRevisao" type="date" class="form-control form-control-sm" /></td>
-                <td><button type="button" class="btn btn-sm btn-danger btn-remove-revisao">✕</button></td>`;
-            tbody.appendChild(row);
-        });
-        document.querySelector('#tblRevisoesItem').addEventListener('click', e => {
-            if (e.target.classList.contains('btn-remove-revisao')) e.target.closest('tr').remove();
-        });
-
-        // 3) Perfis
-        document.getElementById('btnAddPerfilSection').addEventListener('click', () => {
-            const tbody = document.querySelector('#tblPerfisSection tbody'), idx = tbody.rows.length, row = document.createElement('tr');
-            row.innerHTML = `
-                <input type="hidden" name="PerfisSection[${idx}].Id" value="0" />
-                <td><select name="PerfisSection[${idx}].PerfilId" class="form-control"><option value="">-- selecione --</option>${perfisOptions}</select></td>
-                <td><input name="PerfisSection[${idx}].Aco" class="form-control" /></td>
-                <td><table class="table table-borderless mb-0"><thead><tr><th>Nr</th><th>Motivo</th><th>Data</th></tr></thead><tbody id="revs_${idx}"></tbody></table>
-                    <button type="button" class="btn btn-sm btn-outline-secondary mt-1" onclick="addRev(${idx})">+ Revisão</button>
-                </td>
-                <td><button type="button" class="btn btn-sm btn-danger btn-remove-perfil">✕</button></td>`;
-            tbody.appendChild(row);
-        });
-        document.querySelector('#tblPerfisSection').addEventListener('click', e => {
-            if (e.target.classList.contains('btn-remove-perfil')) e.target.closest('tr').remove();
-        });
-        function addRev(perfIdx) {
-            const revTbody = document.getElementById(`revs_${perfIdx}`), rIdx = revTbody.rows.length, tr = document.createElement('tr');
-            tr.innerHTML = `
-                <input type="hidden" name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].Id" value="0" />
-                <td><input name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].Numero" class="form-control form-control-sm" /></td>
-                <td><input name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].MotivoRevisao" class="form-control form-control-sm" /></td>
-                <td><input name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].DataRevisao" type="date" class="form-control form-control-sm" /></td>`;
-            revTbody.appendChild(tr);
-        }
-
-                // 5.0) Itens Integrantes
-        document.getElementById('btnAddIntegrante').addEventListener('click', () => {
-            const tbody = document.querySelector('#tblItensIntegrantes tbody'),
-                  idx   = tbody.rows.length,
-                  row   = document.createElement('tr');
-            row.innerHTML = `
-                <input type="hidden" name="ItensIntegrantes[${idx}].Id" value="0" />
-                <td>
-                    <select name="ItensIntegrantes[${idx}].ItemERPId" class="form-control form-control-sm">
-                        <option value="">-- selecione --</option>
-                        ${itensOptions}
-                    </select>
-                </td>
-                <td>
-                    <select name="ItensIntegrantes[${idx}].DesenhoId" class="form-control form-control-sm">
-                        <option value="">-- selecione --</option>
-                        ${desenhosOptions}
-                    </select>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-sm btn-danger btn-remove-integrante">✕</button>
-                </td>`;
-            tbody.appendChild(row);
-        });
-        document.querySelector('#tblItensIntegrantes').addEventListener('click', e => {
-            if (e.target.classList.contains('btn-remove-integrante'))
-                e.target.closest('tr').remove();
-        });
-
-
-        // 5.1) Itens Pintados
-        document.getElementById('btnAddPintado').addEventListener('click', () => {
-            const tbody = document.querySelector('#tblItensPintados tbody'), idx = tbody.rows.length, row = document.createElement('tr');
-            row.innerHTML = `
-                <input type="hidden" name="ItensPintados[${idx}].Id" value="0" />
-                <td><select name="ItensPintados[${idx}].ItemERPId" class="form-control form-control-sm"><option value="">-- selecione --</option>${itensOptions}</select></td>
-                <td><select name="ItensPintados[${idx}].DesenhoId" class="form-control form-control-sm"><option value="">-- selecione --</option>${desenhosOptions}</select></td>
-                <td><button type="button" class="btn btn-sm btn-danger btn-remove-pintado">✕</button></td>`;
-            tbody.appendChild(row);
-        });
-        document.querySelector('#tblItensPintados').addEventListener('click', e => {
-            if (e.target.classList.contains('btn-remove-pintado')) e.target.closest('tr').remove();
-        });
-
-        // 5.2) Itens Galvanizados
-        document.getElementById('btnAddGalva').addEventListener('click', () => {
-            const tbody = document.querySelector('#tblItensGalva tbody'), idx = tbody.rows.length, row = document.createElement('tr');
-            row.innerHTML = `
-                <input type="hidden" name="ItensGalvanizados[${idx}].Id" value="0" />
-                <td><select name="ItensGalvanizados[${idx}].ItemERPId" class="form-control form-control-sm"><option value="">-- selecione --</option>${itensOptions}</select></td>
-                <td><select name="ItensGalvanizados[${idx}].DesenhoId" class="form-control form-control-sm"><option value="">-- selecione --</option>${desenhosOptions}</select></td>
-                <td><button type="button" class="btn btn-sm btn-danger btn-remove-galva">✕</button></td>`;
-            tbody.appendChild(row);
-        });
-        document.querySelector('#tblItensGalva').addEventListener('click', e => {
-            if (e.target.classList.contains('btn-remove-galva')) e.target.closest('tr').remove();
-        });
-
-        // Seção 6: Componentes
-            document.getElementById('btnAddComponenteFamily').addEventListener('click', () => {
-              const tbody = document.querySelector('#tblComponentesFamily tbody');
-              const idx   = tbody.rows.length;
-              const row   = document.createElement('tr');
-              row.innerHTML = `
-                <input type="hidden" name="ComponentesFamily[${idx}].Id" value="0" />
-                <td>
-                  <select name="ComponentesFamily[${idx}].ComponenteId" class="form-control form-control-sm">
-                    <option value="">-- selecione --</option>
-                    ${componentesOptions}
-                  </select>
-                </td>
-                <td>
-                  <button type="button" class="btn btn-sm btn-danger btn-remove-componente">✕</button>
-                </td>`;
-              tbody.appendChild(row);
-            });
-            document.querySelector('#tblComponentesFamily').addEventListener('click', e => {
-              if (e.target.classList.contains('btn-remove-componente'))
-                e.target.closest('tr').remove();
-            });
-
-            // Seção 6: Agrupadores
-            document.getElementById('btnAddAgrupadorFamily').addEventListener('click', () => {
-              const tbody = document.querySelector('#tblAgrupadoresFamily tbody');
-              const idx   = tbody.rows.length;
-              const row   = document.createElement('tr');
-              row.innerHTML = `
-                <input type="hidden" name="AgrupadoresFamily[${idx}].Id" value="0" />
-                <td>
-                  <select name="AgrupadoresFamily[${idx}].AgrupadorId" class="form-control form-control-sm">
-                    <option value="">-- selecione --</option>
-                    ${agrupadoresOptions}
-                  </select>
-                </td>
-                <td>
-                  <button type="button" class="btn btn-sm btn-danger btn-remove-agrupador">✕</button>
-                </td>`;
-              tbody.appendChild(row);
-            });
-            document.querySelector('#tblAgrupadoresFamily').addEventListener('click', e => {
-              if (e.target.classList.contains('btn-remove-agrupador'))
-                e.target.closest('tr').remove();
-            });
     </script>
 }
