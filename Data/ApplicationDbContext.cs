@@ -34,6 +34,8 @@ namespace Gerenciador_de_Produtos.Data
         public DbSet<ItemERPVinculado> ItensVinculados { get; set; }
 
         public DbSet<VariaveisItemERPComposto> VariaveisItemERPCompostos { get; set; }
+        public List<VariaveisItemERPComposto> Variaveis { get; set; } = new();
+
 
         public DbSet<Secao> Secao { get; set; }
 
@@ -170,6 +172,13 @@ namespace Gerenciador_de_Produtos.Data
                 .HasOne(dp => dp.Desenho)
                 .WithMany()
                 .HasForeignKey(dp => dp.DesenhoId);
+
+            modelBuilder.Entity<VariaveisItemERPComposto>()
+                .HasOne(v => v.ItemERPComposto)
+                .WithMany(c => c.Variaveis) // propriedade de navegação no ItemERPComposto
+                .HasForeignKey(v => v.ItemERPCompostoId)
+                .OnDelete(DeleteBehavior.Cascade); 
+
 
 
 

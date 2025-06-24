@@ -317,6 +317,8 @@ namespace Gerenciador_de_Produtos.Controllers
 
             if (item == null) return NotFound();
 
+
+
             // carrega descricooes dos itens vinculados
             var idsVinculados = item.ItensVinculados.Select(v => v.VinculadoId).ToList();
             var descricoesItens = await _context.ItensERP
@@ -390,6 +392,18 @@ namespace Gerenciador_de_Produtos.Controllers
                     Quantidade = ic.Quantidade,
                     ItemERPDescricao = ic.ItemFilho != null ? $"{ic.ItemFilho.ERP} | {ic.ItemFilho.Descricao}" : string.Empty
                 }).ToList(),
+
+                VariaveisItemComposto = item.VariaveisComposicao.Select(v => new VariaveisItemERPComposto
+                {
+                    Id = v.Id,
+                    Nome = v.Nome,
+                    Descricao = v.Descricao,
+                    Tipo = v.Tipo,
+                    Valor = v.Valor,
+                    Status = v.Status,
+                    ItemERPCompostoId = v.ItemERPCompostoId
+                }).ToList(),
+
 
                 ItensVinculadosPintado = item.ItensVinculados
                     .Where(v => v.Tipo == TipoVinculoERP.Pintado)
@@ -468,6 +482,39 @@ namespace Gerenciador_de_Produtos.Controllers
             item.PesoBrutoMetro = vm.PesoBrutoMetro;
             item.QuantidadeDobras = vm.QuantidadeDobras;
 
+
+            // Salvar ou atualizar variável composta
+            if (!string.IsNullOrEmpty(vm.NomeVariavelEdicao))
+            {
+                // busca o primeiro vínculo de composição do item atual
+                var itemComposto = await _context.ItensERPCompostos
+                    .FirstOrDefaultAsync(ic => ic.ItemPaiId == item.Id);
+
+                if (itemComposto != null)
+                {
+                    var variavel = await _context.VariaveisItemERPCompostos
+                        .FirstOrDefaultAsync(v => v.ItemERPCompostoId == itemComposto.Id && v.Nome == vm.NomeVariavelEdicao);
+
+                    if (variavel == null)
+                    {
+                        _context.VariaveisItemERPCompostos.Add(new VariaveisItemERPComposto
+                        {
+                            Nome = vm.NomeVariavelEdicao,
+                            Valor = vm.ValorVariavelEdicao,
+                            ItemERPCompostoId = itemComposto.Id, // <- AQUI ESTÁ A DIFERENÇA!
+                            Status = true,
+                            Tipo = "expressao"
+                        });
+                    }
+                    else
+                    {
+                        variavel.Valor = vm.ValorVariavelEdicao;
+                    }
+                }
+            }
+
+
+
             // Desenhos
             item.DesenhoItemERPs.Clear();
             if (vm.Desenhos != null)
@@ -504,6 +551,7 @@ namespace Gerenciador_de_Produtos.Controllers
                     });
                 }
             }
+
 
             // Itens compostos
             item.ItensCompostos.Clear();

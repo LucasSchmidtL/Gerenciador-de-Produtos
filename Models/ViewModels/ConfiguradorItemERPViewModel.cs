@@ -133,6 +133,12 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public float? AreaSuperficial { get; set; }
         public int? QuantidadeDobras { get; set; }
 
+        public string? FormulaExpressao { get; set; }
+        public string? NomeVariavelEdicao { get; set; }
+        public string? ValorVariavelEdicao { get; set; }
+
+
+        public List<VariaveisItemERPComposto> VariaveisItemComposto { get; set; } = new();
         public List<int> SelectedAgrupadorIds { get; set; } = new();
         public List<SelectListItem> AllAgrupadores { get; set; } = new();
 

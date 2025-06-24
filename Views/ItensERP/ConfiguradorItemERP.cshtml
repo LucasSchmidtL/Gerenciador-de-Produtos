@@ -179,6 +179,69 @@
 
 
 
+
+            @if (Model.Classificacao == 2)
+            {
+                @Html.Partial("_EditorFormula", Model)
+            }
+            @if (Model.Classificacao == 2)
+            {
+                <div class="card border-primary mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-code-slash me-1"></i> Variáveis do Item Composto
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row">
+                            <!-- Lista de variáveis -->
+                            <div class="col-md-4">
+                                <label class="form-label">Variáveis Cadastradas</label>
+                                <ul class="list-group">
+                                    @foreach (var variavel in Model.VariaveisItemComposto)
+                                    {
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>@variavel.Nome</span>
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                                    onclick="editarVariavel('@variavel.Nome', `@variavel.Valor`)">
+                                                Editar
+                                            </button>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+
+                            <!-- Editor -->
+                            <div class="col-md-8">
+                                <div class="mb-2">
+                                    <label class="form-label">Nome da Variável</label>
+                                    <input type="text" class="form-control" id="nomeVariavel" name="NomeVariavelEdicao" />
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="form-label">Valor da Variável (Expressão)</label>
+                                    <textarea class="form-control" id="valorVariavel" name="ValorVariavelEdicao" rows="3"></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-success btn-sm">Salvar Variável</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+            <script>
+                function editarVariavel(nome, valor) {
+                    document.getElementById("nomeVariavel").value = nome;
+                    document.getElementById("valorVariavel").value = valor;
+                }
+            </script>
+
+
+
+
+
             <!-- ==========================================
                  Vínculos e Composição
                  ========================================== -->
@@ -279,7 +342,6 @@
                         </tbody>
                     </table>
                 </div>
-
 
                 <!-- Bloco: Itens Galvanizados -->
                 <div class="card mb-4">
@@ -833,6 +895,22 @@
 
 
 
+             function verificarSintaxe() {
+            const expressao = document.getElementById("FormulaExpressao").value;
+
+            if (!expressao || expressao.length < 3) {
+                alert("Expressão muito curta.");
+                return;
+            }
+
+            try {
+                // tentativa simples (não executa, só avalia estrutura)
+                new Function("return " + expressao);
+                alert("Sintaxe válida.");
+            } catch (e) {
+                alert("Sintaxe inválida: " + e.message);
+            }
+        }
 
 
 

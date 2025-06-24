@@ -1,0 +1,104 @@
+﻿<div class="card border-primary mb-4">
+    <div class="card-header bg-primary text-white">
+        <i class="bi bi-calculator me-1"></i> Editor de Fórmula
+    </div>
+    <div class="card-body">
+
+        <!-- Campo de expressão -->
+        <div class="mb-3">
+            <label class="form-label">Expressão</label>
+            <textarea class="form-control" id="expressaoFormula" name="FormulaExpressao" rows="3"></textarea>
+        </div>
+
+        <div class="row g-3">
+            <!-- Tipos de Variáveis -->
+            <div class="col-md-4">
+                <label class="form-label">Tipos de Variáveis</label>
+                <select class="form-select" id="tipoVariavel">
+                    <option>Configuração</option>
+                    <option>Constantes</option>
+                    <option>Parâmetros</option>
+                </select>
+            </div>
+
+            <!-- Funções -->
+            <div class="col-md-4">
+                <label class="form-label">Funções</label>
+                <select class="form-select" id="funcoesDisponiveis">
+                    <option>INT()</option>
+                    <option>ABS()</option>
+                    <option>ROUND()</option>
+                </select>
+            </div>
+
+            <!-- Variáveis -->
+            <div class="col-md-4">
+                <label class="form-label">Variáveis</label>
+                <select class="form-select" id="variaveisLista" size="5" onchange="adicionarTexto(this.value)">
+                    
+                    <option value="ALTURA">ALTURA</option>
+                    <option value="COMPRIMENTO">COMPRIMENTO</option>
+                    <option value="PROFUNDIDADE">PROFUNDIDADE</option>
+                    <option value="QUANTIDADE">QUANTIDADE</option>
+ 
+                </select>
+            </div>
+        </div>
+
+        <!-- Operações -->
+        <div class="mt-3">
+            <label class="form-label">Operações</label>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var op in new[] { "=", "<", ">", "+", "-", "*", "/", "(", ")", "[", "]", "E", "OU", "NAO" })
+                {
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="adicionarTexto('@op')">@op</button>
+                }
+            </div>
+        </div>
+
+        <!-- Mensagem de validação -->
+        <div class="mt-3">
+            <label class="form-label">Mensagem de Validação</label>
+            <input type="text" class="form-control" id="mensagemValidacao" name="MensagemValidacao" />
+        </div>
+
+        <!-- Ações -->
+        <div class="mt-4 d-flex gap-2">
+            <button type="button" class="btn btn-outline-success btn-sm" onclick="verificarSintaxe()">Verificar Sintaxe</button>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="limparExpressao()">Apagar</button>
+            <button type="button" class="btn btn-outline-warning btn-sm" onclick="desfazerExpressao()">Desfazer</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let historicoExpressao = [];
+
+    function adicionarTexto(texto) {
+        const campo = document.getElementById("expressaoFormula");
+        historicoExpressao.push(campo.value);
+        campo.value += texto + " ";
+    }
+
+    function limparExpressao() {
+        historicoExpressao.push(document.getElementById("expressaoFormula").value);
+        document.getElementById("expressaoFormula").value = "";
+    }
+
+    function desfazerExpressao() {
+        if (historicoExpressao.length > 0) {
+            document.getElementById("expressaoFormula").value = historicoExpressao.pop();
+        }
+    }
+
+    function verificarSintaxe() {
+        const expressao = document.getElementById("expressaoFormula").value;
+        try {
+            new Function("return " + expressao);
+            alert("Expressão válida!");
+        } catch (e) {
+            alert("Expressão inválida: " + e.message);
+        }
+    }
+</script>
