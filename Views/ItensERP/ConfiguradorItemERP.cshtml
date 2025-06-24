@@ -85,22 +85,18 @@
             </div>
 
             <!-- ==========================================
-            Seção: Desenhos do Item ERP
+            Seção: Desenhos do Item ERP (NOVO ESTILO)
             ========================================== -->
             <div class="card mb-4">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <strong>Desenhos do Item</strong>
+                    <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#secaoAdicionarDesenho" aria-expanded="false">
+                        <i class="bi bi-plus-circle me-1"></i> Adicionar
+                    </button>
                 </div>
-                <div class="card-body">
 
-                    <div class="d-flex justify-content-end mb-3">
-                        <button type="button" id="btnBuscarDesenho" class="btn btn-sm btn-outline-success">
-                            <i class="bi bi-plus-circle me-1"></i> Adicionar
-                        </button>
-                    </div>
-
-
-                    <!-- Filtros e busca -->
+                <!-- Filtros e busca colapsável -->
+                <div class="collapse border-bottom px-3 pt-3" id="secaoAdicionarDesenho">
                     <div class="row g-3 mb-3 align-items-end">
                         <div class="col-md-4">
                             <label class="form-label">Status</label>
@@ -117,72 +113,70 @@
                         </div>
                     </div>
 
-
-
-                    <div class="card-body">
-                        <!-- Formulário inline para criar novo desenho -->
-                        <div id="novoDesenhoForm" class="border rounded p-3 mb-3 bg-light d-none">
-                            <div class="row g-2">
-                                <div class="col-md-3">
-                                    <label class="form-label">Nome</label>
-                                    <input type="text" class="form-control form-control-sm" id="novoDesenhoNome" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Descrição</label>
-                                    <input type="text" class="form-control form-control-sm" id="novoDesenhoDescricao" />
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Revisão</label>
-                                    <input type="number" class="form-control form-control-sm" id="novoDesenhoRevisao" />
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Data de Criação</label>
-                                    <input type="date" class="form-control form-control-sm" id="novoDesenhoDataCriacao" />
-                                </div>
-                                <div class="col-md-2 d-flex align-items-end">
-                                    <button type="button" id="btnSalvarNovoDesenho" class="btn btn-sm btn-primary w-100">
-                                        Salvar Desenho
-                                    </button>
-                                </div>
+                    <!-- Formulário inline para novo desenho -->
+                    <div id="novoDesenhoForm" class="border rounded p-3 mb-3 bg-light collapse">
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <label class="form-label">Nome</label>
+                                <input type="text" class="form-control form-control-sm" id="novoDesenhoNome" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Descrição</label>
+                                <input type="text" class="form-control form-control-sm" id="novoDesenhoDescricao" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Revisão</label>
+                                <input type="number" class="form-control form-control-sm" id="novoDesenhoRevisao" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Data de Criação</label>
+                                <input type="date" class="form-control form-control-sm" id="novoDesenhoDataCriacao" />
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="button" id="btnSalvarNovoDesenho" class="btn btn-sm btn-primary w-100">
+                                    Salvar Desenho
+                                </button>
                             </div>
                         </div>
-
-                        <!-- Datalist ainda disponível para autocomplete opcional -->
-                        <datalist id="desenhosList">
-                            @foreach (var d in Model.AllDesenhos)
-                            {
-                                <option value="@d.Value">@d.Text</option>
-                            }
-                        </datalist>
-
-                        <!-- Tabela de desenhos vinculados -->
-                        <table class="table table-sm mb-2" id="tblDesenhos">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Nome</th>
-                                    <th>Descrição</th>
-                                    <th>Rev.</th>
-                                    <th>Data Criação</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < Model.Desenhos.Count; i++)
-                                {
-                                    <tr>
-                                        <input type="hidden" asp-for="Desenhos[@i].Id" />
-                                        <td><input asp-for="Desenhos[@i].Nome" class="form-control form-control-sm" list="desenhosList" /></td>
-                                        <td><input asp-for="Desenhos[@i].Descricao" class="form-control form-control-sm" /></td>
-                                        <td><input asp-for="Desenhos[@i].Revisao" class="form-control form-control-sm" /></td>
-                                        <td><input asp-for="Desenhos[@i].DataCriacao" type="date" class="form-control form-control-sm" /></td>
-                                        <td><button type="button" class="btn btn-sm btn-danger btn-remove-desenho">✕</button></td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
                     </div>
                 </div>
+
+                <!-- Tabela de desenhos vinculados -->
+                <div class="card-body">
+                    <datalist id="desenhosList">
+                        @foreach (var d in Model.AllDesenhos)
+                        {
+                            <option value="@d.Value">@d.Text</option>
+                        }
+                    </datalist>
+
+                    <table class="table table-sm mb-2" id="tblDesenhos">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nome</th>
+                                <th>Descrição</th>
+                                <th>Rev.</th>
+                                <th>Data Criação</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Desenhos.Count; i++)
+                            {
+                                <tr>
+                                    <input type="hidden" asp-for="Desenhos[@i].Id" />
+                                    <td><input asp-for="Desenhos[@i].Nome" class="form-control form-control-sm" list="desenhosList" /></td>
+                                    <td><input asp-for="Desenhos[@i].Descricao" class="form-control form-control-sm" /></td>
+                                    <td><input asp-for="Desenhos[@i].Revisao" class="form-control form-control-sm" /></td>
+                                    <td><input asp-for="Desenhos[@i].DataCriacao" type="date" class="form-control form-control-sm" /></td>
+                                    <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-desenho">✕</button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
 
 
             <!-- ==========================================
@@ -766,7 +760,7 @@
 
 
         // desenhos - o card nao os vinculos de acabmento
-                $(document).ready(function () {
+            $(document).ready(function () {
             const $select = $('#desenhoSelectTemp');
 
             $select.select2({
@@ -781,40 +775,63 @@
                             status: $('#filtroStatusDesenho').val()
                         };
                     },
-                    processResults: function (data) {
-                        return { results: data };
-                    }
+                processResults: function (data) {
+                    return {
+                        results: data.map(item => ({
+                        id: item.id,
+                        text: item.text,
+                        nome: item.nome,
+                        descricao: item.descricao,
+                        revisao: item.revisao,
+                        dataCriacao: item.dataCriacao
+                    }))
+                };
+            }
+
                 },
                 width: '100%'
             });
 
-            $select.on('select2:select', function (e) {
-                const item = e.params.data;
-                const index = document.querySelector('#tblDesenhos tbody').rows.length;
+                    $select.on('select2:select', function (e) {
+            const item = e.params.data;
+            const index = document.querySelector('#tblDesenhos tbody').rows.length;
 
-                const formatarData = dataStr => {
-                    if (!dataStr) return '';
-                    const data = new Date(dataStr);
-                    return data.toISOString().split('T')[0];
-                };
+            // Trata datas para input[type=date]
+            const formatarData = (dataStr) => {
+                if (!dataStr) return '';
+                // Se já estiver no formato yyyy-MM-dd, retorna direto
+                if (/^\d{4}-\d{2}-\d{2}$/.test(dataStr)) return dataStr;
+                const data = new Date(dataStr);
+                if (isNaN(data)) return '';
+                return data.toISOString().split('T')[0];
+            };
 
-                const row = document.createElement("tr");
-                row.innerHTML = `
+            // Debug (ativa no console pra ver o conteúdo real)
+            console.log('Desenho selecionado:', item);
+
+            const novaLinha = `
+                <tr>
                     <input type="hidden" name="Desenhos[${index}].Id" value="${item.id}" />
                     <td><input name="Desenhos[${index}].Nome" class="form-control form-control-sm" value="${item.nome || ''}" /></td>
                     <td><input name="Desenhos[${index}].Descricao" class="form-control form-control-sm" value="${item.descricao || ''}" /></td>
                     <td><input name="Desenhos[${index}].Revisao" class="form-control form-control-sm" value="${item.revisao || ''}" /></td>
                     <td><input name="Desenhos[${index}].DataCriacao" type="date" class="form-control form-control-sm" value="${formatarData(item.dataCriacao)}" /></td>
-                    <td><button type="button" class="btn btn-sm btn-danger btn-remove-desenho">✕</button></td>`;
-                document.querySelector('#tblDesenhos tbody').appendChild(row);
-                     $select.val(null).trigger('change');
-            });
+                    <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-desenho">✕</button></td>
+                </tr>
+            `;
+
+            document.querySelector('#tblDesenhos tbody').insertAdjacentHTML('beforeend', novaLinha);
+            $select.val(null).trigger('change');
+        });
+
 
 
             $('#btnAddDesenho').on('click', function () {
                 $('#desenhoSelectTemp').select2('open');
             });
         });
+
+
 
 
 

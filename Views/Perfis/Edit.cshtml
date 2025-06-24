@@ -345,6 +345,25 @@
             const option = new Option(desenhoTexto, desenhoPreSelecionado, true, true);
             $desenhoSelect.append(option).trigger('change');
         }
+
+                $desenhoSelect.on('select2:select', function (e) {
+            const item = e.params.data;
+
+            const novaLinha = `
+                <tr>
+                    <td><input type="hidden" name="DesenhosSelecionados" value="${item.id}" />${item.nome || ''}</td>
+                    <td><input type="text" class="form-control form-control-sm" name="DescricaoDesenho" value="${item.descricao || ''}" /></td>
+                    <td><input type="text" class="form-control form-control-sm" name="RevisaoDesenho" value="${item.revisao || ''}" /></td>
+                    <td><input type="date" class="form-control form-control-sm" name="DataCriacaoDesenho" value="${item.dataCriacao || ''}" /></td>
+                    <td><button type="button" class="btn btn-sm btn-danger btnRemoverLinha"><i class="bi bi-x-lg"></i></button></td>
+                </tr>
+            `;
+
+            $('#tabelaDesenhosItemERP tbody').append(novaLinha);
+        });
+
+
+
     </script>
 
     @await Html.PartialAsync("_ValidationScriptsPartial")

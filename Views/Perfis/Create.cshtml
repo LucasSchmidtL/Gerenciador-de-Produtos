@@ -314,8 +314,18 @@
                         revisao: $('#filtroRevisaoDesenho').val()
                     };
                 },
-                processResults: function (data) {
-                    return { results: data };
+                        processResults: function (data) {
+            // Preserva os campos personalizados
+            return {
+                results: data.map(item => ({
+                    id: item.id,
+                    text: item.text,
+                    nome: item.nome,
+                    descricao: item.descricao,
+                    revisao: item.revisao,
+                    dataCriacao: item.dataCriacao
+                            }))
+                    };
                 },
                 cache: true
             },
