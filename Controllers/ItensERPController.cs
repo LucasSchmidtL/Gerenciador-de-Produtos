@@ -280,6 +280,12 @@ namespace Gerenciador_de_Produtos.Controllers
 
             if (item == null) return NotFound();
 
+            // carrega descricooes dos itens vinculados
+            var idsVinculados = item.ItensVinculados.Select(v => v.VinculadoId).ToList();
+            var descricoesItens = await _context.ItensERP
+                .Where(i => idsVinculados.Contains(i.Id))
+                .ToDictionaryAsync(i => i.Id, i => $"{i.ERP} | {i.Descricao}");
+
             var vm = new ConfiguradorItemERPViewModel
             {
                 Id = item.Id,
@@ -296,7 +302,6 @@ namespace Gerenciador_de_Produtos.Controllers
                 PesoBrutoMetro = item.PesoBrutoMetro,
                 QuantidadeDobras = item.QuantidadeDobras,
 
-                // Desenhos
                 Desenhos = item.DesenhoItemERPs.Select(d => new DesenhoLinhaViewModel
                 {
                     Id = (int)d.DesenhoId,
@@ -305,7 +310,6 @@ namespace Gerenciador_de_Produtos.Controllers
                     Revisao = d.Desenho?.Revisao
                 }).ToList(),
 
-                // Revisões
                 Revisoes = item.Revisoes.Select(r => new RevisaoLinhaViewModel
                 {
                     Id = r.Id,
@@ -314,7 +318,6 @@ namespace Gerenciador_de_Produtos.Controllers
                     DataRevisao = r.Data
                 }).ToList(),
 
-                // Perfis
                 PerfisSection = item.PerfilItemERPs.Select(pi => new PerfilLinhaViewModel
                 {
                     Id = pi.Id,
@@ -329,7 +332,6 @@ namespace Gerenciador_de_Produtos.Controllers
                     }).ToList()
                 }).ToList(),
 
-                // Familia
                 ComponentesFamily = item.ComponenteItemERPs.Select(ci => new FamilyComponenteViewModel
                 {
                     Id = ci.Id,
@@ -342,54 +344,54 @@ namespace Gerenciador_de_Produtos.Controllers
                     AgrupadorId = ai.AgrupadorId
                 }).ToList(),
 
-                // Itens recursivos (integrantes)
-                ItensIntegrantes = item.ItensVinculados.Where(v => v.Tipo == TipoVinculoERP.Integrante).Select (v => new ItemERPRelacionadoViewModel{
-                        ItemERPId = v.VinculadoId
-                    }).ToList(),
-
-                // Itens compostos (recursivos)
                 ItensCompostos = item.ItensCompostos.Select(ic => new ItemERPCompostoViewModel
                 {
                     ItemERPId = ic.ItemFilhoId,
                     Quantidade = ic.Quantidade ?? 0,
                     Unidade = ic.Unidade ?? string.Empty,
-                    ItemERPDescricao = ic.ItemFilho != null
-                    ? $"{ic.ItemFilho.ERP} | {ic.ItemFilho.Descricao}"
-                    : string.Empty
-                }).ToList()
+                    ItemERPDescricao = ic.ItemFilho != null ? $"{ic.ItemFilho.ERP} | {ic.ItemFilho.Descricao}" : string.Empty
+                }).ToList(),
 
+                ItensVinculadosPintado = item.ItensVinculados
+                    .Where(v => v.Tipo == TipoVinculoERP.Pintado)
+                    .Select(v => new ItemERPVinculadoViewModel
+                    {
+                        ItemERPId = v.VinculadoId,
+                        Tipo = v.Tipo,
+                        DesenhoId = v.DesenhoId,
+                        ItemERPDescricao = descricoesItens.ContainsKey(v.VinculadoId)
+                            ? descricoesItens[v.VinculadoId]
+                            : string.Empty
+                    }).ToList(),
 
-
-
+                ItensVinculadosGalvanizado = item.ItensVinculados
+                    .Where(v => v.Tipo == TipoVinculoERP.Galvanizado)
+                    .Select(v => new ItemERPVinculadoViewModel
+                    {
+                        ItemERPId = v.VinculadoId,
+                        Tipo = v.Tipo,
+                        DesenhoId = v.DesenhoId,
+                        ItemERPDescricao = descricoesItens.ContainsKey(v.VinculadoId)
+                            ? descricoesItens[v.VinculadoId]
+                            : string.Empty
+                    }).ToList()
             };
 
-            // Carrega os itens que esse item atual está vinculado como PINTADO
-            var idsPintados = await _context.ItensVinculados
-                .Where(v => v.ItemERPId == item.Id && v.Tipo == TipoVinculoERP.Pintado)
-                .Select(v => v.VinculadoId)
-                .ToListAsync();
-
+            // Select2 - Pintado (para buscas filtradas via ajax com pré-seleção)
+            var idsPintados = vm.ItensVinculadosPintado.Select(v => v.ItemERPId).ToList();
             vm.ItensVinculadosPintadoSelecionados = await _context.ItensERP
                 .Where(i => idsPintados.Contains(i.Id))
                 .Select(i => new SelectListItem
                 {
                     Value = i.Id.ToString(),
                     Text = $"{i.ERP}|{i.Descricao}|{i.Status}"
-                })
-                .ToListAsync();
-            vm.ItensVinculadosPintado = item.ItensVinculados
-                .Where(v => v.Tipo == TipoVinculoERP.Pintado)
-                .Select(v => new ItemERPVinculadoViewModel
-                {
-                    ItemERPId = v.VinculadoId,
-                    Tipo = v.Tipo
-                }).ToList();
+                }).ToListAsync();
 
-
-
+            // Preenche os combos auxiliares
             PopulateAuxLists(vm);
             return View(vm);
         }
+
 
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -520,16 +522,24 @@ namespace Gerenciador_de_Produtos.Controllers
                 {
                     if (v.ItemERPId == 0) continue;
 
-                    var vinculado = await _context.ItensERP.FindAsync(v.ItemERPId);
+                    var vinculado = await _context.ItensERP
+                         .AsNoTracking()
+                         .FirstOrDefaultAsync(i => i.Id == v.ItemERPId);
+
                     if (vinculado != null)
                     {
+                        // Aqui está a chave: garantir que não está tentando inserir novamente o mesmo ItemERP como novo
+                        _context.Entry(vinculado).State = EntityState.Unchanged;
+
                         item.ItensVinculados.Add(new ItemERPVinculado
                         {
                             ItemERPId = item.Id,
                             VinculadoId = v.ItemERPId,
-                            Tipo = TipoVinculoERP.Galvanizado
+                            Tipo = TipoVinculoERP.Galvanizado,
+                            ItemERPDescricao = $"{vinculado.ERP} – {vinculado.Descricao}"
                         });
                     }
+
                 }
             }
 

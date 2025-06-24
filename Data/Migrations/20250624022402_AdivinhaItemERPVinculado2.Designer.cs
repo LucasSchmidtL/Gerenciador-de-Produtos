@@ -4,6 +4,7 @@ using Gerenciador_de_Produtos.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gerenciador_de_Produtos.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250624022402_AdivinhaItemERPVinculado2")]
+    partial class AdivinhaItemERPVinculado2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -948,12 +951,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("DesenhoId")
-                        .HasColumnType("int");
-
-                    b.Property<long?>("DesenhoId1")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("ItemERPDescricao")
                         .HasColumnType("nvarchar(max)");
 
@@ -967,8 +964,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DesenhoId1");
 
                     b.HasIndex("ItemERPId");
 
@@ -1248,10 +1243,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
 
             modelBuilder.Entity("ItemERPVinculado", b =>
                 {
-                    b.HasOne("Gerenciador_de_Produtos.Models.Desenho", "Desenho")
-                        .WithMany()
-                        .HasForeignKey("DesenhoId1");
-
                     b.HasOne("Gerenciador_de_Produtos.Models.ItemERP", "ItemERP")
                         .WithMany("ItensVinculados")
                         .HasForeignKey("ItemERPId")
@@ -1262,8 +1253,6 @@ namespace Gerenciador_de_Produtos.Data.Migrations
                         .HasForeignKey("VinculadoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Desenho");
 
                     b.Navigation("ItemERP");
 
