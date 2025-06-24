@@ -1,0 +1,135 @@
+## 1. Produto (Aggregate Root)
+
+### Entidades internas (pertencem ao Aggregate Produto):
+- Agrupador
+- ProdutoAgrupador (entidade intermediária para o relacionamento N:N entre Produto e Agrupador)
+- Variáveis de Produto (entidades internas que definem variáveis específicas do Produto)
+
+### Regras de Negócio Principais:
+- Um `Produto` pode conter vários `Agrupadores`.
+- `Agrupadores`, *Itens ERP* e *Variáveis de Produto* só podem ser adicionados, removidos ou alterados através do `Produto`.
+- As variáveis de `ProdutoAgrupador` (entidade de ligação) só podem ser modificadas via `Produto`, respeitando regras de consistência.
+- O nome das variáveis deve ser único dentro do contexto do Produto.
+- O tipo da variável deve ser válido (Ex: Texto, Número, Decimal).
+
+### Métodos típicos de domínio:
+- `AdicionarAgrupador(Agrupador agrupador)`
+- `RemoverAgrupador(int agrupadorId)`
+- `AdicionarItemERP(ItemERP itemErp)`
+- `RemoverItemERP(int itemErpId)`
+- `CriarVariavelProduto(string nome, string tipo, string descricao)`
+- `AlterarVariavelProduto(int variavelId, string novoTipo, string novaDescricao)`
+- `InativarVariavelProduto(int variavelId)`
+- `EditarVariaveisDoAgrupador(int agrupadorId, List<Variavel> novasVariaveis)`
+- `AlterarNome(string novoNome)`
+- `AlterarFamilia(string novaFamilia)`
+- `ValidarNomeUnico()`
+- `Inativar()`
+- `CriarFuncaoProdutoAgrupador()`
+
+### Responsabilidades chave do Aggregate Produto:
+- Gerenciar a composição dos **Agrupadores** e **Variáveis de Produto**.
+- Garantir a consistência das variáveis de relacionamento (**ProdutoAgrupador**).
+
+---
+
+## 2. Agrupador (Aggregate Root)
+
+### Entidades internas (pertencem ao Aggregate Agrupador):
+- Componente
+- Item ERP
+- Variáveis de Agrupador (entidades internas que definem variáveis específicas do Agrupador)
+
+### Regras de Negócio Principais:
+- Um `Agrupador` pode possuir um ou mais `Agrupadores` filhos.
+- Um `Agrupador` possui vários `Componentes`.
+- Os `Componentes`, `Itens ERP` e `Variáveis de Agrupador` só podem ser adicionados, removidos ou alterados através do `Agrupador`.
+- O `Agrupador` é responsável por garantir a integridade e consistência dos seus componentes e variáveis.
+- O nome das variáveis deve ser único dentro do contexto do Agrupador.
+- O tipo da variável deve ser válido.
+
+### Métodos típicos de domínio:
+- `AdicionarAgrupadorFilho(Agrupador agrupador)`
+- `RemoverAgrupadorFilho(Agrupador agrupador)`
+- `AdicionarComponente(Componente componente)`
+- `RemoverComponente(int componenteId)`
+- `AdicionarItemERP(ItemERP itemErp)`
+- `RemoverItemERP(int itemErpId)`
+- `CriarVariavelAgrupador(string nome, string tipo, string descricao)`
+- `AlterarVariavelAgrupador(int variavelId, string novoTipo, string novaDescricao)`
+- `InativarVariavelAgrupador(int variavelId)`
+- `AlterarNome(string novoNome)`
+- `PodeExcluir()` — valida se o agrupador pode ser excluído (ex: não possui componentes)
+
+### Responsabilidades chave do Aggregate Agrupador:
+- Gerenciar a composição dos **Componentes**, **Itens ERP** e **Variáveis de Agrupador**.
+- Garantir a consistência e integridade interna dos componentes, itens e variáveis.
+
+---
+
+## 3. Componente (Aggregate Root)
+
+### Entidades internas (pertencem ao Aggregate Componente):
+- Item ERP
+- Variáveis de Componente (entidades internas que definem variáveis específicas do Componente)
+
+### Regras de Negócio Principais:
+- Um `Componente` possui vários `Itens`.
+- `Itens` e `Variáveis de Componente` só podem ser manipulados através do `Componente`.
+- O `Componente` é responsável por garantir a integridade e consistência dos seus Itens e variáveis.
+- O nome das variáveis deve ser único dentro do contexto do Componente.
+- O tipo da variável deve ser válido.
+
+### Métodos típicos:
+- `AdicionarItemERP(ItemERP itemErp)`
+- `RemoverItemERP(int itemErpId)`
+- `CriarVariavelComponente(string nome, string tipo, string descricao)`
+- `AlterarVariavelComponente(int variavelId, string novoTipo, string novaDescricao)`
+- `InativarVariavelComponente(int variavelId)`
+- `AlterarNome(string novoNome)`
+- `PodeExcluir()` — valida se o componente pode ser excluído (ex: não possui itens)
+
+### Responsabilidades chave do Aggregate Componente:
+- Gerenciar a composição dos **Itens ERP** e **Variáveis de Componente**.
+- Garantir a consistência e integridade interna dos itens e variáveis.
+
+---
+
+## 4. Item ERP (Aggregate Root)
+
+### Entidades internas (pertencem ao Aggregate Item ERP):
+- Itens ERP filhos e relacionados
+- Desenho
+- Perfil
+- Tag
+- Variáveis de Item ERP (entidades internas que definem variáveis específicas do Item ERP)
+
+### Regras de Negócio Principais:
+- Um `ItemERP` pode possuir vários `Itens` filhos (relação hierárquica) ou relacionados (itens similares com acabamento diferente).
+- `Desenhos`, `Perfis`, `Tags` e `Variáveis de Item ERP` só podem ser vinculados através do `Item ERP`.
+- O nome das variáveis deve ser único dentro do contexto do Item ERP.sim
+- O tipo da variável deve ser válido.
+
+### Métodos típicos:
+- `AdicionarItemERP(ItemERP itemErp)`
+- `RemoverItemERP(int itemErpId)`
+- `CriarVariavelItemERP(string nome, string tipo, string descricao)`
+- `AlterarVariavelItemERP(int variavelId, string novoTipo, string novaDescricao)`
+- `InativarVariavelItemERP(int variavelId)`
+- `AlterarNome(string novoNome)`
+- `PodeExcluir()` — valida se o item pode ser excluído (ex: não possui itens)
+- `AdicionarDesenho(Desenho desenho)`
+- `RemoverDesenho(int desenhoId)`
+- `AdicionarTag(Tag tag)`
+- `RemoverTag(int tagId)`
+- `AdicionarPerfil(Perfil perfil)`
+- `RemoverPerfil(int perfilId)`
+- `ClonarItemERP()`
+- `CriarFuncaoItemERPFilho()`
+- `RevisarItemERP()`
+
+### Responsabilidades chave do Aggregate Item ERP:
+- Gerenciar a composição de **Itens filhos**, **Itens relacionados**, **Desenhos**, **Perfis**, **Tags** e **Variáveis de Item ERP**.
+- Garantir a consistência e integridade interna de todas as associações.
+
+---
