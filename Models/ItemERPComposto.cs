@@ -12,10 +12,10 @@ public class ItemERPComposto
     public int ItemFilhoId { get; set; }
     public ItemERP ItemFilho { get; set; } = null!;
 
-    public float? Comprimento { get; set; }
-    public float? Profundidade { get; set; }
-    public float? Altura { get; set; }
-    public int? Quantidade { get; set; }
+    public string? Comprimento { get; set; }
+    public string? Profundidade { get; set; }
+    public string? Altura { get; set; }
+    public string? Quantidade { get; set; }
 
     public string? Unidade { get; set; }
 

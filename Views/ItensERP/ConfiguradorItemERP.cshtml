@@ -84,45 +84,105 @@
                 </div>
             </div>
 
+            <!-- ==========================================
+            Seção: Desenhos do Item ERP
+            ========================================== -->
+            <div class="card mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <strong>Desenhos do Item</strong>
+                </div>
+                <div class="card-body">
 
-            <!-- Tabela de Desenhos -->
-            <div class="mb-3">
-                <h5>Desenhos</h5>
-                <datalist id="desenhosList">
-                    @foreach (var d in Model.AllDesenhos)
-                    {
-                        <option value="@d.Value">@d.Text</option>
-                    }
-                </datalist>
-                <table class="table table-sm mb-2" id="tblDesenhos">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Nome</th>
-                            <th>Descrição</th>
-                            <th>Rev.</th>
-                            <th>Data Criação</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < Model.Desenhos.Count; i++)
-                        {
-                            <tr>
-                                <input type="hidden" asp-for="Desenhos[@i].Id" />
-                                <td><input asp-for="Desenhos[@i].Nome" class="form-control form-control-sm" list="desenhosList" /></td>
-                                <td><input asp-for="Desenhos[@i].Descricao" class="form-control form-control-sm" /></td>
-                                <td><input asp-for="Desenhos[@i].Revisao" class="form-control form-control-sm" /></td>
-                                <td><input asp-for="Desenhos[@i].DataCriacao" type="date" class="form-control form-control-sm" /></td>
-                                <td><button type="button" class="btn btn-sm btn-danger btn-remove-desenho">✕</button></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                <button type="button" id="btnAddDesenho" class="btn btn-success btn-sm">
-                    <i class="bi bi-plus-lg me-1"></i>Adicionar Desenho
-                </button>
+                    <div class="d-flex justify-content-end mb-3">
+                        <button type="button" id="btnBuscarDesenho" class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-plus-circle me-1"></i> Adicionar
+                        </button>
+                    </div>
+
+
+                    <!-- Filtros e busca -->
+                    <div class="row g-3 mb-3 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label">Status</label>
+                            <select id="filtroStatusDesenho" class="form-select">
+                                <option value="">-- Todos --</option>
+                                <option value="Ativo">Ativo</option>
+                                <option value="NaoAtivo">Não Ativo</option>
+                                <option value="Obsoleto">Obsoleto</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Buscar desenho</label>
+                            <select class="form-select" id="desenhoSelectTemp"></select>
+                        </div>
+                    </div>
+
+
+
+                    <div class="card-body">
+                        <!-- Formulário inline para criar novo desenho -->
+                        <div id="novoDesenhoForm" class="border rounded p-3 mb-3 bg-light d-none">
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <label class="form-label">Nome</label>
+                                    <input type="text" class="form-control form-control-sm" id="novoDesenhoNome" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Descrição</label>
+                                    <input type="text" class="form-control form-control-sm" id="novoDesenhoDescricao" />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Revisão</label>
+                                    <input type="number" class="form-control form-control-sm" id="novoDesenhoRevisao" />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Data de Criação</label>
+                                    <input type="date" class="form-control form-control-sm" id="novoDesenhoDataCriacao" />
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="button" id="btnSalvarNovoDesenho" class="btn btn-sm btn-primary w-100">
+                                        Salvar Desenho
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Datalist ainda disponível para autocomplete opcional -->
+                        <datalist id="desenhosList">
+                            @foreach (var d in Model.AllDesenhos)
+                            {
+                                <option value="@d.Value">@d.Text</option>
+                            }
+                        </datalist>
+
+                        <!-- Tabela de desenhos vinculados -->
+                        <table class="table table-sm mb-2" id="tblDesenhos">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Descrição</th>
+                                    <th>Rev.</th>
+                                    <th>Data Criação</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Desenhos.Count; i++)
+                                {
+                                    <tr>
+                                        <input type="hidden" asp-for="Desenhos[@i].Id" />
+                                        <td><input asp-for="Desenhos[@i].Nome" class="form-control form-control-sm" list="desenhosList" /></td>
+                                        <td><input asp-for="Desenhos[@i].Descricao" class="form-control form-control-sm" /></td>
+                                        <td><input asp-for="Desenhos[@i].Revisao" class="form-control form-control-sm" /></td>
+                                        <td><input asp-for="Desenhos[@i].DataCriacao" type="date" class="form-control form-control-sm" /></td>
+                                        <td><button type="button" class="btn btn-sm btn-danger btn-remove-desenho">✕</button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-
 
 
             <!-- ==========================================
@@ -131,7 +191,7 @@
             <!-- Bloco: Itens da Composição (Filhos) -->
             <div class="card mb-4">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <strong>Itens Compostos (com quantidade)</strong>
+                    <strong>Itens Compostos</strong>
                     <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#secaoAdicionarComposto" aria-expanded="false">
                         <i class="bi bi-plus-circle me-1"></i> Adicionar
                     </button>
@@ -189,9 +249,10 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Item ERP</th>
+                                <th>Comprimento</th>
+                                <th>Profundidade</th>
+                                <th>Altura</th>
                                 <th>Quantidade</th>
-                                <th>Unidade</th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -205,10 +266,16 @@
 
                                     </td>
                                     <td>
-                                        <input asp-for="ItensCompostos[@i].Quantidade" class="form-control form-control-sm" />
+                                        <input asp-for="ItensCompostos[@i].Comprimento" class="form-control form-control-sm" />
                                     </td>
                                     <td>
-                                        <input asp-for="ItensCompostos[@i].Unidade" class="form-control form-control-sm" />
+                                        <input asp-for="ItensCompostos[@i].Profundidade" class="form-control form-control-sm" />
+                                    </td>
+                                    <td>
+                                        <input asp-for="ItensCompostos[@i].Altura" class="form-control form-control-sm" />
+                                    </td>
+                                    <td>
+                                        <input asp-for="ItensCompostos[@i].Quantidade" class="form-control form-control-sm" />
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-outline-danger btn-remove-composto">✕</button>
@@ -381,7 +448,7 @@
                     </table>
                 </div>
             </div>
-        </div>
+        
     </div>
 
 
@@ -697,6 +764,65 @@
             return $('<span><strong>' + parts[0] + '</strong> — ' + parts[1] + ' <small class="text-muted">(' + parts[2] + ')</small></span>');
         }
 
+
+        // desenhos - o card nao os vinculos de acabmento
+                $(document).ready(function () {
+            const $select = $('#desenhoSelectTemp');
+
+            $select.select2({
+                placeholder: "Buscar desenho...",
+                ajax: {
+                    url: '/Desenhos/BuscarDesenhos',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            term: params.term,
+                            status: $('#filtroStatusDesenho').val()
+                        };
+                    },
+                    processResults: function (data) {
+                        return { results: data };
+                    }
+                },
+                width: '100%'
+            });
+
+            $select.on('select2:select', function (e) {
+                const item = e.params.data;
+                const index = document.querySelector('#tblDesenhos tbody').rows.length;
+
+                const formatarData = dataStr => {
+                    if (!dataStr) return '';
+                    const data = new Date(dataStr);
+                    return data.toISOString().split('T')[0];
+                };
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <input type="hidden" name="Desenhos[${index}].Id" value="${item.id}" />
+                    <td><input name="Desenhos[${index}].Nome" class="form-control form-control-sm" value="${item.nome || ''}" /></td>
+                    <td><input name="Desenhos[${index}].Descricao" class="form-control form-control-sm" value="${item.descricao || ''}" /></td>
+                    <td><input name="Desenhos[${index}].Revisao" class="form-control form-control-sm" value="${item.revisao || ''}" /></td>
+                    <td><input name="Desenhos[${index}].DataCriacao" type="date" class="form-control form-control-sm" value="${formatarData(item.dataCriacao)}" /></td>
+                    <td><button type="button" class="btn btn-sm btn-danger btn-remove-desenho">✕</button></td>`;
+                document.querySelector('#tblDesenhos tbody').appendChild(row);
+                     $select.val(null).trigger('change');
+            });
+
+
+            $('#btnAddDesenho').on('click', function () {
+                $('#desenhoSelectTemp').select2('open');
+            });
+        });
+
+
+
+
+
+
+
+
         function setupSelect2ComFiltrosERP({ selectId, filtroTipo, filtroStatus, filtroTag, botaoLimpar }) {
             const $select = $('#' + selectId);
 
@@ -758,8 +884,10 @@
                                 <input type="hidden" name="ItensCompostos[${index}].ItemERPId" value="${item.id}" />
                                 <input type="text" class="form-control form-control-sm" value="${parts[0]} — ${parts[1]}" readonly />
                             </td>
+                            <td><input name="ItensCompostos[${index}].Comprimento" class="form-control form-control-sm" /></td>
+                            <td><input name="ItensCompostos[${index}].Profundidade" class="form-control form-control-sm" /></td>
+                            <td><input name="ItensCompostos[${index}].Altura" class="form-control form-control-sm" /></td>
                             <td><input name="ItensCompostos[${index}].Quantidade" class="form-control form-control-sm" /></td>
-                            <td><input name="ItensCompostos[${index}].Unidade" class="form-control form-control-sm" /></td>
                             <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-composto">✕</button></td>
                         </tr>`;
                     targetTableId = 'tblItensCompostos';

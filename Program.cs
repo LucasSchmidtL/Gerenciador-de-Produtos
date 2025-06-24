@@ -20,9 +20,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages(); // <- se estiver usando Razor Pages (Identity etc)
+
+// Corrigido: Adiciona a sessão antes de build
+builder.Services.AddSession();
 
 builder.Services.AddScoped<LSTParserService>();
-
 builder.Services.AddScoped<GraphService>();
 
 builder.WebHost.ConfigureKestrel(options =>
@@ -49,10 +52,14 @@ else
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Isso garante que o CSS, JS, etc., vão funcionar
+app.UseStaticFiles();
 
 app.UseRouting();
 
+// Ativando sessão corretamente no pipeline
+app.UseSession();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Roteamento MVC padrão
@@ -60,7 +67,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Razor Pages (Identity, etc)
 app.MapRazorPages();
 
 app.Run();

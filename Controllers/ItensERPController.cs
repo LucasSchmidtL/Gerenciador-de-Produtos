@@ -8,6 +8,7 @@ using Gerenciador_de_Produtos.Models;
 using Gerenciador_de_Produtos.Models.ViewModels;
 using Gerenciador_de_Produtos.Services;
 using Gerenciador_de_Produtos.Models.DTOs;
+using System.Text.Json;
 
 namespace Gerenciador_de_Produtos.Controllers
 {
@@ -49,6 +50,42 @@ namespace Gerenciador_de_Produtos.Controllers
 
             return View(itens);
         }
+
+        // esse cara aqyu é so pra buscar o desenho da aba, não ta na outra controller pq se não eles não se enxergam, vem DDD por favor
+        [HttpGet]
+        public async Task<IActionResult> BuscarDesenhos(string? term, string? status)
+        {
+            var query = _context.Desenhos.AsQueryable();
+
+            if (!string.IsNullOrEmpty(term))
+                query = query.Where(d => d.Nome.Contains(term) || d.Descricao.Contains(term));
+
+            if (!string.IsNullOrEmpty(status))
+                query = query.Where(d => d.Status.ToString() == status);
+
+            var resultados = await query
+                .OrderByDescending(d => d.DataCriacao)
+                .Select(d => new
+                {
+                    id = d.DesenhoId,
+                    text = $"{d.Nome} | Rev. {d.Revisao} | {d.Descricao}",
+                    nome = d.Nome,
+                    descricao = d.Descricao,
+                    revisao = d.Revisao,
+                    dataCriacao = d.DataCriacao.HasValue ? d.DataCriacao.Value.ToString("yyyy-MM-dd") : ""
+                })
+                .Take(30)
+                .ToListAsync();
+
+            return Json(resultados, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null // mantém PascalCase se quiser
+            });
+
+        }
+
+
+
 
         // GET: AJAX
         [HttpGet]
@@ -347,8 +384,10 @@ namespace Gerenciador_de_Produtos.Controllers
                 ItensCompostos = item.ItensCompostos.Select(ic => new ItemERPCompostoViewModel
                 {
                     ItemERPId = ic.ItemFilhoId,
-                    Quantidade = ic.Quantidade ?? 0,
-                    Unidade = ic.Unidade ?? string.Empty,
+                    Comprimento = ic.Comprimento,
+                    Profundidade = ic.Profundidade,
+                    Altura = ic.Altura,
+                    Quantidade = ic.Quantidade,
                     ItemERPDescricao = ic.ItemFilho != null ? $"{ic.ItemFilho.ERP} | {ic.ItemFilho.Descricao}" : string.Empty
                 }).ToList(),
 
@@ -476,8 +515,10 @@ namespace Gerenciador_de_Produtos.Controllers
                     {
                         ItemPaiId = item.Id,
                         ItemFilhoId = ic.ItemERPId,
-                        Quantidade = (int?)ic.Quantidade,
-                        Unidade = ic.Unidade
+                        Comprimento = ic.Comprimento,
+                        Profundidade = ic.Profundidade,
+                        Altura = ic.Altura,
+                        Quantidade = ic.Quantidade
                     });
                 }
             }

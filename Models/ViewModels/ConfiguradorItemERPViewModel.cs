@@ -73,10 +73,13 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
 
     public class ItemERPCompostoViewModel
     {
+        [Required]
         public int ItemERPId { get; set; }
 
-        [Required]
-        public decimal Quantidade { get; set; }
+        public string? Comprimento { get; set; }
+        public string? Profundidade { get; set; }
+        public string? Altura { get; set; }
+        public string? Quantidade { get; set; }
 
         public string? Unidade { get; set; }
 

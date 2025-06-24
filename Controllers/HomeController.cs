@@ -227,6 +227,21 @@ namespace Gerenciador_de_Produtos.Controllers
             return Json(detalhes);
         }
 
+
+        [HttpPost]
+        public IActionResult SalvarTema(string corHex, string tema)
+        {
+            if (!string.IsNullOrEmpty(corHex))
+                HttpContext.Session.SetString("SidebarColor", corHex);
+
+            if (!string.IsNullOrEmpty(tema))
+                HttpContext.Session.SetString("TemaSistema", tema);
+
+            return Redirect(Request.Headers["Referer"].ToString());
+        }
+
+
+
         public IActionResult Privacy() => View();
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
