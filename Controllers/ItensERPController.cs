@@ -115,13 +115,17 @@ namespace Gerenciador_de_Produtos.Controllers
             return Json(resultados);
         }
 
-        // Novo método para carregar resultados filtrados via AJAX na index dinâmica
+        // metodo para carregar resultados filtrados via AJAX na INDEX
         [HttpGet]
         public async Task<IActionResult> Filtrar(string? tipo, string? status, string? tag, string? termo)
         {
             var query = _context.ItensERP
                 .Include(i => i.Tags)
                 .Include(i => i.Revisoes)
+                .Include(i => i.DesenhoItemERPs).ThenInclude(di => di.Desenho)
+                .Include(i => i.AgrupadorItensERP).ThenInclude(ai => ai.Agrupador)
+                .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Perfil)
+                .Include(i => i.ComponenteItemERPs).ThenInclude(ci => ci.Componente)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(tipo) && Enum.TryParse<TipoItem>(tipo, out var tipoEnum))
@@ -140,6 +144,7 @@ namespace Gerenciador_de_Produtos.Controllers
 
             return PartialView("_ListaItensERP", itens);
         }
+
 
 
         // GET: ItensERP/Details/5

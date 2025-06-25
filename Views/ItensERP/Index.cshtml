@@ -5,7 +5,6 @@
     ViewData["Title"] = "Itens ERP";
 }
 
-<!-- Estilos de rotação do ícone (mova para site.css) -->
 <style>
     .toggle-icon {
         transition: transform 0.3s ease;
@@ -14,74 +13,112 @@
     .toggle-collapsed .toggle-icon {
         transform: rotate(-90deg);
     }
+
+    .erp-card {
+        transition: all 0.3s ease;
+        border-left: 5px solid #0d6efd;
+        border-radius: 0.75rem;
+    }
+
+        .erp-card:hover {
+            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.05);
+            transform: scale(1.01);
+        }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .section-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #0d6efd;
+    }
+
+    .btn-outline-secondary {
+        transition: all 0.2s ease;
+    }
+
+        .btn-outline-secondary:hover {
+            background-color: #f8f9fa;
+        }
+
+    }
 </style>
 
-<div class="mb-4">
-    <h3 class="fw-bold mb-3">@ViewData["Title"]</h3>
-    <div class="row g-2">
-        <div class="col-auto">
-            <a asp-action="Create" class="btn btn-primary rounded-pill py-0 px-3">
-                <i class="bi bi-plus-lg me-1"></i>Novo ItemERP
-            </a>
-
-        </div>
-        <div class="col-auto">
-            <a asp-action="ImportarLST" class="btn btn-outline-success rounded-pill py-0 px-3">
-                <i class="bi bi-upload me-1"></i> Importar LST
-            </a>
-        </div>
-
-        <div class="col">
-            <input id="searchInput" class="form-control" placeholder="Buscar ERP, descrição ou tipo..." />
-        </div>
-    </div>
+<!-- TÍTULO CENTRALIZADO -->
+<div class="text-center my-5">
+    <h1 class="section-title">@ViewData["Title"]</h1>
 </div>
 
-
+<!-- CARD DE BUSCA E FILTROS -->
 <div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-light fw-semibold">
+        <i class="bi bi-funnel me-2 text-primary"></i> Filtros e Ações
+    </div>
     <div class="card-body">
+
+        <!-- LINHA: BUSCA + BOTÕES -->
+        <div class="row g-3 align-items-end mb-4">
+            <div class="col-md-6">
+                <label for="searchTerm" class="form-label">Buscar por nome ou código</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input id="searchTerm" class="form-control" placeholder="Digite o nome ou ERP..." />
+                </div>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end gap-2 btn-group-actions">
+                <a asp-action="Create" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-plus-lg me-1"></i> Novo ItemERP
+                </a>
+                <a asp-action="ImportarLST" class="btn btn-outline-success rounded-pill px-4">
+                    <i class="bi bi-upload me-1"></i> Importar LST
+                </a>
+            </div>
+        </div>
+
+        <!-- LINHA: FILTROS -->
         <div class="row g-3">
             <div class="col-md-3">
-                <label class="form-label">Tipo</label>
+                <label for="filtroTipo" class="form-label">Tipo do item</label>
                 <select id="filtroTipo" class="form-select">
-                    <option value="">-- Todos --</option>
+                    <option value="">Todos</option>
                     <option value="Perfil">Perfil</option>
                     <option value="Componente">Componente</option>
                     <option value="Galvanizado">Galvanizado</option>
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label">Status</label>
+                <label for="filtroStatus" class="form-label">Status</label>
                 <select id="filtroStatus" class="form-select">
-                    <option value="">-- Todos --</option>
+                    <option value="">Todos</option>
                     <option value="Ativo">Ativo</option>
                     <option value="NaoAtivo">Não Ativo</option>
                     <option value="Obsoleto">Obsoleto</option>
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label">Tag</label>
+                <label for="filtroTag" class="form-label">Tag</label>
                 <select id="filtroTag" class="form-select">
-                    <option value="">-- Todas --</option>
+                    <option value="">Todas</option>
                     @foreach (var tag in ViewBag.AllTags as List<SelectListItem>)
                     {
                         <option value="@tag.Value">@tag.Text</option>
                     }
                 </select>
             </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <input id="searchTerm" class="form-control" placeholder="Buscar ERP ou descrição..." />
+            <div class="col-md-3 d-grid">
+                <label class="form-label invisible">.</label>
+                <button id="btnLimparFiltros" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle me-1"></i> Limpar Filtros
+                </button>
             </div>
         </div>
 
-        <div class="mt-3 text-end">
-            <button class="btn btn-outline-secondary" id="btnLimparFiltros">
-                <i class="bi bi-x-circle me-1"></i> Limpar Filtros
-            </button>
-        </div>
     </div>
 </div>
 
+<!-- CONTAINER DE RESULTADOS -->
 <div id="itensERPContainer">
     <div class="text-center text-muted py-5">
         <div class="spinner-border text-primary" role="status"></div>
@@ -92,12 +129,6 @@
 
 @section Scripts {
     <script>
-        document.getElementById('searchInput').addEventListener('input', function() {
-            var filtro = this.value.toLowerCase();
-            document.querySelectorAll('[data-search]').forEach(function(card) {
-                card.style.display = card.getAttribute('data-search').toLowerCase().includes(filtro) ? '' : 'none';
-            });
-        });
 
         document.querySelectorAll('.toggle-btn').forEach(function(btn) {
             btn.classList.add('toggle-collapsed');
