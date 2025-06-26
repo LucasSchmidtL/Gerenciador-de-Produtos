@@ -9,6 +9,8 @@ using Gerenciador_de_Produtos.Models.ViewModels;
 using Gerenciador_de_Produtos.Services;
 using Gerenciador_de_Produtos.Models.DTOs;
 using System.Text.Json;
+using Azure;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Gerenciador_de_Produtos.Controllers
 {
@@ -53,7 +55,7 @@ namespace Gerenciador_de_Produtos.Controllers
 
         // esse cara aqyu é so pra buscar o desenho da aba, não ta na outra controller pq se não eles não se enxergam, vem DDD por favor
         [HttpGet]
-        public async Task<IActionResult> BuscarDesenhos(string? term, string? status)
+        public async Task<IActionResult> BuscarDesenhoItemERP(string? term, string? status)
         {
             var query = _context.Desenhos.AsQueryable();
 
@@ -77,12 +79,9 @@ namespace Gerenciador_de_Produtos.Controllers
                 .Take(30)
                 .ToListAsync();
 
-            return Json(resultados, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = null // mantém PascalCase se quiser
-            });
-
+            return Json(resultados);
         }
+
 
 
 
@@ -210,6 +209,7 @@ namespace Gerenciador_de_Produtos.Controllers
             if (id == null) return NotFound();
 
             var item = await _context.ItensERP
+                .Include(i => i.Tags)
                 .Include(i => i.AgrupadorItensERP)
                 .Include(i => i.ComponenteItemERPs)
                 .Include(i => i.DesenhoItemERPs).ThenInclude(d => d.Desenho)
@@ -222,6 +222,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (item == null) return NotFound();
+
 
 
 
@@ -246,6 +247,8 @@ namespace Gerenciador_de_Produtos.Controllers
                 PesoLiquidoMetro = item.PesoLiquidoMetro,
                 PesoBrutoMetro = item.PesoBrutoMetro,
                 QuantidadeDobras = item.QuantidadeDobras,
+                SelectedTagIds = item.Tags.Select(t => t.Id).ToList(),
+
 
                 Desenhos = item.DesenhoItemERPs.Select(d => new DesenhoLinhaViewModel
                 {
@@ -349,6 +352,9 @@ namespace Gerenciador_de_Produtos.Controllers
                             ? descricoesItens[v.VinculadoId]
                             : string.Empty
                     }).ToList()
+
+                
+
             };
 
             // Select2 - Pintado (para buscas filtradas via ajax com pré-seleção)
@@ -367,6 +373,8 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
 
+        // POST DO CONFIGURADOR
+
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfiguradorItemERP(ConfiguradorItemERPViewModel vm)
         {
@@ -377,6 +385,7 @@ namespace Gerenciador_de_Produtos.Controllers
             }
 
             var item = await _context.ItensERP
+                .Include (i => i.Tags)
                 .Include(i => i.DesenhoItemERPs)
                 .Include(i => i.Revisoes)
                 .Include(i => i.PerfilItemERPs).ThenInclude(p => p.Revisoes)
@@ -412,6 +421,7 @@ namespace Gerenciador_de_Produtos.Controllers
                     item.DesenhoItemERPs.Add(new DesenhoItemERP { DesenhoId = d.Id, ItemERPId = item.Id });
                 }
             }
+
 
             // Limpa compostos e variáveis
             var compostosAntigos = await _context.ItensERPCompostos
@@ -507,6 +517,22 @@ namespace Gerenciador_de_Produtos.Controllers
                     });
                 }
             }
+
+            // Atualiza Tags
+            item.Tags.Clear();
+
+            if (vm.SelectedTagIds != null && vm.SelectedTagIds.Any())
+            {
+                var tagsSelecionadas = await _context.Tags
+                    .Where(t => vm.SelectedTagIds.Contains(t.Id))
+                    .ToListAsync();
+
+                foreach (var tag in tagsSelecionadas)
+                {
+                    item.Tags.Add(tag);
+                }
+            }
+
 
             await _context.SaveChangesAsync();
 
@@ -697,6 +723,12 @@ namespace Gerenciador_de_Produtos.Controllers
                 .ToList();
         }
 
+
+
+
+
+
+
         private void PopulateAuxLists(ConfiguradorItemERPViewModel vm)
         {
             vm.AllAgrupadores = _context.Agrupadores
@@ -720,9 +752,8 @@ namespace Gerenciador_de_Produtos.Controllers
                 .ToList();
 
             vm.AllTags = _context.Tags
-                .Select(t => new SelectListItem(t.Nome, t.Id.ToString()))
-                .ToList();
-
+                 .Select(t => new SelectListItem(t.Nome, t.Id.ToString(), vm.SelectedTagIds.Contains(t.Id)))
+                 .ToList();
 
 
         }

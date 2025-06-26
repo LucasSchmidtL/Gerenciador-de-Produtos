@@ -89,6 +89,12 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group mb-3">
+                <label asp-for="SelectedTagIds" class="form-label">Tags</label>
+                <select asp-for="SelectedTagIds" asp-items="Model.AllTags" multiple class="form-select select2-tags" style="width: 100%"></select>
+                <span asp-validation-for="SelectedTagIds" class="text-danger"></span>
+            </div>
+
 
 
             <!-- ==========================================
@@ -248,7 +254,7 @@
 
                     <label class="form-label">Buscar Item ERP</label>
                     <select id="erpSelectComposicao" class="form-select w-100"></select>
-                    <ul class="list-group mt-3" id="listaItensComposicao"></ul>
+                    <ul class="list-group mt-3" id="tblItensCompostos"></ul>
                 </div>
 
                 <!-- Tabela dos Itens Compostos  -->
@@ -813,6 +819,28 @@
         }
 
 
+        //tags
+
+          $(document).ready(function () {
+            $('.select2-tags').select2({
+                placeholder: "Selecione as tags...",
+                allowClear: true,
+                width: 'resolve'
+            });
+        });
+
+
+                $('.select2-tags').select2({
+            theme: 'bootstrap4',
+            placeholder: "Selecione as tags...",
+            allowClear: true,
+            width: 'resolve'
+        });
+
+
+
+
+
         // desenhos - o card nao os vinculos de acabmento
             $(document).ready(function () {
             const $select = $('#desenhoSelectTemp');
@@ -820,7 +848,7 @@
             $select.select2({
                 placeholder: "Buscar desenho...",
                 ajax: {
-                    url: '/Desenhos/BuscarDesenhos',
+                    url: '/ItensERP/BuscarDesenhoItemERP',
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
@@ -878,6 +906,10 @@
             $select.val(null).trigger('change');
         });
 
+                // Remove uma linha da tabela de desenhos
+        $(document).on('click', '.btn-remove-desenho', function () {
+            $(this).closest('tr').remove();
+        });
 
 
             $('#btnAddDesenho').on('click', function () {

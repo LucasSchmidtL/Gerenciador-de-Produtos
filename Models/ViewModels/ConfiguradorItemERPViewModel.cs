@@ -174,13 +174,14 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
 
 
 
-
         public List<FamilyComponenteViewModel> ComponentesFamily { get; set; } = new();
         public List<FamilyAgrupadorViewModel> AgrupadoresFamily { get; set; } = new();
 
         public List<SelectListItem> AllComponentes { get; set; } = new();
 
         public List<SelectListItem> AllTags { get; set; } = new();
+
+        public List<int> SelectedTagIds { get; set; } = new();
 
         /// <summary>
         /// Dropdown de ItensERP (Seção 05)
