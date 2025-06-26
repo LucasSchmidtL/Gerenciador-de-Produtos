@@ -18,7 +18,7 @@
     );
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2 class="text-center fw-bold display-5 my-4">@ViewData["Title"]</h2>
 
 <form asp-action="ConfiguradorItemERP" method="post">
     <input asp-for="Id" type="hidden" />
@@ -32,57 +32,64 @@
         <div class="card-body">
 
             <!-- Campos principais -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
+            <div class="row g-4 mb-3">
+                <div class="col-md-3">
                     <label asp-for="ERP" class="form-label">Item ERP</label>
                     <input asp-for="ERP" class="form-control" />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label asp-for="Descricao" class="form-label">Descrição</label>
                     <input asp-for="Descricao" class="form-control" />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label asp-for="TipoItem" class="form-label">Tipo</label>
                     <input asp-for="TipoItem" class="form-control" />
                 </div>
+                <div class="col-md-3">
+                    <label asp-for="Status" class="form-label">Status</label>
+                    <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<Gerenciador_de_Produtos.Models.Enums.StatusItem>()">
+                        <option value="">-- selecione --</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
             </div>
-
-            <!-- Status -->
-            <div class="col-md-4">
-                <label asp-for="Status" class="form-label">Status</label>
-                <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<Gerenciador_de_Produtos.Models.Enums.StatusItem>()">
-                    <option value="">-- selecione --</option>
-                </select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-
-
 
             <!-- Acabamento / Classificação -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <label class="form-label">Acabamento</label>
-                    <div class="form-check">
-                        <input asp-for="Acabamento" class="form-check-input" type="radio" value="Com Acabamento" id="acabCom" />
-                        <label class="form-check-label" for="acabCom">Com acabamento</label>
-                    </div>
-                    <div class="form-check">
-                        <input asp-for="Acabamento" class="form-check-input" type="radio" value="Sem Acabamento" id="acabSem" />
-                        <label class="form-check-label" for="acabSem">Sem acabamento</label>
-                    </div>
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-light fw-semibold">
+                    <i class="bi bi-sliders me-2 text-primary"></i> Opções do Item
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">Classificação</label>
-                    <div class="form-check">
-                        <input asp-for="Classificacao" class="form-check-input" type="radio" value="1" id="classSimples" />
-                        <label class="form-check-label" for="classSimples">Simples</label>
-                    </div>
-                    <div class="form-check">
-                        <input asp-for="Classificacao" class="form-check-input" type="radio" value="2" id="classComposta" />
-                        <label class="form-check-label" for="classComposta">Composta</label>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <!-- Acabamento -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold d-block mb-2">Acabamento</label>
+                            <div class="form-check form-check-inline">
+                                <input asp-for="Acabamento" class="form-check-input" type="radio" value="Com Acabamento" id="acabCom" />
+                                <label class="form-check-label" for="acabCom">Com acabamento</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input asp-for="Acabamento" class="form-check-input" type="radio" value="Sem Acabamento" id="acabSem" />
+                                <label class="form-check-label" for="acabSem">Sem acabamento</label>
+                            </div>
+                        </div>
+
+                        <!-- Classificação -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold d-block mb-2">Classificação</label>
+                            <div class="form-check form-check-inline">
+                                <input asp-for="Classificacao" class="form-check-input" type="radio" value="1" id="classSimples" />
+                                <label class="form-check-label" for="classSimples">Simples</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input asp-for="Classificacao" class="form-check-input" type="radio" value="2" id="classComposta" />
+                                <label class="form-check-label" for="classComposta">Composta</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
 
             <!-- ==========================================
             Seção: Desenhos do Item ERP (NOVO ESTILO)
@@ -178,67 +185,11 @@
             </div>
 
 
-
-
-            @if (Model.Classificacao == 2)
+            @* Comentada chamada do editor de formula aqui, pra lembra dpois*@
+            @*@if (Model.Classificacao == 2)
             {
                 @Html.Partial("_EditorFormula", Model)
-            }
-            @if (Model.Classificacao == 2)
-            {
-                <div class="card border-primary mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <i class="bi bi-code-slash me-1"></i> Variáveis do Item Composto
-                    </div>
-
-                    <div class="card-body">
-
-                        <div class="row">
-                            <!-- Lista de variáveis -->
-                            <div class="col-md-4">
-                                <label class="form-label">Variáveis Cadastradas</label>
-                                <ul class="list-group">
-                                    @foreach (var variavel in Model.VariaveisItemComposto)
-                                    {
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span>@variavel.Nome</span>
-                                            <button type="button" class="btn btn-sm btn-outline-primary"
-                                                    onclick="editarVariavel('@variavel.Nome', `@variavel.Valor`)">
-                                                Editar
-                                            </button>
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-
-                            <!-- Editor -->
-                            <div class="col-md-8">
-                                <div class="mb-2">
-                                    <label class="form-label">Nome da Variável</label>
-                                    <input type="text" class="form-control" id="nomeVariavel" name="NomeVariavelEdicao" />
-                                </div>
-
-                                <div class="mb-2">
-                                    <label class="form-label">Valor da Variável (Expressão)</label>
-                                    <textarea class="form-control" id="valorVariavel" name="ValorVariavelEdicao" rows="3"></textarea>
-                                </div>
-
-                                <button type="submit" class="btn btn-success btn-sm">Salvar Variável</button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            }
-
-            <script>
-                function editarVariavel(nome, valor) {
-                    document.getElementById("nomeVariavel").value = nome;
-                    document.getElementById("valorVariavel").value = valor;
-                }
-            </script>
-
-
+            } *@
 
 
 
@@ -300,48 +251,93 @@
                     <ul class="list-group mt-3" id="listaItensComposicao"></ul>
                 </div>
 
-                <!-- Tabela dos itens compostos -->
-                <div class="card-body">
-                    <table class="table table-sm" id="tblItensCompostos">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Item ERP</th>
-                                <th>Comprimento</th>
-                                <th>Profundidade</th>
-                                <th>Altura</th>
-                                <th>Quantidade</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (int i = 0; i < Model.ItensCompostos.Count; i++)
-                            {
-                                <tr>
-                                    <td>
-                                        <input type="hidden" asp-for="ItensCompostos[@i].ItemERPId" />
-                                        <input type="text" class="form-control form-control-sm"
-                                               value="@Model.ItensCompostos[i].ItemERPDescricao" readonly />
+                <!-- Tabela dos Itens Compostos  -->
+                <div class="card-body" id="containerItensCompostos">
+                    @for (int i = 0; i < Model.ItensCompostos.Count; i++)
+                    {
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <strong>@Model.ItensCompostos[i].ItemERPDescricao</strong>
+                                <input type="hidden" asp-for="ItensCompostos[@i].ItemERPId" />
+                            </div>
 
-                                    </td>
-                                    <td>
+                            <div class="card-body">
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Comprimento</label>
                                         <input asp-for="ItensCompostos[@i].Comprimento" class="form-control form-control-sm" />
-                                    </td>
-                                    <td>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Profundidade</label>
                                         <input asp-for="ItensCompostos[@i].Profundidade" class="form-control form-control-sm" />
-                                    </td>
-                                    <td>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Altura</label>
                                         <input asp-for="ItensCompostos[@i].Altura" class="form-control form-control-sm" />
-                                    </td>
-                                    <td>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Quantidade</label>
                                         <input asp-for="ItensCompostos[@i].Quantidade" class="form-control form-control-sm" />
-                                    </td>
-                                    <td>
+                                    </div>
+                                    <div class="col-md-1 d-flex align-items-end">
                                         <button type="button" class="btn btn-sm btn-outline-danger btn-remove-composto">✕</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                                    </div>
+                                </div>
+
+                                <!-- Tabela de variáveis -->
+                                <label class="form-label fw-semibold">Variáveis</label>
+                                <table class="table table-bordered table-sm mb-2">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Descrição</th>
+                                            <th>Tipo</th>
+                                            <th>Valor</th>
+                                            <th>Status</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="variaveis_@i">
+                                        @for (int j = 0; j < Model.ItensCompostos[i].Variaveis.Count; j++)
+                                        {
+                                            <tr>
+                                                <input type="hidden" name="ItensCompostos[@i].Variaveis[@j].Id" value="@Model.ItensCompostos[i].Variaveis[j].Id" />
+                                                <td>
+                                                    <input name="ItensCompostos[@i].Variaveis[@j].Nome" class="form-control form-control-sm" value="@Model.ItensCompostos[i].Variaveis[j].Nome" />
+                                                </td>
+                                                <td>
+                                                    <input name="ItensCompostos[@i].Variaveis[@j].Descricao" class="form-control form-control-sm" value="@Model.ItensCompostos[i].Variaveis[j].Descricao" />
+                                                </td>
+                                                <td>
+                                                    <input name="ItensCompostos[@i].Variaveis[@j].Tipo" class="form-control form-control-sm" value="@Model.ItensCompostos[i].Variaveis[j].Tipo" />
+                                                </td>
+                                                <td>
+                                                    <input name="ItensCompostos[@i].Variaveis[@j].Valor" class="form-control form-control-sm" value="@Model.ItensCompostos[i].Variaveis[j].Valor" />
+                                                </td>
+                                                <td>
+                                                    <select name="ItensCompostos[@i].Variaveis[@j].Status" class="form-select form-select-sm">
+                                                        <option value="true" selected="@(Model.ItensCompostos[i].Variaveis[j].Status ? "selected" : null)">Ativo</option>
+                                                        <option value="false" selected="@(Model.ItensCompostos[i].Variaveis[j].Status == false ? "selected" : null)">Inativo</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger">✕</button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addVariavel(@i, @Model.ItensCompostos[i].ItemERPId)">
+                                    + Adicionar variável para este item
+                                </button>
+
+                            </div>
+                        </div>
+                    }
                 </div>
+            </div>
 
                 <!-- Bloco: Itens Galvanizados -->
                 <div class="card mb-4">
@@ -504,8 +500,6 @@
                     </table>
                 </div>
             </div>
-        
-    </div>
 
 
     <!-- ==========================================
@@ -796,8 +790,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
 
 
 
@@ -916,6 +908,102 @@
 
 
 
+                function addComposicaoRow(item) {
+            const index = document.querySelectorAll('#containerItensCompostos .card').length;
+
+            const html = `
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <strong>${item.text}</strong>
+                        <input type="hidden" name="ItensCompostos[${index}].ItemERPId" value="${item.id}" />
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Comprimento</label>
+                                <input name="ItensCompostos[${index}].Comprimento" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Profundidade</label>
+                                <input name="ItensCompostos[${index}].Profundidade" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Altura</label>
+                                <input name="ItensCompostos[${index}].Altura" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Quantidade</label>
+                                <input name="ItensCompostos[${index}].Quantidade" class="form-control form-control-sm" value="1" />
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="button" class="btn btn-sm btn-outline-danger btn-remove-composto">✕</button>
+                            </div>
+                        </div>
+
+                        <label class="form-label fw-semibold">Variáveis</label>
+                        <table class="table table-bordered table-sm mb-2">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Descrição</th>
+                                    <th>Tipo</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="variaveis_${index}">
+                            </tbody>
+                        </table>
+
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addVariavel(${index}, ${item.id})">
+                            + Adicionar variável para este item
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('containerItensCompostos').insertAdjacentHTML('beforeend', html);
+        }
+
+
+
+
+
+
+
+
+                function addVariavel(indexItem, itemERPId) {
+            const tbody = document.querySelector(`#variaveis_${indexItem}`);
+            const rowCount = tbody.rows.length;
+
+            const novaLinha = `
+                <tr>
+                    <input type="hidden" name="ItensCompostos[${indexItem}].Variaveis[${rowCount}].Id" value="0" />
+                    <input type="hidden" name="ItensCompostos[${indexItem}].Variaveis[${rowCount}].ItemERPCompostoId" value="${itemERPId}" />
+                    <td><input name="ItensCompostos[${indexItem}].Variaveis[${rowCount}].Nome" class="form-control form-control-sm" /></td>
+                    <td><input name="ItensCompostos[${indexItem}].Variaveis[${rowCount}].Descricao" class="form-control form-control-sm" /></td>
+                    <td><input name="ItensCompostos[${indexItem}].Variaveis[${rowCount}].Tipo" class="form-control form-control-sm" /></td>
+                    <td><input name="ItensCompostos[${indexItem}].Variaveis[${rowCount}].Valor" class="form-control form-control-sm" /></td>
+                    <td>
+                        <select name="ItensCompostos[${indexItem}].Variaveis[${rowCount}].Status" class="form-select form-select-sm">
+                            <option value="true">Ativo</option>
+                            <option value="false">Inativo</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('tr').remove()">✕</button>
+                    </td>
+                </tr>
+            `;
+
+            tbody.insertAdjacentHTML("beforeend", novaLinha);
+        }
+
+
+
+
 
 
         function setupSelect2ComFiltrosERP({ selectId, filtroTipo, filtroStatus, filtroTag, botaoLimpar }) {
@@ -972,21 +1060,12 @@
                 let rowHtml = '';
                 let targetTableId = '';
 
-                if (selectId === 'erpSelectComposicao') {
-                    rowHtml = `
-                        <tr>
-                            <td>
-                                <input type="hidden" name="ItensCompostos[${index}].ItemERPId" value="${item.id}" />
-                                <input type="text" class="form-control form-control-sm" value="${parts[0]} — ${parts[1]}" readonly />
-                            </td>
-                            <td><input name="ItensCompostos[${index}].Comprimento" class="form-control form-control-sm" /></td>
-                            <td><input name="ItensCompostos[${index}].Profundidade" class="form-control form-control-sm" /></td>
-                            <td><input name="ItensCompostos[${index}].Altura" class="form-control form-control-sm" /></td>
-                            <td><input name="ItensCompostos[${index}].Quantidade" class="form-control form-control-sm" /></td>
-                            <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-composto">✕</button></td>
-                        </tr>`;
-                    targetTableId = 'tblItensCompostos';
-                }
+                       if (selectId === 'erpSelectComposicao') {
+            addComposicaoRow(item); // <-- já monta o card e insere no lugar certo
+            $select.val(null).trigger('change');
+            return;
+            }
+
 
                 if (selectId === 'erpSelectPintado') {
                     rowHtml = `

@@ -201,105 +201,6 @@ namespace Gerenciador_de_Produtos.Controllers
             return RedirectToAction(nameof(ConfiguradorItemERP), new { id = item.Id });
         }
 
-        // GET: ItensERP/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null) return NotFound();
-            var item = await _context.ItensERP
-                .Include(i => i.Tags)
-                .Include(i => i.AgrupadorItensERP)
-                .Include(i => i.DesenhoItemERPs)
-                .Include(i => i.PerfilItemERPs)
-                .FirstOrDefaultAsync(i => i.Id == id);
-            if (item == null) return NotFound();
-
-            var vm = new ItemERPCreateEditViewModel
-            {
-                Id = item.Id,
-                ERP = item.ERP,
-                Descricao = item.Descricao,
-                TipoItem = item.TipoItem,
-                Acabamento = item.Acabamento,
-                Classificacao = item.Classificacao,
-                ChapaAberta = item.ChapaAberta,
-                Espessura = item.Altura,
-                AreaSuperficial = item.AreaSuperficial,
-                PesoLiquidoMetro = item.PesoLiquidoMetro,
-                PesoBrutoMetro = item.PesoBrutoMetro,
-                QuantidadeDobras = item.QuantidadeDobras,
-                SelectedTagIds = item.Tags.Select(t => t.Id).ToList(),
-                SelectedAgrupadorIds = item.AgrupadorItensERP.Select(ai => ai.AgrupadorId).ToList(),
-                SelectedDesenhoIds = item.DesenhoItemERPs.Select(d => (int)d.DesenhoId).ToList(),
-                SelectedPerfilIds = item.PerfilItemERPs.Select(pi => pi.PerfilId).ToList()
-            };
-            PopulateSelections(vm);
-            return View(vm);
-        }
-
-        // POST: ItensERP/Edit/5
-        [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ItemERPCreateEditViewModel vm)
-        {
-            if (id != vm.Id) return BadRequest();
-            if (!ModelState.IsValid)
-            {
-                PopulateSelections(vm);
-                return View(vm);
-            }
-
-            var item = await _context.ItensERP
-                .Include(i => i.Tags)
-                .Include(i => i.AgrupadorItensERP)
-                .Include(i => i.DesenhoItemERPs)
-                .Include(i => i.PerfilItemERPs)
-                .FirstOrDefaultAsync(i => i.Id == id);
-            if (item == null) return NotFound();
-
-            // Atualiza campos básicos
-            item.ERP = vm.ERP;
-            item.Descricao = vm.Descricao;
-            item.TipoItem = vm.TipoItem;
-            item.Acabamento = vm.Acabamento;
-            item.Classificacao = vm.Classificacao;
-            item.ChapaAberta = vm.ChapaAberta;
-            item.Altura = vm.Espessura;
-            item.AreaSuperficial = vm.AreaSuperficial;
-            item.PesoLiquidoMetro = vm.PesoLiquidoMetro;
-            item.PesoBrutoMetro = vm.PesoBrutoMetro;
-            item.QuantidadeDobras = vm.QuantidadeDobras;
-
-            // Tags
-            item.Tags.Clear();
-            var tags = await _context.Tags.Where(t => vm.SelectedTagIds.Contains(t.Id)).ToListAsync();
-            tags.ForEach(t => item.Tags.Add(t));
-
-            // Agrupadores
-            _context.AgrupadorItemERPs.RemoveRange(item.AgrupadorItensERP);
-            foreach (var agrId in vm.SelectedAgrupadorIds)
-                item.AgrupadorItensERP.Add(new AgrupadorItemERP { ItemERPId = item.Id, AgrupadorId = agrId, Status = true });
-
-            // Desenhos
-            item.DesenhoItemERPs.Clear();
-            var desenhos = await _context.Desenhos
-                .Where(d => vm.SelectedDesenhoIds.Contains((int)d.DesenhoId))
-                .ToListAsync();
-            desenhos.ForEach(d => item.DesenhoItemERPs.Add(new DesenhoItemERP
-            {
-                ItemERPId = item.Id,
-                DesenhoId = d.DesenhoId
-            }));
-
-
-            // Perfis
-            item.PerfilItemERPs.Clear();
-            var perfis = await _context.Perfis
-                .Where(p => vm.SelectedPerfilIds.Contains(p.Id))
-                .ToListAsync();
-            perfis.ForEach(p => item.PerfilItemERPs.Add(new PerfilItemERP { ItemERPId = item.Id, PerfilId = p.Id }));
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
         //-------------------------------------------------------------------configurador-------------------------------------------------------------------
 
@@ -395,8 +296,23 @@ namespace Gerenciador_de_Produtos.Controllers
                     Profundidade = ic.Profundidade,
                     Altura = ic.Altura,
                     Quantidade = ic.Quantidade,
-                    ItemERPDescricao = ic.ItemFilho != null ? $"{ic.ItemFilho.ERP} | {ic.ItemFilho.Descricao}" : string.Empty
+                    ItemERPDescricao = ic.ItemFilho != null ? $"{ic.ItemFilho.ERP} | {ic.ItemFilho.Descricao}" : string.Empty,
+
+                    Variaveis = item.VariaveisComposicao
+                        .Where(v => v.ItemERPCompostoId == ic.Id)
+                        .Select(v => new VariaveisItemERPComposto
+                        {
+                            Id = v.Id,
+                            Nome = v.Nome,
+                            Descricao = v.Descricao,
+                            Tipo = v.Tipo,
+                            Valor = v.Valor,
+                            Status = v.Status,
+                            ItemERPCompostoId = v.ItemERPCompostoId
+                        }).ToList()
                 }).ToList(),
+
+
 
                 VariaveisItemComposto = item.VariaveisComposicao.Select(v => new VariaveisItemERPComposto
                 {
@@ -451,7 +367,6 @@ namespace Gerenciador_de_Produtos.Controllers
         }
 
 
-
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfiguradorItemERP(ConfiguradorItemERPViewModel vm)
         {
@@ -469,11 +384,12 @@ namespace Gerenciador_de_Produtos.Controllers
                 .Include(i => i.AgrupadorItensERP)
                 .Include(i => i.ItensVinculados)
                 .Include(i => i.ItensCompostos)
+                .Include(i => i.ItensVinculados)
                 .FirstOrDefaultAsync(i => i.Id == vm.Id);
 
             if (item == null) return NotFound();
 
-            // Atualiza campos básicos...
+            // Atualiza campos principais
             item.ERP = vm.ERP;
             item.Descricao = vm.Descricao;
             item.TipoItem = vm.TipoItem;
@@ -487,166 +403,115 @@ namespace Gerenciador_de_Produtos.Controllers
             item.PesoBrutoMetro = vm.PesoBrutoMetro;
             item.QuantidadeDobras = vm.QuantidadeDobras;
 
-
-            // Salvar ou atualizar variável composta
-            if (!string.IsNullOrEmpty(vm.NomeVariavelEdicao))
-            {
-                // busca o primeiro vínculo de composição do item atual
-                var itemComposto = await _context.ItensERPCompostos
-                    .FirstOrDefaultAsync(ic => ic.ItemPaiId == item.Id);
-
-                if (itemComposto != null)
-                {
-                    var variavel = await _context.VariaveisItemERPCompostos
-                        .FirstOrDefaultAsync(v => v.ItemERPCompostoId == itemComposto.Id && v.Nome == vm.NomeVariavelEdicao);
-
-                    if (variavel == null)
-                    {
-                        _context.VariaveisItemERPCompostos.Add(new VariaveisItemERPComposto
-                        {
-                            Nome = vm.NomeVariavelEdicao,
-                            Valor = vm.ValorVariavelEdicao,
-                            ItemERPCompostoId = itemComposto.Id, // <- AQUI ESTÁ A DIFERENÇA!
-                            Status = true,
-                            Tipo = "expressao"
-                        });
-                    }
-                    else
-                    {
-                        variavel.Valor = vm.ValorVariavelEdicao;
-                    }
-                }
-            }
-
-
-
-            // Desenhos
+            // Atualiza desenhos
             item.DesenhoItemERPs.Clear();
             if (vm.Desenhos != null)
             {
                 foreach (var d in vm.Desenhos)
                 {
-                    item.DesenhoItemERPs.Add(new DesenhoItemERP
-                    {
-                        DesenhoId = d.Id,
-                        ItemERPId = item.Id
-                    });
+                    item.DesenhoItemERPs.Add(new DesenhoItemERP { DesenhoId = d.Id, ItemERPId = item.Id });
                 }
             }
 
-            // Itens Integrantes
-            var integrantesParaRemover = item.ItensVinculados
-            .Where(v => v.Tipo == TipoVinculoERP.Integrante)
-            .ToList();
+            // Limpa compostos e variáveis
+            var compostosAntigos = await _context.ItensERPCompostos
+                .Where(c => c.ItemPaiId == item.Id)
+                .ToListAsync();
 
-            foreach (var vinculo in integrantesParaRemover)
+            var idsCompostos = compostosAntigos.Select(c => c.Id).ToList();
+            var variaveisAntigas = await _context.VariaveisItemERPCompostos
+                .Where(v => idsCompostos.Contains(v.ItemERPCompostoId)).ToListAsync();
+
+            _context.VariaveisItemERPCompostos.RemoveRange(variaveisAntigas);
+            _context.ItensERPCompostos.RemoveRange(compostosAntigos);
+
+            await _context.SaveChangesAsync();
+
+            // Adiciona novos compostos e variáveis
+            if (vm.ItensCompostos != null)
             {
-                item.ItensVinculados.Remove(vinculo);
+                foreach (var ic in vm.ItensCompostos)
+                {
+                    var novoComposto = new ItemERPComposto
+                    {
+                        ItemPaiId = item.Id,
+                        ItemFilhoId = ic.ItemERPId,
+                        Comprimento = ic.Comprimento,
+                        Altura = ic.Altura,
+                        Profundidade = ic.Profundidade,
+                        Quantidade = ic.Quantidade
+                    };
+
+                    _context.ItensERPCompostos.Add(novoComposto);
+                    await _context.SaveChangesAsync(); // necessário para obter ID do composto
+
+                    foreach (var variavel in ic.Variaveis ?? new())
+                    {
+                        _context.VariaveisItemERPCompostos.Add(new VariaveisItemERPComposto
+                        {
+                            Nome = variavel.Nome,
+                            Descricao = variavel.Descricao,
+                            Tipo = variavel.Tipo,
+                            Valor = variavel.Valor,
+                            Status = variavel.Status,
+                            ItemERPCompostoId = novoComposto.Id
+                        });
+                    }
+                }
             }
 
-            if (vm.ItensIntegrantes != null)
+            // VÍNCULOS ===
+
+            foreach (var vinculo in item.ItensVinculados.Where(v => v.Tipo == TipoVinculoERP.Integrante).ToList())
+                item.ItensVinculados.Remove(vinculo);
+
+            foreach (var v in vm.ItensIntegrantes ?? new())
             {
-                foreach (var v in vm.ItensIntegrantes)
+                item.ItensVinculados.Add(new ItemERPVinculado
+                {
+                    ItemERPId = item.Id,
+                    VinculadoId = v.ItemERPId,
+                    Tipo = TipoVinculoERP.Integrante
+                });
+            }
+
+            foreach (var vinculo in item.ItensVinculados.Where(v => v.Tipo == TipoVinculoERP.Pintado).ToList())
+                item.ItensVinculados.Remove(vinculo);
+
+            foreach (var v in vm.ItensVinculadosPintado ?? new())
+            {
+                if (v.ItemERPId == 0) continue;
+                item.ItensVinculados.Add(new ItemERPVinculado
+                {
+                    ItemERPId = item.Id,
+                    VinculadoId = v.ItemERPId,
+                    Tipo = TipoVinculoERP.Pintado
+                });
+            }
+
+            foreach (var vinculo in item.ItensVinculados.Where(v => v.Tipo == TipoVinculoERP.Galvanizado).ToList())
+                item.ItensVinculados.Remove(vinculo);
+
+            foreach (var v in vm.ItensVinculadosGalvanizado ?? new())
+            {
+                if (v.ItemERPId == 0) continue;
+                var vinculado = await _context.ItensERP.AsNoTracking().FirstOrDefaultAsync(i => i.Id == v.ItemERPId);
+                if (vinculado != null)
                 {
                     item.ItensVinculados.Add(new ItemERPVinculado
                     {
                         ItemERPId = item.Id,
                         VinculadoId = v.ItemERPId,
-                        Tipo = TipoVinculoERP.Integrante
+                        Tipo = TipoVinculoERP.Galvanizado,
+                        ItemERPDescricao = $"{vinculado.ERP} – {vinculado.Descricao}"
                     });
                 }
             }
-
-
-            // Itens compostos
-            item.ItensCompostos.Clear();
-            if (vm.ItensCompostos != null)
-            {
-                foreach (var ic in vm.ItensCompostos)
-                {
-                    item.ItensCompostos.Add(new ItemERPComposto
-                    {
-                        ItemPaiId = item.Id,
-                        ItemFilhoId = ic.ItemERPId,
-                        Comprimento = ic.Comprimento,
-                        Profundidade = ic.Profundidade,
-                        Altura = ic.Altura,
-                        Quantidade = ic.Quantidade
-                    });
-                }
-            }
-
-            // Remoção de vínculos antigos de tipo Pintado e Galvanizado
-            var vinculosParaRemover = item.ItensVinculados
-                .Where(v => v.Tipo == TipoVinculoERP.Pintado || v.Tipo == TipoVinculoERP.Galvanizado)
-                .ToList();
-
-            foreach (var vinculo in vinculosParaRemover)
-            {
-                item.ItensVinculados.Remove(vinculo);
-            }
-
-
-            // Adiciona vínculos Pintado
-            if (vm.ItensVinculadosPintado != null)
-            {
-                foreach (var v in vm.ItensVinculadosPintado)
-                {
-                    if (v.ItemERPId == 0) continue;
-
-                    var vinculado = await _context.ItensERP.FindAsync(v.ItemERPId);
-                    if (vinculado != null)
-                    {
-                        item.ItensVinculados.Add(new ItemERPVinculado
-                        {
-                            ItemERPId = item.Id,
-                            VinculadoId = v.ItemERPId,
-                            Tipo = TipoVinculoERP.Pintado
-                        });
-                    }
-                }
-            }
-
-
-
-            // Adiciona vínculos Galvanizado
-            if (vm.ItensVinculadosGalvanizado != null)
-            {
-                foreach (var v in vm.ItensVinculadosGalvanizado)
-                {
-                    if (v.ItemERPId == 0) continue;
-
-                    var vinculado = await _context.ItensERP
-                         .AsNoTracking()
-                         .FirstOrDefaultAsync(i => i.Id == v.ItemERPId);
-
-                    if (vinculado != null)
-                    {
-                        // Aqui está a chave: garantir que não está tentando inserir novamente o mesmo ItemERP como novo
-                        _context.Entry(vinculado).State = EntityState.Unchanged;
-
-                        item.ItensVinculados.Add(new ItemERPVinculado
-                        {
-                            ItemERPId = item.Id,
-                            VinculadoId = v.ItemERPId,
-                            Tipo = TipoVinculoERP.Galvanizado,
-                            ItemERPDescricao = $"{vinculado.ERP} – {vinculado.Descricao}"
-                        });
-                    }
-
-                }
-            }
-
-
 
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
-
-
-
-
 
 
 

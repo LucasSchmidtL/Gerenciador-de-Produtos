@@ -84,6 +84,8 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
         public string? Unidade { get; set; }
 
         public string? ItemERPDescricao { get; set; }
+
+        public List<VariaveisItemERPComposto> Variaveis { get; set; } = new();
     }
 
 

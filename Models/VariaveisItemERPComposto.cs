@@ -12,7 +12,7 @@ namespace Gerenciador_de_Produtos.Models
         public string Tipo { get; set; } = "texto";
 
         public int ItemERPCompostoId { get; set; }
-        public ItemERPComposto ItemERPComposto { get; set; } = null!;
+        public ItemERPComposto? ItemERPComposto { get; set; } = null!;
 
         public bool Status { get; set; }
         public string? Valor { get; set; }
