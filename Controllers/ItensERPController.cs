@@ -507,6 +507,60 @@ namespace Gerenciador_de_Produtos.Controllers
             }
 
 
+            // Revisao do ItemERP
+            _context.RevisaoItemERPs.RemoveRange(item.Revisoes);
+            foreach (var rvm in vm.Revisoes)
+            {
+                item.Revisoes.Add(new RevisaoItemERP
+                {
+                    Numero = rvm.Numero,
+                    Motivo = rvm.MotivoRevisao,
+                    Data = rvm.DataRevisao!.Value,
+                    ItemERPId = item.Id
+                });
+            }
+
+
+            // Perfis
+            _context.PerfilItemERPs.RemoveRange(item.PerfilItemERPs);
+            foreach (var pvm in vm.PerfisSection)
+            {
+                var perfilItem = new PerfilItemERP
+                {
+                    ItemERPId = item.Id,
+                    PerfilId = pvm.PerfilId
+                };
+                foreach (var rr in pvm.Revisoes)
+                {
+                    perfilItem.Revisoes.Add(new RevisaoPerfilItemERP 
+                    {
+                        Numero = rr.Numero,
+                        Motivo = rr.MotivoRevisao,
+                        Data = rr.DataRevisao!.Value,
+                        PerfilItemERPId = perfilItem.Id
+                    });
+                }
+                item.PerfilItemERPs.Add(perfilItem);
+            }
+
+
+
+            // Agrupadores
+            _context.AgrupadorItemERPs.RemoveRange(item.AgrupadorItensERP);
+            foreach (var a in vm.AgrupadoresFamily)
+                item.AgrupadorItensERP.Add(new AgrupadorItemERP { ItemERPId = item.Id, AgrupadorId = a.AgrupadorId, Status = true });
+
+
+
+            // Famílias
+            _context.ComponenteItemERPs.RemoveRange(item.ComponenteItemERPs);
+            foreach (var c in vm.ComponentesFamily)
+                item.ComponenteItemERPs.Add(new ComponenteItemERP { ItemERPId = item.Id, ComponenteId = c.ComponenteId });
+            
+
+
+
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

@@ -1171,5 +1171,98 @@
             if (e.target.classList.contains('btn-remove-galva'))    e.target.closest('tr').remove();
         });
 
+
+
+
+        // Revisões
+        document.getElementById('btnAddRevisaoItem').addEventListener('click', () => {
+            const tbody = document.querySelector('#tblRevisoesItem tbody'), idx = tbody.rows.length, row = document.createElement('tr');
+            row.innerHTML = `
+                <input type="hidden" name="Revisoes[${idx}].Id" value="0" />
+                <td><input name="Revisoes[${idx}].Numero" class="form-control form-control-sm" /></td>
+                <td><input name="Revisoes[${idx}].MotivoRevisao" class="form-control form-control-sm" /></td>
+                <td><input name="Revisoes[${idx}].DataRevisao" type="date" class="form-control form-control-sm" /></td>
+                <td><button type="button" class="btn btn-sm btn-danger btn-remove-revisao">✕</button></td>`;
+            tbody.appendChild(row);
+        });
+
+        document.querySelector('#tblRevisoesItem').addEventListener('click', e => {
+            if (e.target.classList.contains('btn-remove-revisao')) e.target.closest('tr').remove();
+        });
+
+
+
+        // Perfis
+        document.getElementById('btnAddPerfilSection').addEventListener('click', () => {
+            const tbody = document.querySelector('#tblPerfisSection tbody'), idx = tbody.rows.length, row = document.createElement('tr');
+            row.innerHTML = `
+                <input type="hidden" name="PerfisSection[${idx}].Id" value="0" />
+                <td><select name="PerfisSection[${idx}].PerfilId" class="form-control"><option value="">-- selecione --</option>${perfisOptions}</select></td>
+                <td><input name="PerfisSection[${idx}].Aco" class="form-control" /></td>
+                <td><table class="table table-borderless mb-0"><thead><tr><th>Nr</th><th>Motivo</th><th>Data</th></tr></thead><tbody id="revs_${idx}"></tbody></table>
+                    <button type="button" class="btn btn-sm btn-outline-secondary mt-1" onclick="addRev(${idx})">+ Revisão</button>
+                </td>
+                <td><button type="button" class="btn btn-sm btn-danger btn-remove-perfil">✕</button></td>`;
+            tbody.appendChild(row);
+        });
+        document.querySelector('#tblPerfisSection').addEventListener('click', e => {
+            if (e.target.classList.contains('btn-remove-perfil')) e.target.closest('tr').remove();
+        });
+        function addRev(perfIdx) {
+            const revTbody = document.getElementById(`revs_${perfIdx}`), rIdx = revTbody.rows.length, tr = document.createElement('tr');
+            tr.innerHTML = `
+                <input type="hidden" name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].Id" value="0" />
+                <td><input name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].Numero" class="form-control form-control-sm" /></td>
+                <td><input name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].MotivoRevisao" class="form-control form-control-sm" /></td>
+                <td><input name="PerfisSection[${perfIdx}].Revisoes[${rIdx}].DataRevisao" type="date" class="form-control form-control-sm" /></td>`;
+            revTbody.appendChild(tr);
+        }
+
+        // Agrupadores
+            document.getElementById('btnAddAgrupadorFamily').addEventListener('click', () => {
+              const tbody = document.querySelector('#tblAgrupadoresFamily tbody');
+              const idx   = tbody.rows.length;
+              const row   = document.createElement('tr');
+              row.innerHTML = `
+                <input type="hidden" name="AgrupadoresFamily[${idx}].Id" value="0" />
+                <td>
+                  <select name="AgrupadoresFamily[${idx}].AgrupadorId" class="form-control form-control-sm">
+                    <option value="">-- selecione --</option>
+                    ${agrupadoresOptions}
+                  </select>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-danger btn-remove-agrupador">✕</button>
+                </td>`;
+              tbody.appendChild(row);
+            });
+            document.querySelector('#tblAgrupadoresFamily').addEventListener('click', e => {
+              if (e.target.classList.contains('btn-remove-agrupador'))
+                e.target.closest('tr').remove();
+            });
+
+             // Componentes
+            document.getElementById('btnAddComponenteFamily').addEventListener('click', () => {
+              const tbody = document.querySelector('#tblComponentesFamily tbody');
+              const idx   = tbody.rows.length;
+              const row   = document.createElement('tr');
+              row.innerHTML = `
+                <input type="hidden" name="ComponentesFamily[${idx}].Id" value="0" />
+                <td>
+                  <select name="ComponentesFamily[${idx}].ComponenteId" class="form-control form-control-sm">
+                    <option value="">-- selecione --</option>
+                    ${componentesOptions}
+                  </select>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-danger btn-remove-componente">✕</button>
+                </td>`;
+              tbody.appendChild(row);
+            });
+            document.querySelector('#tblComponentesFamily').addEventListener('click', e => {
+              if (e.target.classList.contains('btn-remove-componente'))
+                e.target.closest('tr').remove();
+            });
+
     </script>
 }
