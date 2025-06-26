@@ -74,6 +74,7 @@ namespace Gerenciador_de_Produtos.Models.ViewModels
     public class ItemERPCompostoViewModel
     {
         [Required]
+        public int Id { get; set; }
         public int ItemERPId { get; set; }
 
         public string? Comprimento { get; set; }

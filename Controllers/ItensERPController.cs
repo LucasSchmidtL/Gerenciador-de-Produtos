@@ -144,24 +144,6 @@ namespace Gerenciador_de_Produtos.Controllers
             return PartialView("_ListaItensERP", itens);
         }
 
-
-
-        // GET: ItensERP/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null) return NotFound();
-            var item = await _context.ItensERP
-                .Include(i => i.Tags)
-                .Include(i => i.AgrupadorItensERP).ThenInclude(ai => ai.Agrupador)
-                .Include(i => i.DesenhoItemERPs).ThenInclude(di => di.Desenho)
-                .Include(i => i.Revisoes)
-                .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Revisoes)
-                .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Perfil)
-                .FirstOrDefaultAsync(i => i.Id == id);
-            if (item == null) return NotFound();
-            return View(item);
-        }
-
         // GET: ItensERP/Create
         public IActionResult Create()
         {
@@ -218,6 +200,7 @@ namespace Gerenciador_de_Produtos.Controllers
                 .Include(i => i.PerfilItemERPs).ThenInclude(pi => pi.Perfil)
                 .Include(i => i.ItensVinculados)
                 .Include(i => i.ItensCompostos).ThenInclude(ic => ic.ItemFilho)
+                .Include(i => i.ItensCompostos).ThenInclude(ic => ic.Variaveis) 
                 .Include(i => i.VariaveisComposicao)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
@@ -294,6 +277,7 @@ namespace Gerenciador_de_Produtos.Controllers
 
                 ItensCompostos = item.ItensCompostos.Select(ic => new ItemERPCompostoViewModel
                 {
+                    Id = ic.Id,
                     ItemERPId = ic.ItemFilhoId,
                     Comprimento = ic.Comprimento,
                     Profundidade = ic.Profundidade,
@@ -301,31 +285,16 @@ namespace Gerenciador_de_Produtos.Controllers
                     Quantidade = ic.Quantidade,
                     ItemERPDescricao = ic.ItemFilho != null ? $"{ic.ItemFilho.ERP} | {ic.ItemFilho.Descricao}" : string.Empty,
 
-                    Variaveis = item.VariaveisComposicao
-                        .Where(v => v.ItemERPCompostoId == ic.Id)
-                        .Select(v => new VariaveisItemERPComposto
-                        {
-                            Id = v.Id,
-                            Nome = v.Nome,
-                            Descricao = v.Descricao,
-                            Tipo = v.Tipo,
-                            Valor = v.Valor,
-                            Status = v.Status,
-                            ItemERPCompostoId = v.ItemERPCompostoId
-                        }).ToList()
-                }).ToList(),
-
-
-
-                VariaveisItemComposto = item.VariaveisComposicao.Select(v => new VariaveisItemERPComposto
-                {
-                    Id = v.Id,
-                    Nome = v.Nome,
-                    Descricao = v.Descricao,
-                    Tipo = v.Tipo,
-                    Valor = v.Valor,
-                    Status = v.Status,
-                    ItemERPCompostoId = v.ItemERPCompostoId
+                    Variaveis = ic.Variaveis.Select(v => new VariaveisItemERPComposto
+                    {
+                        Id = v.Id,
+                        Nome = v.Nome,
+                        Descricao = v.Descricao,
+                        Tipo = v.Tipo,
+                        Valor = v.Valor,
+                        Status = v.Status,
+                        ItemERPCompostoId = v.ItemERPCompostoId
+                    }).ToList()
                 }).ToList(),
 
 
@@ -453,7 +422,9 @@ namespace Gerenciador_de_Produtos.Controllers
                     };
 
                     _context.ItensERPCompostos.Add(novoComposto);
-                    await _context.SaveChangesAsync(); // necessário para obter ID do composto
+                    await _context.SaveChangesAsync();
+
+                    item.ItensCompostos.Add(novoComposto); // <- aqui ó 👈
 
                     foreach (var variavel in ic.Variaveis ?? new())
                     {
@@ -467,6 +438,8 @@ namespace Gerenciador_de_Produtos.Controllers
                             ItemERPCompostoId = novoComposto.Id
                         });
                     }
+
+                    await _context.SaveChangesAsync();
                 }
             }
 

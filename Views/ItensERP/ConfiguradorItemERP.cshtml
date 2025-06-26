@@ -254,7 +254,6 @@
 
                     <label class="form-label">Buscar Item ERP</label>
                     <select id="erpSelectComposicao" class="form-select w-100"></select>
-                    <ul class="list-group mt-3" id="tblItensCompostos"></ul>
                 </div>
 
                 <!-- Tabela dos Itens Compostos  -->
@@ -269,6 +268,7 @@
 
                             <div class="card-body">
                                 <div class="row g-2 mb-3">
+                                    <input type="hidden" name="ItensCompostos[@i].Id" value="@Model.ItensCompostos[i].Id" />
                                     <div class="col-md-3">
                                         <label class="form-label">Comprimento</label>
                                         <input asp-for="ItensCompostos[@i].Comprimento" class="form-control form-control-sm" />
@@ -928,7 +928,6 @@
             }
 
             try {
-                // tentativa simples (não executa, só avalia estrutura)
                 new Function("return " + expressao);
                 alert("Sintaxe válida.");
             } catch (e) {
@@ -1078,66 +1077,67 @@
                 $select.select2('open');
             });
 
-            $select.on('select2:select', function (e) {
-                const item = e.params.data;
-                const parts = item.text.split('|');
+                    $select.on('select2:select', function (e) {
+            const item = e.params.data;
+            const parts = item.text.split('|');
+            let rowHtml = '';
+            let targetTableId = '';
 
-                const indices = {
-                    erpSelectComposicao: document.querySelector('#tblItensCompostos tbody').rows.length,
-                    erpSelectPintado: document.querySelector('#tblItensVinculadosPintado tbody').rows.length,
-                    erpSelectGalvanizado: document.querySelector('#tblItensGalva tbody').rows.length
-                };
-                const index = indices[selectId];
-
-                let rowHtml = '';
-                let targetTableId = '';
-
-                       if (selectId === 'erpSelectComposicao') {
-            addComposicaoRow(item); // <-- já monta o card e insere no lugar certo
-            $select.val(null).trigger('change');
-            return;
+            if (selectId === 'erpSelectComposicao') {
+                console.log('✅ Adicionando item composto:', item);
+                addComposicaoRow(item);
+                $select.val(null).trigger('change');
+                return;
             }
 
+            const indices = {
+                erpSelectPintado: document.querySelector('#tblItensVinculadosPintado tbody').rows.length,
+                erpSelectGalvanizado: document.querySelector('#tblItensGalva tbody').rows.length
+            };
+            const index = indices[selectId] || 0;
 
-                if (selectId === 'erpSelectPintado') {
-                    rowHtml = `
-                        <tr>
-                            <td>
-                                <input type="hidden" name="ItensVinculadosPintado[${index}].ItemERPId" value="${item.id}" />
-                                <input type="text" class="form-control form-control-sm" value="${parts[0]} — ${parts[1]}" readonly />
-                            </td>
-                            <td>
-                                <select name="ItensVinculadosPintado[${index}].DesenhoId" class="form-control form-control-sm">
-                                    <option value="">-- selecione --</option>
-                                    ${desenhosOptions}
-                                </select>
-                            </td>
-                            <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-pintado">✕</button></td>
-                        </tr>`;
-                    targetTableId = 'tblItensVinculadosPintado';
-                }
+            if (selectId === 'erpSelectPintado') {
+                rowHtml = `
+                    <tr>
+                        <td>
+                            <input type="hidden" name="ItensVinculadosPintado[${index}].ItemERPId" value="${item.id}" />
+                            <input type="text" class="form-control form-control-sm" value="${parts[0]} — ${parts[1]}" readonly />
+                        </td>
+                        <td>
+                            <select name="ItensVinculadosPintado[${index}].DesenhoId" class="form-control form-control-sm">
+                                <option value="">-- selecione --</option>
+                                ${desenhosOptions}
+                            </select>
+                        </td>
+                        <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-pintado">✕</button></td>
+                    </tr>`;
+                targetTableId = 'tblItensVinculadosPintado';
+            }
 
-                if (selectId === 'erpSelectGalvanizado') {
-                    rowHtml = `
-                        <tr>
-                            <td>
-                                <input type="hidden" name="ItensVinculadosGalvanizado[${index}].ItemERPId" value="${item.id}" />
-                                <input type="text" class="form-control form-control-sm" value="${parts[0]} — ${parts[1]}" readonly />
-                            </td>
-                            <td>
-                                <select name="ItensVinculadosGalvanizado[${index}].DesenhoId" class="form-control form-control-sm">
-                                    <option value="">-- selecione --</option>
-                                    ${desenhosOptions}
-                                </select>
-                            </td>
-                            <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-galva">✕</button></td>
-                        </tr>`;
-                    targetTableId = 'tblItensGalva';
-                }
+            if (selectId === 'erpSelectGalvanizado') {
+                rowHtml = `
+                    <tr>
+                        <td>
+                            <input type="hidden" name="ItensVinculadosGalvanizado[${index}].ItemERPId" value="${item.id}" />
+                            <input type="text" class="form-control form-control-sm" value="${parts[0]} — ${parts[1]}" readonly />
+                        </td>
+                        <td>
+                            <select name="ItensVinculadosGalvanizado[${index}].DesenhoId" class="form-control form-control-sm">
+                                <option value="">-- selecione --</option>
+                                ${desenhosOptions}
+                            </select>
+                        </td>
+                        <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-galva">✕</button></td>
+                    </tr>`;
+                targetTableId = 'tblItensGalva';
+            }
 
+            if (rowHtml && targetTableId) {
                 document.querySelector(`#${targetTableId} tbody`).insertAdjacentHTML('beforeend', rowHtml);
                 $select.val(null).trigger('change');
-            });
+            }
+        });
+
         }
 
         // Inicializações
@@ -1165,10 +1165,11 @@
             botaoLimpar: 'limparFiltrosGalvanizado'
         });
 
-        document.addEventListener('click', e => {
-            if (e.target.classList.contains('btn-remove-composto')) e.target.closest('tr').remove();
+                document.addEventListener('click', e => {
+            if (e.target.classList.contains('btn-remove-composto')) e.target.closest('.card').remove(); 
             if (e.target.classList.contains('btn-remove-pintado'))  e.target.closest('tr').remove();
             if (e.target.classList.contains('btn-remove-galva'))    e.target.closest('tr').remove();
         });
+
     </script>
 }
